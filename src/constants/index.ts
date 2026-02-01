@@ -17,16 +17,16 @@ export const SITE_CONFIG = {
   address: {
     line1: 'Faculty of Engineering',
     line2: 'University of Ruhuna',
-    city: 'Wellamadama, Matara',
+    city: 'Hapugala, Galle',
     country: 'Sri Lanka',
     postalCode: '81000',
   },
   contact: {
     email: 'comes@eng.ruh.ac.lk',
     phone: '+94 41 205 001',
-    address: 'Faculty of Engineering, University of Ruhuna, Wellamadama, Matara, Sri Lanka',
+    address: 'Faculty of Engineering, University of Ruhuna, Hapugala, Galle, Sri Lanka',
   },
-  foundedYear: 2015,
+  foundedYear: 2026,
 } as const;
 
 // Navigation Links
@@ -124,10 +124,10 @@ export const COLORS = {
 
 // Statistics
 export const STATISTICS = [
-  { id: '1', label: 'Members', value: 500, suffix: '+', icon: 'users' },
+  { id: '1', label: 'Members', value: 700, suffix: '+', icon: 'users' },
   { id: '2', label: 'Events', value: 50, suffix: '+', icon: 'calendar' },
   { id: '3', label: 'Projects', value: 25, suffix: '+', icon: 'code' },
-  { id: '4', label: 'Years', value: 10, suffix: '+', icon: 'award' },
+  { id: '4', label: 'Years', value: 5, suffix: '+', icon: 'award' },
 ];
 
 // Contact Subjects

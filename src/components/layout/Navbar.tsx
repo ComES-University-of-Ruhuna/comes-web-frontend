@@ -9,8 +9,8 @@ import { Menu, X, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { useScrollPosition, useClickOutside } from '@/hooks';
 import { cn } from '@/utils';
-import { ThemeToggle } from '@/components/ui';
-import { useThemeStore } from '@/store';
+import { ThemeToggle, UserProfileDropdown, NotificationsDropdown } from '@/components/ui';
+import { useThemeStore, useStudentStore, useAuthStore } from '@/store';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -21,6 +21,11 @@ export const Navbar = () => {
   const mobileMenuRef = useClickOutside<HTMLDivElement>(() =>
     setIsMobileMenuOpen(false)
   );
+
+  // Check if user is authenticated
+  const { isAuthenticated: isStudentAuth } = useStudentStore();
+  const { isAuthenticated: isAdminAuth } = useAuthStore();
+  const isAuthenticated = isStudentAuth || isAdminAuth;
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -61,7 +66,7 @@ export const Navbar = () => {
         getNavStyles()
       )}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link
@@ -81,7 +86,7 @@ export const Navbar = () => {
               )}
             >
               <span className="relative z-10">CE</span>
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 transition-opacity opacity-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent group-hover:opacity-100" />
             </motion.div>
             <div className="hidden sm:block">
               <h1
@@ -108,7 +113,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="items-center hidden gap-1 lg:flex">
             {NAV_LINKS.map((link, index) => (
               <motion.div
                 key={link.path}
@@ -154,44 +159,64 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-3">
-            {/* Theme Toggle */}
-            <ThemeToggle 
-              className={cn(
-                isScrolled 
-                  ? '' 
-                  : 'text-white hover:bg-white/10'
-              )} 
-            />
-
-            {/* CTA Button */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                to="/contact"
+          <div className="items-center hidden gap-3 lg:flex">
+            {/* Theme Toggle - only show if not authenticated */}
+            {!isAuthenticated && (
+              <ThemeToggle 
                 className={cn(
-                  'px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2',
-                  'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 hover:from-amber-300 hover:to-yellow-400',
-                  'shadow-lg shadow-amber-500/25'
-                )}
+                  isScrolled 
+                    ? '' 
+                    : 'text-white hover:bg-white/10'
+                )} 
+              />
+            )}
+
+            {/* Notifications - only show if authenticated */}
+            {isAuthenticated && (
+              <NotificationsDropdown isScrolled={isScrolled} />
+            )}
+
+            {/* User Profile Dropdown or CTA Button */}
+            {isAuthenticated ? (
+              <UserProfileDropdown isScrolled={isScrolled} />
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Sparkles className="w-4 h-4" />
-                Join Us
-              </Link>
-            </motion.div>
+                <Link
+                  to="/register"
+                  className={cn(
+                    'px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2',
+                    'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 hover:from-amber-300 hover:to-yellow-400',
+                    'shadow-lg shadow-amber-500/25'
+                  )}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Join Us
+                </Link>
+                
+              </motion.div>
+            )}
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex lg:hidden items-center gap-2">
-            <ThemeToggle 
-              className={cn(
-                isScrolled 
-                  ? '' 
-                  : 'text-white hover:bg-white/10'
-              )} 
-            />
+          <div className="flex items-center gap-2 lg:hidden">
+            {!isAuthenticated && (
+              <ThemeToggle 
+                className={cn(
+                  isScrolled 
+                    ? '' 
+                    : 'text-white hover:bg-white/10'
+                )} 
+              />
+            )}
+            {isAuthenticated && (
+              <>
+                <NotificationsDropdown isScrolled={isScrolled} />
+                <UserProfileDropdown isScrolled={isScrolled} />
+              </>
+            )}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -242,7 +267,7 @@ export const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="lg:hidden fixed inset-0 top-16 md:top-20 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 lg:hidden top-16 md:top-20 bg-black/60 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -295,13 +320,29 @@ export const Navbar = () => {
                     isDark ? 'border-slate-800' : 'border-gray-200'
                   )}
                 >
-                  <Link
-                    to="/contact"
-                    className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full font-semibold bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 hover:from-amber-300 hover:to-yellow-400 transition-all shadow-lg"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Join Us
-                  </Link>
+                  {isAuthenticated ? (
+                    <UserProfileDropdown variant="mobile" />
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className={cn(
+                          'flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full font-semibold mb-3 transition-all',
+                          isDark 
+                            ? 'bg-slate-800 text-white hover:bg-slate-700' 
+                            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                        )}
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        to="/register"
+                        className="flex items-center justify-center w-full gap-2 px-6 py-3 font-semibold text-white transition-all rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                      >
+                        Register
+                      </Link>
+                    </>
+                  )}
                 </motion.div>
               </div>
             </motion.div>

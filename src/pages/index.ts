@@ -12,3 +12,13 @@ export { BlogPage } from './BlogPage';
 export { ContactPage } from './ContactPage';
 export { FAQPage } from './FAQPage';
 export { NotFoundPage } from './NotFoundPage';
+export { StudentRegisterPage } from './StudentRegisterPage';
+export { StudentLoginPage } from './StudentLoginPage';
+
+// Student pages
+export { 
+  StudentDashboardPage, 
+  StudentProfilePage, 
+  StudentEventsPage, 
+  StudentSettingsPage 
+} from './student';

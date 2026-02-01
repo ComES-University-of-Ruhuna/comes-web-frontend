@@ -22,3 +22,6 @@ export {
   AnimatedCounter 
 } from './PageTransition';
 export { ThemeToggle } from './ThemeToggle';
+export { UserProfileDropdown } from './UserProfileDropdown';
+export { NotificationsDropdown } from './NotificationsDropdown';
+export { CustomCursor } from './CustomCursor';

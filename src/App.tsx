@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence } from 'framer-motion';
 import { Layout } from '@/components/layout';
-import { LoadingScreen } from '@/components/ui';
+import { LoadingScreen, CustomCursor } from '@/components/ui';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { initializeTheme } from '@/store';
 import {
@@ -20,6 +20,12 @@ import {
   ContactPage,
   FAQPage,
   NotFoundPage,
+  StudentRegisterPage,
+  StudentLoginPage,
+  StudentDashboardPage,
+  StudentProfilePage,
+  StudentEventsPage,
+  StudentSettingsPage,
 } from '@/pages';
 import {
   AdminLayout,
@@ -56,6 +62,21 @@ const AnimatedRoutes = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
         </Route>
+
+        {/* Student Registration Route (public) */}
+        <Route path="/register" element={<StudentRegisterPage />} />
+
+        {/* Student Login Route (public) */}
+        <Route path="/login" element={<StudentLoginPage />} />
+
+        {/* Student Dashboard Routes */}
+        <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+        <Route path="/student/profile" element={<StudentProfilePage />} />
+        <Route path="/student/events" element={<StudentEventsPage />} />
+        <Route path="/student/settings" element={<StudentSettingsPage />} />
+        <Route path="/student/quizzes" element={<StudentDashboardPage />} />
+        <Route path="/student/certificates" element={<StudentDashboardPage />} />
+        <Route path="/student/resources" element={<StudentDashboardPage />} />
 
         {/* Admin Login Route (public) */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -108,6 +129,7 @@ function App() {
 
   return (
     <>
+      <CustomCursor />
       {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
       {showApp && (
         <BrowserRouter>
