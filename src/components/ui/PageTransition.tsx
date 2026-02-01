@@ -275,6 +275,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
+      transition={{ duration }}
     >
       <motion.span
         initial={{ opacity: 0 }}

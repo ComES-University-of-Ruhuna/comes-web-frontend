@@ -171,7 +171,7 @@ export {
   
   // Interface Elements
   Layers,
-  Layout,
+  Layout as LayoutIcon,
   LayoutGrid,
   Grid3X3,
   Table,
