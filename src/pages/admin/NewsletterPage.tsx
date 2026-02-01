@@ -15,7 +15,6 @@ import {
   Send,
   X,
   CheckCircle,
-  XCircle,
 } from 'lucide-react';
 import { useThemeStore } from '@/store';
 import { cn } from '@/utils';

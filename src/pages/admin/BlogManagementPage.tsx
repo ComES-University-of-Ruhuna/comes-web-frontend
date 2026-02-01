@@ -11,8 +11,6 @@ import {
   Trash2,
   Eye,
   Calendar,
-  Clock,
-  MoreVertical,
   FileText,
   Save,
   X,

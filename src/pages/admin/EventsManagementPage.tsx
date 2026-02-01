@@ -437,7 +437,7 @@ export const EventsManagementPage = () => {
             )}
           >
             <div className="flex items-start justify-between mb-4">
-              <Badge variant={getStatusColor(event.status) as 'primary' | 'success' | 'secondary' | 'danger'}>
+              <Badge variant={getStatusColor(event.status) as 'primary' | 'success' | 'secondary' | 'error'}>
                 {event.status}
               </Badge>
               <Badge variant="secondary">{event.type}</Badge>

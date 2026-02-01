@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, ArrowRight, Search, Newspaper, PenLine, Sparkles } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Search, Newspaper, PenLine } from 'lucide-react';
 import { Section, SectionHeader, Card, Button, Badge, PageTransition, FadeInView, HoverScale, NewsletterSection } from '@/components/ui';
 import { blogPosts, getFeaturedPosts, blogCategories } from '@/data';
 import { useThemeStore } from '@/store';

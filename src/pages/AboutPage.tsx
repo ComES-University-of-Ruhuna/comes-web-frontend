@@ -8,13 +8,11 @@ import {
   Users, 
   Lightbulb, 
   Zap, 
-  ArrowRight,
   Target,
   Eye,
   Trophy,
   Calendar,
-  Rocket,
-  Sparkles
+  Rocket
 } from 'lucide-react';
 import { Section, SectionHeader, Card, Button, PageTransition, FadeInView, HoverScale } from '@/components/ui';
 import { STATISTICS, SITE_CONFIG } from '@/constants';

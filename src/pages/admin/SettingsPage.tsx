@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import {
   Save,
   Globe,
-  Mail,
   Bell,
   Lock,
   Palette,

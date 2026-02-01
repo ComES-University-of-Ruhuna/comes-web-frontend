@@ -6,13 +6,10 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search,
-  Mail,
   Calendar,
-  Eye,
   Trash2,
   MessageSquare,
   Archive,
-  CheckCircle,
   Clock,
   X,
   Reply,
