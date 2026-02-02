@@ -25,3 +25,4 @@ export { ThemeToggle } from './ThemeToggle';
 export { UserProfileDropdown } from './UserProfileDropdown';
 export { NotificationsDropdown } from './NotificationsDropdown';
 export { CustomCursor } from './CustomCursor';
+export { CookieConsent } from './CookieConsent';

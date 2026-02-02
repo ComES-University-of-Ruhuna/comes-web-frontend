@@ -28,3 +28,6 @@ export type { NewsletterSubscription } from './newsletter.service';
 
 export { studentService, validateRegistrationNo, extractBatchFromRegNo } from './student.service';
 export type { Student, StudentRegisterData, StudentAuthResponse } from './student.service';
+
+export { analyticsService } from './analytics.service';
+export type { VisitorData, PageView, AnalyticsSummary, AnalyticsFilters } from './analytics.service';

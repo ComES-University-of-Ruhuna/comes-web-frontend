@@ -6,9 +6,9 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence } from 'framer-motion';
 import { Layout } from '@/components/layout';
-import { LoadingScreen, CustomCursor } from '@/components/ui';
+import { LoadingScreen, CustomCursor, CookieConsent } from '@/components/ui';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { initializeTheme } from '@/store';
+import { initializeTheme, initializeCookies } from '@/store';
 import {
   HomePage,
   AboutPage,
@@ -42,10 +42,12 @@ import {
   ContactsPage as AdminContactsPage,
   NewsletterPage,
   SettingsPage,
+  AnalyticsPage,
 } from '@/pages/admin';
 
-// Initialize theme on app load
+// Initialize theme and cookies on app load
 initializeTheme();
+initializeCookies();
 
 // Animated Routes Component
 const AnimatedRoutes = () => {
@@ -100,6 +102,7 @@ const AnimatedRoutes = () => {
         >
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="blog" element={<BlogManagementPage />} />
           <Route path="events" element={<EventsManagementPage />} />
           <Route path="projects" element={<ProjectsManagementPage />} />
@@ -138,6 +141,7 @@ function App() {
   return (
     <>
       <CustomCursor />
+      <CookieConsent />
       {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
       {showApp && (
         <BrowserRouter>
