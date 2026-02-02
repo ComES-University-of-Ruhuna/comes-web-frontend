@@ -26,6 +26,10 @@ import {
   StudentProfilePage,
   StudentEventsPage,
   StudentSettingsPage,
+  SoftwareEngineeringPage,
+  AIDataSciencePage,
+  EmbeddedElectronicsPage,
+  NetworkSecurityPage,
 } from '@/pages';
 import {
   AdminLayout,
@@ -54,6 +58,10 @@ const AnimatedRoutes = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
+          <Route path="/subgroups/ai-data-science" element={<AIDataSciencePage />} />
+          <Route path="/subgroups/embedded-electronics" element={<EmbeddedElectronicsPage />} />
+          <Route path="/subgroups/network-security" element={<NetworkSecurityPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/projects" element={<ProjectsPage />} />

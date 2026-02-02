@@ -5,12 +5,253 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X, Sparkles, ChevronDown } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { useScrollPosition, useClickOutside } from '@/hooks';
 import { cn } from '@/utils';
 import { ThemeToggle, UserProfileDropdown, NotificationsDropdown } from '@/components/ui';
 import { useThemeStore, useStudentStore, useAuthStore } from '@/store';
+import type { NavLink } from '@/types';
+
+// NavItem component for desktop navigation with dropdown support
+interface NavItemProps {
+  link: NavLink;
+  index: number;
+  isScrolled: boolean;
+  isDark: boolean;
+  isActive: (path: string) => boolean;
+}
+
+const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsDropdownOpen(false));
+  
+  const hasChildren = link.children && link.children.length > 0;
+  const isChildActive = hasChildren && link.children?.some(child => isActive(child.path));
+
+  if (hasChildren) {
+    return (
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="relative"
+        onMouseEnter={() => setIsDropdownOpen(true)}
+        onMouseLeave={() => setIsDropdownOpen(false)}
+      >
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className={cn(
+            'relative px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-1',
+            isChildActive
+              ? isScrolled
+                ? isDark 
+                  ? 'bg-blue-500/20 text-blue-400' 
+                  : 'bg-comesBlue text-white'
+                : 'bg-white/20 text-white'
+              : isScrolled
+                ? isDark 
+                  ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
+                  : 'text-gray-700 hover:bg-gray-100'
+                : 'text-white/90 hover:bg-white/10 hover:text-white'
+          )}
+        >
+          <span className="relative z-10">{link.label}</span>
+          <ChevronDown className={cn(
+            'w-4 h-4 transition-transform duration-200',
+            isDropdownOpen && 'rotate-180'
+          )} />
+        </button>
+
+        <AnimatePresence>
+          {isDropdownOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className={cn(
+                'absolute top-full left-0 mt-2 w-64 rounded-xl shadow-xl overflow-hidden z-50',
+                isDark 
+                  ? 'bg-slate-900 border border-slate-800' 
+                  : 'bg-white border border-gray-200'
+              )}
+            >
+              <div className="py-2">
+                {link.children?.map((child) => (
+                  <Link
+                    key={child.path}
+                    to={child.path}
+                    className={cn(
+                      'block px-4 py-3 text-sm font-medium transition-all duration-200',
+                      isActive(child.path)
+                        ? isDark 
+                          ? 'bg-blue-500/20 text-blue-400' 
+                          : 'bg-blue-50 text-comesBlue'
+                        : isDark 
+                          ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
+                          : 'text-gray-700 hover:bg-gray-100'
+                    )}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Link
+        to={link.path}
+        className={cn(
+          'relative px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-2',
+          isActive(link.path)
+            ? isScrolled
+              ? isDark 
+                ? 'bg-blue-500/20 text-blue-400' 
+                : 'bg-comesBlue text-white'
+              : 'bg-white/20 text-white'
+            : isScrolled
+              ? isDark 
+                ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
+              : 'text-white/90 hover:bg-white/10 hover:text-white'
+        )}
+      >
+        {isActive(link.path) && (
+          <motion.div
+            layoutId="nav-indicator"
+            className={cn(
+              'absolute inset-0 rounded-xl',
+              isScrolled
+                ? isDark 
+                  ? 'bg-blue-500/20' 
+                  : 'bg-comesBlue'
+                : 'bg-white/20'
+            )}
+            transition={{ type: 'spring', bounce: 0.25, duration: 0.5 }}
+          />
+        )}
+        <span className="relative z-10">{link.label}</span>
+      </Link>
+    </motion.div>
+  );
+};
+
+// MobileNavItem component for mobile navigation with dropdown support
+interface MobileNavItemProps {
+  link: NavLink;
+  index: number;
+  isDark: boolean;
+  isActive: (path: string) => boolean;
+}
+
+const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const hasChildren = link.children && link.children.length > 0;
+  const isChildActive = hasChildren && link.children?.some(child => isActive(child.path));
+
+  if (hasChildren) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.05 }}
+      >
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={cn(
+            'w-full px-4 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-between',
+            isChildActive
+              ? isDark 
+                ? 'bg-blue-500/20 text-blue-400' 
+                : 'bg-comesBlue text-white'
+              : isDark 
+                ? 'text-gray-300 hover:bg-slate-800' 
+                : 'text-gray-700 hover:bg-gray-100'
+          )}
+        >
+          <span>{link.label}</span>
+          <ChevronDown className={cn(
+            'w-4 h-4 transition-transform duration-200',
+            isExpanded && 'rotate-180'
+          )} />
+        </button>
+        
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className={cn(
+                'ml-4 mt-1 space-y-1 border-l-2 pl-4',
+                isDark ? 'border-slate-700' : 'border-gray-200'
+              )}>
+                {link.children?.map((child) => (
+                  <Link
+                    key={child.path}
+                    to={child.path}
+                    className={cn(
+                      'block px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
+                      isActive(child.path)
+                        ? isDark 
+                          ? 'bg-blue-500/20 text-blue-400' 
+                          : 'bg-blue-50 text-comesBlue'
+                        : isDark 
+                          ? 'text-gray-400 hover:bg-slate-800 hover:text-gray-200' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                    )}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Link
+        to={link.path}
+        className={cn(
+          'block px-4 py-3 rounded-xl font-medium transition-all duration-200',
+          isActive(link.path)
+            ? isDark 
+              ? 'bg-blue-500/20 text-blue-400' 
+              : 'bg-comesBlue text-white'
+            : isDark 
+              ? 'text-gray-300 hover:bg-slate-800' 
+              : 'text-gray-700 hover:bg-gray-100'
+        )}
+      >
+        {link.label}
+      </Link>
+    </motion.div>
+  );
+};
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -115,46 +356,14 @@ export const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="items-center hidden gap-1 lg:flex">
             {NAV_LINKS.map((link, index) => (
-              <motion.div
-                key={link.path}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Link
-                  to={link.path}
-                  className={cn(
-                    'relative px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-2',
-                    isActive(link.path)
-                      ? isScrolled
-                        ? isDark 
-                          ? 'bg-blue-500/20 text-blue-400' 
-                          : 'bg-comesBlue text-white'
-                        : 'bg-white/20 text-white'
-                      : isScrolled
-                        ? isDark 
-                          ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
-                          : 'text-gray-700 hover:bg-gray-100'
-                        : 'text-white/90 hover:bg-white/10 hover:text-white'
-                  )}
-                >
-                  {isActive(link.path) && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className={cn(
-                        'absolute inset-0 rounded-xl',
-                        isScrolled
-                          ? isDark 
-                            ? 'bg-blue-500/20' 
-                            : 'bg-comesBlue'
-                          : 'bg-white/20'
-                      )}
-                      transition={{ type: 'spring', bounce: 0.25, duration: 0.5 }}
-                    />
-                  )}
-                  <span className="relative z-10">{link.label}</span>
-                </Link>
-              </motion.div>
+              <NavItem 
+                key={link.path} 
+                link={link} 
+                index={index} 
+                isScrolled={isScrolled} 
+                isDark={isDark} 
+                isActive={isActive} 
+              />
             ))}
           </div>
 
@@ -287,28 +496,13 @@ export const Navbar = () => {
             >
               <div className="p-6 space-y-2">
                 {NAV_LINKS.map((link, index) => (
-                  <motion.div
+                  <MobileNavItem 
                     key={link.path}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link
-                      to={link.path}
-                      className={cn(
-                        'block px-4 py-3 rounded-xl font-medium transition-all duration-200',
-                        isActive(link.path)
-                          ? isDark 
-                            ? 'bg-blue-500/20 text-blue-400' 
-                            : 'bg-comesBlue text-white'
-                          : isDark 
-                            ? 'text-gray-300 hover:bg-slate-800' 
-                            : 'text-gray-700 hover:bg-gray-100'
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
+                    link={link}
+                    index={index}
+                    isDark={isDark}
+                    isActive={isActive}
+                  />
                 ))}
 
                 <motion.div

@@ -33,6 +33,16 @@ export const SITE_CONFIG = {
 export const NAV_LINKS: NavLink[] = [
   { label: 'Home', path: '/' },
   { label: 'About', path: '/about' },
+  { 
+    label: 'Subgroups', 
+    path: '/subgroups',
+    children: [
+      { label: 'Software Engineering', path: '/subgroups/software-engineering' },
+      { label: 'AI and Data Science', path: '/subgroups/ai-data-science' },
+      { label: 'Embedded and Electronics', path: '/subgroups/embedded-electronics' },
+      { label: 'Network and Security', path: '/subgroups/network-security' },
+    ]
+  },
   { label: 'Events', path: '/events' },
   { label: 'Projects', path: '/projects' },
   { label: 'Team', path: '/team' },

@@ -7,6 +7,7 @@ export interface NavLink {
   label: string;
   path: string;
   icon?: string;
+  children?: NavLink[];
 }
 
 // Team Member Types

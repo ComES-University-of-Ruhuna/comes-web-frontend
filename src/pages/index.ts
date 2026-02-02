@@ -22,3 +22,11 @@ export {
   StudentEventsPage, 
   StudentSettingsPage 
 } from './student';
+
+// Subgroup pages
+export {
+  SoftwareEngineeringPage,
+  AIDataSciencePage,
+  EmbeddedElectronicsPage,
+  NetworkSecurityPage,
+} from './subgroups';
