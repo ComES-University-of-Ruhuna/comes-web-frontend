@@ -20,7 +20,8 @@ export {
   StudentDashboardPage, 
   StudentProfilePage, 
   StudentEventsPage, 
-  StudentSettingsPage 
+  StudentSettingsPage,
+  StudentTeamsPage
 } from './student';
 
 // Subgroup pages

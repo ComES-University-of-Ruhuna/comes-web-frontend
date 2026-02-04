@@ -38,7 +38,7 @@ const ContactInfoCard = ({
           isDark && 'bg-slate-800/50 border-slate-700/50'
         )}>
           <motion.div 
-            className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-blue-500/30"
+            className="flex items-center justify-center mx-auto mb-4 text-white shadow-lg w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-blue-500/30"
             whileHover={{ rotate: 10, scale: 1.1 }}
           >
             {icon}
@@ -161,7 +161,7 @@ const ContactForm = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring' }}
-            className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30"
+            className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full shadow-lg bg-gradient-to-br from-green-400 to-emerald-500 shadow-green-500/30"
           >
             <CheckCircle className="w-10 h-10 text-white" />
           </motion.div>
@@ -193,7 +193,7 @@ const ContactForm = () => {
         isDark && 'bg-slate-800/50 border-slate-700/50'
       )}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <div className="flex items-center justify-center w-10 h-10 shadow-lg bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-blue-500/30">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
           <h3 className={cn(
@@ -202,7 +202,7 @@ const ContactForm = () => {
           )}>Send us a Message</h3>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             <Input
               label="Your Name"
               name="name"
@@ -245,7 +245,7 @@ const ContactForm = () => {
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-sm"
+              className="p-3 text-sm text-red-500 border rounded-lg bg-red-500/10 border-red-500/30"
             >
               {error}
             </motion.div>
@@ -274,16 +274,16 @@ const ContactHero = () => {
 
   return (
     <Section background="gradient" padding="xl" className={isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : ''}>
-      <div className="text-center max-w-4xl mx-auto relative">
+      <div className="relative max-w-4xl mx-auto text-center">
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-3xl"
+          className="absolute top-0 w-32 h-32 rounded-full left-1/4 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
         />
         <motion.div
           animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
           transition={{ duration: 4, repeat: Infinity }}
-          className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full blur-3xl"
+          className="absolute bottom-0 w-40 h-40 rounded-full right-1/4 bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
         />
 
         <FadeInView>
@@ -291,7 +291,7 @@ const ContactHero = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', delay: 0.2 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-6 shadow-lg shadow-blue-500/30"
+            className="inline-flex items-center justify-center w-20 h-20 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
           >
             <Mail className="w-10 h-10 text-white" />
           </motion.div>
@@ -302,7 +302,7 @@ const ContactHero = () => {
             'text-4xl md:text-5xl lg:text-6xl font-bold mb-6',
             isDark ? 'text-white' : 'text-comesBlue'
           )}>
-            Get In <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Touch</span>
+            Get In <span className="text-transparent bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text">Touch</span>
           </h1>
         </FadeInView>
 
@@ -327,7 +327,7 @@ const ContactInfoSection = () => {
 
   return (
     <Section background={isDark ? 'dark' : 'white'}>
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
+      <div className="grid gap-6 mb-12 md:grid-cols-3">
         <ContactInfoCard
           icon={<Mail className="w-6 h-6" />}
           title="Email"
@@ -372,7 +372,7 @@ const FormMapSection = () => {
 
   return (
     <Section background={isDark ? 'white' : 'gray'}>
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid gap-8 lg:grid-cols-2">
         <ContactForm />
 
         <FadeInView direction="right">
@@ -383,7 +383,7 @@ const FormMapSection = () => {
             <div className="h-full min-h-[400px] bg-gray-200">
               {/* Google Maps Embed */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.0285882844!2d80.57016031476913!3d5.938945995673951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae1391b37f36b35%3A0x9d5ba6b57e9cf48d!2sFaculty%20of%20Engineering%2C%20University%20of%20Ruhuna!5e0!3m2!1sen!2slk!4v1678900000000!5m2!1sen!2slk"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.3801182574557!2d80.18938967447819!3d6.079373728166143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae1714b88f66a7b%3A0x8a7feea89839a01a!2sFaculty%20of%20Engineering%20-%20University%20of%20Ruhuna!5e0!3m2!1sen!2slk!4v1770146247608!5m2!1sen!2slk"
                 width="100%"
                 height="100%"
                 style={{ border: 0, minHeight: '400px' }}

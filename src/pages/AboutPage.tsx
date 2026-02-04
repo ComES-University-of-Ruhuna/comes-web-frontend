@@ -12,7 +12,13 @@ import {
   Eye,
   Trophy,
   Calendar,
-  Rocket
+  Rocket,
+  GraduationCap,
+  Building2,
+  Cpu,
+  Wrench,
+  CircuitBoard,
+  Leaf
 } from 'lucide-react';
 import { Section, SectionHeader, Card, Button, PageTransition, FadeInView, HoverScale } from '@/components/ui';
 import { STATISTICS, SITE_CONFIG } from '@/constants';
@@ -33,24 +39,24 @@ const AboutHero = () => {
         isDark && 'bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950'
       )}
     >
-      <div className="text-center max-w-4xl mx-auto relative">
+      <div className="relative max-w-4xl mx-auto text-center">
         {/* Decorative elements */}
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="absolute -top-10 -left-10 w-20 h-20 border border-dashed border-blue-300/30 rounded-full"
+          className="absolute w-20 h-20 border border-dashed rounded-full -top-10 -left-10 border-blue-300/30"
         />
         <motion.div 
           animate={{ rotate: -360 }}
           transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-          className="absolute -bottom-10 -right-10 w-16 h-16 border border-dashed border-amber-300/30 rounded-full"
+          className="absolute w-16 h-16 border border-dashed rounded-full -bottom-10 -right-10 border-amber-300/30"
         />
 
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', bounce: 0.4 }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-6 shadow-lg shadow-blue-500/30"
+          className="inline-flex items-center justify-center w-20 h-20 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
         >
           <Target className="w-10 h-10 text-white" />
         </motion.div>
@@ -83,6 +89,178 @@ const AboutHero = () => {
   );
 };
 
+// University & Faculty Section
+const UniversityFacultySection = () => {
+  const { resolvedTheme } = useThemeStore();
+  const isDark = resolvedTheme === 'dark';
+
+  const degrees = [
+    { 
+      icon: <Cpu className="w-6 h-6" />, 
+      title: 'Computer Engineering', 
+      description: 'Focuses on computer hardware, software, and embedded systems design.',
+      gradient: 'from-blue-500 to-cyan-500'
+    },
+    { 
+      icon: <Zap className="w-6 h-6" />, 
+      title: 'Electrical Engineering', 
+      description: 'Covers power systems, electronics, and electrical machines.',
+      gradient: 'from-amber-500 to-orange-500'
+    },
+    { 
+      icon: <Wrench className="w-6 h-6" />, 
+      title: 'Mechanical Engineering', 
+      description: 'Deals with mechanics, thermodynamics, and manufacturing.',
+      gradient: 'from-red-500 to-pink-500'
+    },
+    { 
+      icon: <Building2 className="w-6 h-6" />, 
+      title: 'Civil Engineering', 
+      description: 'Encompasses structural, environmental, and construction engineering.',
+      gradient: 'from-emerald-500 to-teal-500'
+    },
+    { 
+      icon: <CircuitBoard className="w-6 h-6" />, 
+      title: 'Electronic & Telecommunication Engineering', 
+      description: 'Specializes in communication systems and electronic devices.',
+      gradient: 'from-purple-500 to-indigo-500'
+    },
+    { 
+      icon: <Leaf className="w-6 h-6" />, 
+      title: 'Information & Communication Technology', 
+      description: 'Focuses on software development, networking, and IT systems.',
+      gradient: 'from-green-500 to-lime-500'
+    },
+  ];
+
+  return (
+    <Section background={isDark ? 'dark' : 'white'}>
+      <div className="grid items-start gap-12 mb-16 lg:grid-cols-2">
+        {/* University of Ruhuna */}
+        <FadeInView direction="right">
+          <div className={cn(
+            'rounded-2xl p-8 border h-full',
+            isDark 
+              ? 'bg-slate-800/50 border-slate-700/50' 
+              : 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100'
+          )}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <h2 className={cn(
+                'text-2xl font-bold',
+                isDark ? 'text-white' : 'text-comesBlue'
+              )}>University of Ruhuna</h2>
+            </div>
+            <p className={cn(
+              'text-lg leading-relaxed mb-4',
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            )}>
+              The University of Ruhuna is one of the leading national universities in Sri Lanka, 
+              established in 1978. Located in the beautiful southern province of Sri Lanka, 
+              it has grown to become a center of academic excellence with a strong commitment 
+              to research, innovation, and community development.
+            </p>
+            <p className={cn(
+              'text-lg leading-relaxed',
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            )}>
+              With multiple faculties offering a wide range of undergraduate and postgraduate 
+              programs, the university serves thousands of students and has produced graduates 
+              who have excelled in various fields both nationally and internationally.
+            </p>
+          </div>
+        </FadeInView>
+
+        {/* Faculty of Engineering */}
+        <FadeInView direction="left">
+          <div className={cn(
+            'rounded-2xl p-8 border h-full',
+            isDark 
+              ? 'bg-slate-800/50 border-slate-700/50' 
+              : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100'
+          )}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500">
+                <Building2 className="w-6 h-6 text-white" />
+              </div>
+              <h2 className={cn(
+                'text-2xl font-bold',
+                isDark ? 'text-white' : 'text-comesBlue'
+              )}>Faculty of Engineering</h2>
+            </div>
+            <p className={cn(
+              'text-lg leading-relaxed mb-4',
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            )}>
+              The Faculty of Engineering at the University of Ruhuna was established in 1999 
+              and has since become one of the premier engineering faculties in Sri Lanka. 
+              The faculty is accredited by the Institution of Engineers Sri Lanka (IESL) and 
+              offers degree programs that meet international standards.
+            </p>
+            <p className={cn(
+              'text-lg leading-relaxed',
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            )}>
+              With state-of-the-art laboratories, experienced academic staff, and strong 
+              industry partnerships, the faculty provides students with both theoretical 
+              knowledge and practical skills needed to excel in the engineering profession.
+            </p>
+          </div>
+        </FadeInView>
+      </div>
+
+      {/* Degrees Offered */}
+      <FadeInView>
+        <div className="mb-10 text-center">
+          <h3 className={cn(
+            'text-2xl md:text-3xl font-bold mb-4',
+            isDark ? 'text-white' : 'text-comesBlue'
+          )}>Degree Programs Offered</h3>
+          <p className={cn(
+            'text-lg max-w-3xl mx-auto',
+            isDark ? 'text-gray-400' : 'text-gray-600'
+          )}>
+            The Faculty of Engineering offers six specialized degree programs, 
+            each designed to produce highly skilled engineers ready for the challenges of tomorrow.
+          </p>
+        </div>
+      </FadeInView>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {degrees.map((degree, index) => (
+          <FadeInView key={degree.title} direction="up" delay={index * 0.1}>
+            <motion.div whileHover={{ y: -8, scale: 1.02 }}>
+              <Card hoverable padding="lg" className={cn(
+                'h-full',
+                isDark && 'bg-slate-800/50 border-slate-700/50'
+              )}>
+                <motion.div 
+                  whileHover={{ rotate: 10, scale: 1.1 }}
+                  className={`w-14 h-14 bg-gradient-to-br ${degree.gradient} rounded-2xl flex items-center justify-center mb-4 text-white shadow-lg`}
+                >
+                  {degree.icon}
+                </motion.div>
+                <h4 className={cn(
+                  'text-lg font-bold mb-2',
+                  isDark ? 'text-comesBlue' : 'text-white'
+                )}>
+                  {degree.title}
+                </h4>
+                <p className={cn(
+                  'text-sm',
+                  isDark ? 'text-gray-400' : 'text-gray-600'
+                )}>{degree.description}</p>
+              </Card>
+            </motion.div>
+          </FadeInView>
+        ))}
+      </div>
+    </Section>
+  );
+};
+
 // Mission & Vision Section
 const MissionVisionSection = () => {
   const { resolvedTheme } = useThemeStore();
@@ -97,7 +275,7 @@ const MissionVisionSection = () => {
 
   return (
     <Section background={isDark ? 'dark' : 'white'}>
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="grid items-center gap-12 lg:grid-cols-2">
         <div className="space-y-8">
           <FadeInView direction="right">
             <div className="flex items-center gap-3 mb-4">
@@ -206,7 +384,7 @@ const WhatWeDoSection = () => {
         />
       </FadeInView>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity, index) => (
           <FadeInView key={index} direction="up" delay={index * 0.1}>
             <motion.div whileHover={{ y: -10, scale: 1.02 }}>
@@ -214,7 +392,7 @@ const WhatWeDoSection = () => {
                 isDark && 'bg-slate-800/50 border-slate-700/50'
               )}>
                 <motion.div 
-                  className="text-4xl mb-4"
+                  className="mb-4 text-4xl"
                   whileHover={{ scale: 1.2, rotate: 10 }}
                 >
                   {activity.icon}
@@ -251,7 +429,7 @@ const StatisticsSection = () => {
         />
       </FadeInView>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         {STATISTICS.map((stat, index) => (
           <FadeInView key={stat.id} direction="up" delay={index * 0.1}>
             <motion.div
@@ -267,7 +445,7 @@ const StatisticsSection = () => {
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.3, type: 'spring' }}
-                className="text-4xl md:text-5xl font-bold text-white mb-2"
+                className="mb-2 text-4xl font-bold text-white md:text-5xl"
               >
                 {stat.value}{stat.suffix}
               </motion.div>
@@ -297,7 +475,7 @@ const AchievementsSection = () => {
         />
       </FadeInView>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
         {achievements.map((achievement, index) => (
           <FadeInView key={achievement.id} direction={index % 2 === 0 ? 'left' : 'right'} delay={index * 0.1}>
             <motion.div whileHover={{ x: 10 }}>
@@ -383,7 +561,7 @@ const HistorySection = () => {
                 <motion.div 
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
-                  className="absolute left-4 md:left-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full transform -translate-x-1/2 z-10 shadow-lg shadow-blue-500/30"
+                  className="absolute z-10 w-4 h-4 transform -translate-x-1/2 rounded-full shadow-lg left-4 md:left-1/2 bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
                 />
 
                 {/* Content */}
@@ -394,7 +572,7 @@ const HistorySection = () => {
                     <Card padding="md" className={cn(
                       isDark && 'bg-slate-800/50 border-slate-700/50'
                     )}>
-                      <div className="text-amber-500 font-bold text-lg mb-1 flex items-center gap-2">
+                      <div className="flex items-center gap-2 mb-1 text-lg font-bold text-amber-500">
                         <Trophy className="w-4 h-4" />
                         {item.year}
                       </div>
@@ -430,11 +608,11 @@ const CTASection = () => {
   return (
     <Section background={isDark ? 'dark' : 'white'} padding="xl">
       <FadeInView>
-        <div className="text-center max-w-3xl mx-auto relative">
+        <div className="relative max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-6 shadow-lg shadow-blue-500/30"
+            className="inline-flex items-center justify-center w-16 h-16 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
           >
             <Rocket className="w-8 h-8 text-white" />
           </motion.div>
@@ -453,7 +631,7 @@ const CTASection = () => {
             and engineering. Join us and be part of a community that shapes the
             future.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <HoverScale>
               <Button href="/team" size="lg" icon={<Users className="w-5 h-5" />}>
                 Meet Our Team
@@ -476,6 +654,7 @@ export const AboutPage = () => {
   return (
     <PageTransition>
       <AboutHero />
+      <UniversityFacultySection />
       <MissionVisionSection />
       <WhatWeDoSection />
       <StatisticsSection />

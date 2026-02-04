@@ -26,6 +26,7 @@ import {
   StudentProfilePage,
   StudentEventsPage,
   StudentSettingsPage,
+  StudentTeamsPage,
   SoftwareEngineeringPage,
   AIDataSciencePage,
   EmbeddedElectronicsPage,
@@ -84,6 +85,7 @@ const AnimatedRoutes = () => {
         <Route path="/student/profile" element={<StudentProfilePage />} />
         <Route path="/student/events" element={<StudentEventsPage />} />
         <Route path="/student/settings" element={<StudentSettingsPage />} />
+        <Route path="/student/teams" element={<StudentTeamsPage />} />
         <Route path="/student/quizzes" element={<StudentDashboardPage />} />
         <Route path="/student/certificates" element={<StudentDashboardPage />} />
         <Route path="/student/resources" element={<StudentDashboardPage />} />

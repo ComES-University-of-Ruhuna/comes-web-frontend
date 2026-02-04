@@ -2,6 +2,7 @@
 // ComES Website - Student Dashboard Page
 // ============================================
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router';
 import { 
@@ -14,12 +15,14 @@ import {
   FileText,
   Clock,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Users,
+  UserPlus
 } from 'lucide-react';
 import { useStudentStore } from '@/store/studentStore';
 import { useThemeStore } from '@/store';
 import { cn } from '@/utils';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, CreateTeamModal } from '@/components/ui';
 import { Navbar, Footer } from '@/components/layout';
 
 // Quick Stats Card
@@ -75,6 +78,7 @@ export const StudentDashboardPage = () => {
   const { student } = useStudentStore();
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === 'dark';
+  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
   // Mock data - replace with real data later
   const upcomingEvents = [
@@ -84,6 +88,7 @@ export const StudentDashboardPage = () => {
   ];
 
   const quickLinks = [
+    { icon: Users, label: 'My Teams', href: '/student/teams', color: 'bg-indigo-500' },
     { icon: BookOpen, label: 'My Quizzes', href: '/student/quizzes', color: 'bg-purple-500', badge: 'Coming Soon' },
     { icon: Calendar, label: 'Events', href: '/events', color: 'bg-blue-500' },
     { icon: Award, label: 'Certificates', href: '/student/certificates', color: 'bg-amber-500', badge: 'Coming Soon' },
@@ -123,6 +128,14 @@ export const StudentDashboardPage = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
+                <Button 
+                  variant="primary" 
+                  className="gap-2"
+                  onClick={() => setIsCreateTeamModalOpen(true)}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Create Team</span>
+                </Button>
                 <Button variant="secondary" className="gap-2">
                   <Bell className="w-4 h-4" />
                   <span className="hidden sm:inline">Notifications</span>
@@ -316,6 +329,16 @@ export const StudentDashboardPage = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Create Team Modal */}
+      <CreateTeamModal
+        isOpen={isCreateTeamModalOpen}
+        onClose={() => setIsCreateTeamModalOpen(false)}
+        onSuccess={() => {
+          // Optionally refresh teams or show success notification
+          console.log('Team created successfully!');
+        }}
+      />
     </div>
   );
 };

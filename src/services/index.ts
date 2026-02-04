@@ -31,3 +31,6 @@ export type { Student, StudentRegisterData, StudentAuthResponse } from './studen
 
 export { analyticsService } from './analytics.service';
 export type { VisitorData, PageView, AnalyticsSummary, AnalyticsFilters } from './analytics.service';
+
+export { competitionTeamService } from './competitionTeam.service';
+export type { CreateCompetitionTeamData, StudentSearchResult } from './competitionTeam.service';

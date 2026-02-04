@@ -28,11 +28,16 @@ export interface TeamMember {
 
 export type TeamPosition =
   | 'president'
+  | 'president-elect'
   | 'vice-president'
   | 'secretary'
+  | 'assistant-secretary'
   | 'treasurer'
   | 'senior-treasurer'
+  | 'ex-officio'
   | 'coordinator'
+  | 'chairperson'
+  | 'board-member'
   | 'member'
   | 'advisor';
 
@@ -98,6 +103,40 @@ export type ProjectStatus =
   | 'In Progress'
   | 'Completed'
   | 'On Hold';
+
+// Competition Team Types
+export interface CompetitionTeam {
+  _id: string;
+  name: string;
+  leaderId: string;
+  leaderName: string;
+  leaderEmail: string;
+  members: CompetitionTeamMember[];
+  status: TeamStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompetitionTeamMember {
+  id: string;
+  name: string;
+  email: string;
+  registrationNo: string;
+  status: TeamMemberStatus;
+  joinedAt?: string;
+}
+
+export type TeamStatus = 'pending' | 'active' | 'disbanded';
+export type TeamMemberStatus = 'pending' | 'approved' | 'rejected';
+
+export interface TeamInvitation {
+  _id: string;
+  teamId: string;
+  teamName: string;
+  leaderName: string;
+  invitedAt: string;
+  status: TeamMemberStatus;
+}
 
 // Gallery Types
 export interface GalleryImage {
