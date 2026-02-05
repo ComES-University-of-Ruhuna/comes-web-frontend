@@ -190,4 +190,10 @@ export const studentService = {
     const response = await api.delete<ApiResponse<null>>(`/students/events/${eventId}/unregister`);
     return response.data;
   },
+
+  // Delete student account
+  deleteAccount: async (): Promise<ApiResponse<null>> => {
+    const response = await api.delete<ApiResponse<null>>('/students/me');
+    return response.data;
+  },
 };

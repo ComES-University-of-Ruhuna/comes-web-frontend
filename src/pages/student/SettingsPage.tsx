@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { 
   Bell, 
   Mail, 
@@ -15,17 +15,20 @@ import {
   Monitor,
   CheckCircle,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 import { useStudentStore } from '@/store/studentStore';
 import { useThemeStore } from '@/store';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui';
 import { Navbar, Footer } from '@/components/layout';
+import * as studentService from '@/services/student.service';
 
 export const SettingsPage = () => {
   const { logout } = useStudentStore();
   const { theme, setTheme, resolvedTheme } = useThemeStore();
+  const navigate = useNavigate();
   const isDark = resolvedTheme === 'dark';
   
   const [notifications, setNotifications] = useState({
@@ -35,10 +38,25 @@ export const SettingsPage = () => {
   });
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
     // TODO: Save to backend
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      setDeleteError('');
+      await studentService.default.deleteAccount();
+      logout();
+      navigate('/');
+    } catch (err: any) {
+      setDeleteError(err.response?.data?.message || 'Failed to delete account. Please try again.');
+      setIsDeleting(false);
+    }
   };
 
   const themeOptions = [
@@ -352,22 +370,37 @@ export const SettingsPage = () => {
                   <p className={cn('text-sm mb-4', isDark ? 'text-gray-300' : 'text-gray-700')}>
                     Are you sure you want to delete your account? This action cannot be undone.
                   </p>
+                  {deleteError && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-500">{deleteError}</p>
+                    </div>
+                  )}
                   <div className="flex gap-3">
                     <Button
                       variant="secondary"
-                      onClick={() => setShowDeleteConfirm(false)}
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteError('');
+                      }}
+                      disabled={isDeleting}
                     >
                       Cancel
                     </Button>
                     <Button
                       variant="ghost"
-                      onClick={() => {
-                        // TODO: Implement account deletion
-                        logout();
-                      }}
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
                       className="bg-red-500 text-white hover:bg-red-600"
                     >
-                      Yes, Delete My Account
+                      {isDeleting ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Deleting...</span>
+                        </div>
+                      ) : (
+                        'Yes, Delete My Account'
+                      )}
                     </Button>
                   </div>
                 </div>
