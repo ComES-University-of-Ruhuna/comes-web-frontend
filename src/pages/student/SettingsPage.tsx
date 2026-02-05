@@ -23,7 +23,7 @@ import { useThemeStore } from '@/store';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui';
 import { Navbar, Footer } from '@/components/layout';
-import * as studentService from '@/services/student.service';
+import { studentService } from '@/services/student.service';
 
 export const SettingsPage = () => {
   const { logout } = useStudentStore();
@@ -50,7 +50,7 @@ export const SettingsPage = () => {
     try {
       setIsDeleting(true);
       setDeleteError('');
-      await studentService.default.deleteAccount();
+      await studentService.deleteAccount();
       logout();
       navigate('/');
     } catch (err: any) {
