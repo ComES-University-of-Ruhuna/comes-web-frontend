@@ -78,9 +78,24 @@ export const validateRegistrationNo = (regNo: string): { valid: boolean; error?:
 };
 
 // Extract batch from registration number
+// EG/2021/XXXX → 23rd batch, EG/2022/XXXX → 24th batch, etc.
 export const extractBatchFromRegNo = (regNo: string): string => {
   const match = regNo.match(/EG\/(\d{4})\//);
-  return match ? match[1] : '';
+  if (!match) return '';
+  
+  const year = parseInt(match[1], 10);
+  const batchNumber = year - 1998; // 2021 - 1998 = 23
+  
+  // Add ordinal suffix
+  const suffix = getOrdinalSuffix(batchNumber);
+  return `${batchNumber}${suffix}`;
+};
+
+// Helper to get ordinal suffix (1st, 2nd, 3rd, 4th, etc.)
+const getOrdinalSuffix = (n: number): string => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
 };
 
 export const studentService = {

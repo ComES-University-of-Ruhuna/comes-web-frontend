@@ -192,7 +192,7 @@ export const StudentRegisterPage = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring' }}
-            className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center"
+            className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20"
           >
             <CheckCircle className="w-10 h-10 text-green-500" />
           </motion.div>
@@ -236,7 +236,7 @@ export const StudentRegisterPage = () => {
         )}
       >
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="mb-8 text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -261,7 +261,7 @@ export const StudentRegisterPage = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3"
+            className="flex items-start gap-3 p-4 mb-6 border rounded-xl bg-red-500/10 border-red-500/20"
           >
             <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <p className="text-sm text-red-500">{errors.general}</p>
@@ -447,7 +447,7 @@ export const StudentRegisterPage = () => {
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 rounded-full border-white/30 border-t-white animate-spin" />
                 <span>Creating Account...</span>
               </div>
             ) : (
