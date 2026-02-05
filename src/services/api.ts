@@ -43,9 +43,16 @@ export const getStudentAccessToken = () => studentAccessToken;
 // Request interceptor - add auth token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Check if this is a student endpoint
-    const isStudentEndpoint = config.url?.includes('/students');
-    const token = isStudentEndpoint ? studentAccessToken : accessToken;
+    // Check if this is a student-specific endpoint (me, my-events, etc.)
+    // Admin endpoints to /students (GET all, DELETE, notify) should use admin token
+    const isStudentAuthEndpoint = 
+      config.url?.includes('/students/me') || 
+      config.url?.includes('/students/my-') ||
+      config.url?.includes('/students/events/') ||
+      config.url?.includes('/students/change-password') ||
+      config.url?.includes('/students/search');
+    
+    const token = isStudentAuthEndpoint ? studentAccessToken : accessToken;
     
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
