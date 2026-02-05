@@ -7,3 +7,4 @@ export { useAuthStore } from './authStore';
 export { useStudentStore } from './studentStore';
 export { useNotificationStore, type Notification } from './notificationStore';
 export { useCookieStore, initializeCookies, type CookiePreference } from './cookieStore';
+export { useToastStore, toast, type Toast, type ToastType } from './toastStore';

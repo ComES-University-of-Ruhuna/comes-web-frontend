@@ -14,10 +14,9 @@ import {
   GraduationCap,
   Phone,
   ArrowRight,
-  CheckCircle,
-  AlertCircle
+  CheckCircle
 } from 'lucide-react';
-import { useThemeStore } from '@/store';
+import { useThemeStore, toast } from '@/store';
 import { cn } from '@/utils';
 import { Button, Input } from '@/components/ui';
 import { studentService, validateRegistrationNo, extractBatchFromRegNo } from '@/services/student.service';
@@ -38,7 +37,6 @@ interface FormErrors {
   contactNo?: string;
   password?: string;
   passwordConfirm?: string;
-  general?: string;
 }
 
 export const StudentRegisterPage = () => {
@@ -156,16 +154,17 @@ export const StudentRegisterPage = () => {
       
       if (response.status === 'success') {
         setIsSuccess(true);
+        toast.success('Registration successful! Please check your email.');
         // Redirect after showing success message
         setTimeout(() => {
           navigate('/');
         }, 3000);
       } else {
-        setErrors({ general: response.message || 'Registration failed' });
+        toast.error(response.message || 'Registration failed');
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
-      setErrors({ general: message });
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -255,18 +254,6 @@ export const StudentRegisterPage = () => {
             Create your ComES student account
           </p>
         </div>
-
-        {/* Error Alert */}
-        {errors.general && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 p-4 mb-6 border rounded-xl bg-red-500/10 border-red-500/20"
-          >
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-500">{errors.general}</p>
-          </motion.div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">

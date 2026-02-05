@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence } from 'framer-motion';
 import { Layout } from '@/components/layout';
-import { LoadingScreen, CustomCursor, CookieConsent } from '@/components/ui';
+import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from '@/components/ui';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { initializeTheme, initializeCookies } from '@/store';
 import {
@@ -144,6 +144,7 @@ function App() {
     <>
       <CustomCursor />
       <CookieConsent />
+      <ToastContainer />
       {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
       {showApp && (
         <BrowserRouter>

@@ -27,3 +27,4 @@ export { NotificationsDropdown } from './NotificationsDropdown';
 export { CustomCursor } from './CustomCursor';
 export { CookieConsent } from './CookieConsent';
 export { CreateTeamModal } from './CreateTeamModal';
+export { ToastContainer } from './Toast';
