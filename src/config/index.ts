@@ -8,7 +8,7 @@ export const API_CONFIG = {
   baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
   
   // Request timeout in milliseconds
-  timeout: 10000,
+  timeout: 30000,
   
   // Whether to include credentials (cookies) in requests
   withCredentials: true,
