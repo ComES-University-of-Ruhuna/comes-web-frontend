@@ -162,9 +162,18 @@ export const StudentRegisterPage = () => {
       } else {
         toast.error(response.message || 'Registration failed');
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
-      toast.error(message);
+    } catch (error: any) {
+      // Handle API error response
+      const errorMessage = error.response?.data?.message || error.message || 'Registration failed. Please try again.';
+      const validationErrors = error.response?.data?.errors;
+      
+      // Show main error message
+      toast.error(errorMessage);
+      
+      // If there are field-specific validation errors, set them
+      if (validationErrors) {
+        setErrors(validationErrors);
+      }
     } finally {
       setIsLoading(false);
     }
