@@ -3,29 +3,27 @@
 // ============================================
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { API_CONFIG, STORAGE_KEYS } from '@/config';
 
-// API Base URL - change this in production
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-
-// Create axios instance
+// Create axios instance with centralized config
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: API_CONFIG.baseUrl,
+  timeout: API_CONFIG.timeout,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: API_CONFIG.withCredentials,
 });
 
 // Token management
-let accessToken: string | null = localStorage.getItem('accessToken');
+let accessToken: string | null = localStorage.getItem(STORAGE_KEYS.accessToken);
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
   if (token) {
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem(STORAGE_KEYS.accessToken, token);
   } else {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem(STORAGE_KEYS.accessToken);
   }
 };
 
@@ -53,9 +51,9 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
         if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+          const response = await axios.post(`${API_CONFIG.baseUrl}/auth/refresh-token`, {
             refreshToken,
           });
 
@@ -70,7 +68,7 @@ api.interceptors.response.use(
       } catch {
         // Refresh failed - clear tokens and redirect to login
         setAccessToken(null);
-        localStorage.removeItem('refreshToken');
+        localStorage.removeItem(STORAGE_KEYS.refreshToken);
         window.dispatchEvent(new CustomEvent('auth:logout'));
       }
     }

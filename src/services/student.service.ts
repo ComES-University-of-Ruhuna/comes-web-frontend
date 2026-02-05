@@ -3,6 +3,7 @@
 // ============================================
 
 import api, { type ApiResponse } from './api';
+import { STORAGE_KEYS } from '@/config';
 
 export interface Student {
   _id: string;
@@ -31,6 +32,20 @@ export interface StudentAuthResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+// Student token management
+let studentAccessToken: string | null = localStorage.getItem(STORAGE_KEYS.studentAccessToken);
+
+export const setStudentAccessToken = (token: string | null) => {
+  studentAccessToken = token;
+  if (token) {
+    localStorage.setItem(STORAGE_KEYS.studentAccessToken, token);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.studentAccessToken);
+  }
+};
+
+export const getStudentAccessToken = () => studentAccessToken;
 
 // Validate registration number format: EG/20XX/XXXX
 export const validateRegistrationNo = (regNo: string): { valid: boolean; error?: string } => {
@@ -72,7 +87,27 @@ export const studentService = {
   // Register new student
   register: async (data: StudentRegisterData): Promise<ApiResponse<StudentAuthResponse>> => {
     const response = await api.post<ApiResponse<StudentAuthResponse>>('/students/register', data);
+    if (response.data.data) {
+      setStudentAccessToken(response.data.data.accessToken);
+      localStorage.setItem(STORAGE_KEYS.studentRefreshToken, response.data.data.refreshToken);
+    }
     return response.data;
+  },
+
+  // Login student
+  login: async (credentials: { email: string; password: string }): Promise<ApiResponse<StudentAuthResponse>> => {
+    const response = await api.post<ApiResponse<StudentAuthResponse>>('/students/login', credentials);
+    if (response.data.data) {
+      setStudentAccessToken(response.data.data.accessToken);
+      localStorage.setItem(STORAGE_KEYS.studentRefreshToken, response.data.data.refreshToken);
+    }
+    return response.data;
+  },
+
+  // Logout student
+  logout: async (): Promise<void> => {
+    setStudentAccessToken(null);
+    localStorage.removeItem(STORAGE_KEYS.studentRefreshToken);
   },
 
   // Get student profile

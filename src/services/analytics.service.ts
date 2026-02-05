@@ -3,6 +3,7 @@
 // ============================================
 
 import api from './api';
+import { STORAGE_KEYS } from '@/config';
 
 export interface VisitorData {
   id: string;
@@ -64,10 +65,10 @@ const generateSessionId = (): string => {
 
 // Get or create session ID
 const getSessionId = (): string => {
-  let sessionId = sessionStorage.getItem('comes-session-id');
+  let sessionId = sessionStorage.getItem(STORAGE_KEYS.sessionId);
   if (!sessionId) {
     sessionId = generateSessionId();
-    sessionStorage.setItem('comes-session-id', sessionId);
+    sessionStorage.setItem(STORAGE_KEYS.sessionId, sessionId);
   }
   return sessionId;
 };

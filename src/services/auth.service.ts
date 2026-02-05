@@ -3,6 +3,7 @@
 // ============================================
 
 import api, { setAccessToken, type ApiResponse } from './api';
+import { STORAGE_KEYS } from '@/config';
 
 export interface User {
   _id: string;
@@ -38,7 +39,7 @@ export const authService = {
     const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
     if (response.data.data) {
       setAccessToken(response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
   },
@@ -48,7 +49,7 @@ export const authService = {
     const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
     if (response.data.data) {
       setAccessToken(response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
   },
@@ -59,7 +60,7 @@ export const authService = {
       await api.post('/auth/logout');
     } finally {
       setAccessToken(null);
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem(STORAGE_KEYS.refreshToken);
     }
   },
 
@@ -78,7 +79,7 @@ export const authService = {
     const response = await api.patch<ApiResponse<AuthResponse>>('/auth/update-password', data);
     if (response.data.data) {
       setAccessToken(response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
   },
@@ -97,7 +98,7 @@ export const authService = {
     const response = await api.patch<ApiResponse<AuthResponse>>(`/auth/reset-password/${token}`, data);
     if (response.data.data) {
       setAccessToken(response.data.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
   },

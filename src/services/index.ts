@@ -26,7 +26,7 @@ export type { ContactFormData, ContactSubmission } from './contact.service';
 export { newsletterService } from './newsletter.service';
 export type { NewsletterSubscription } from './newsletter.service';
 
-export { studentService, validateRegistrationNo, extractBatchFromRegNo } from './student.service';
+export { studentService, validateRegistrationNo, extractBatchFromRegNo, setStudentAccessToken, getStudentAccessToken } from './student.service';
 export type { Student, StudentRegisterData, StudentAuthResponse } from './student.service';
 
 export { analyticsService } from './analytics.service';
