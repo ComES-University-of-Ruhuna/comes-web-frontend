@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Bell,
   BarChart3,
+  UserCircle,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { useThemeStore } from '@/store';
@@ -29,6 +30,7 @@ import { ThemeToggle } from '@/components/ui';
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: '/admin/members', label: 'Members', icon: UserCircle },
   { path: '/admin/events', label: 'Events', icon: Calendar },
   { path: '/admin/projects', label: 'Projects', icon: FolderKanban },
   { path: '/admin/blog', label: 'Blog Posts', icon: FileText },

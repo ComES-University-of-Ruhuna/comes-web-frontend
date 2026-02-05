@@ -13,3 +13,4 @@ export { ContactsPage } from './ContactsPage';
 export { NewsletterPage } from './NewsletterPage';
 export { SettingsPage } from './SettingsPage';
 export { AnalyticsPage } from './AnalyticsPage';
+export { MembersManagementPage } from './MembersManagementPage';

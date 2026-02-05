@@ -45,6 +45,7 @@ import {
   NewsletterPage,
   SettingsPage,
   AnalyticsPage,
+  MembersManagementPage,
 } from '@/pages/admin';
 
 // Initialize theme and cookies on app load
@@ -109,6 +110,7 @@ const AnimatedRoutes = () => {
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="members" element={<MembersManagementPage />} />
           <Route path="blog" element={<BlogManagementPage />} />
           <Route path="events" element={<EventsManagementPage />} />
           <Route path="projects" element={<ProjectsManagementPage />} />
