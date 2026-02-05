@@ -79,7 +79,7 @@ export const StudentLoginPage = () => {
         )}
       >
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="mb-8 text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -112,7 +112,7 @@ export const StudentLoginPage = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3"
+            className="flex items-start gap-3 p-4 mb-6 border rounded-xl bg-red-500/10 border-red-500/20"
           >
             <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <p className="text-sm text-red-500">{error}</p>
@@ -218,7 +218,7 @@ export const StudentLoginPage = () => {
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 rounded-full border-white/30 border-t-white animate-spin" />
                 <span>Signing in...</span>
               </div>
             ) : (
@@ -244,7 +244,7 @@ export const StudentLoginPage = () => {
         </div>
 
         {/* Admin Link */}
-        <div className="mt-4 pt-4 border-t text-center" style={{ borderColor: isDark ? '#334155' : '#e5e7eb' }}>
+        <div className="pt-4 mt-4 text-center border-t" style={{ borderColor: isDark ? '#334155' : '#e5e7eb' }}>
           <p className={cn('text-sm', isDark ? 'text-gray-500' : 'text-gray-500')}>
             Are you an admin?{' '}
             <Link

@@ -22,6 +22,7 @@ import {
   NotFoundPage,
   StudentRegisterPage,
   StudentLoginPage,
+  StudentPortfolioPage,
   StudentDashboardPage,
   StudentProfilePage,
   StudentEventsPage,
@@ -79,6 +80,9 @@ const AnimatedRoutes = () => {
 
         {/* Student Login Route (public) */}
         <Route path="/login" element={<StudentLoginPage />} />
+
+        {/* Student Portfolio Route (public) */}
+        <Route path="/portfolio/:username" element={<StudentPortfolioPage />} />
 
         {/* Student Dashboard Routes */}
         <Route path="/student/dashboard" element={<StudentDashboardPage />} />

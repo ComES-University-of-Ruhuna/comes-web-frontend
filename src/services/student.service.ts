@@ -9,11 +9,17 @@ export interface Student {
   _id: string;
   name: string;
   email: string;
+  username: string;
   registrationNo: string;
   batch: string;
   semester?: number;
   contactNo?: string;
   avatar?: string;
+  bio?: string;
+  skills?: string[];
+  github?: string;
+  linkedin?: string;
+  website?: string;
   isEmailVerified: boolean;
   createdAt: string;
 }

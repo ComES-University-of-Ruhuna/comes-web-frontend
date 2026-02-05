@@ -14,6 +14,7 @@ export { FAQPage } from './FAQPage';
 export { NotFoundPage } from './NotFoundPage';
 export { StudentRegisterPage } from './StudentRegisterPage';
 export { StudentLoginPage } from './StudentLoginPage';
+export { StudentPortfolioPage } from './StudentPortfolioPage';
 
 // Student pages
 export { 

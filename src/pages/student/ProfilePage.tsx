@@ -29,6 +29,11 @@ interface FormData {
   email: string;
   contactNo: string;
   semester: number | '';
+  bio: string;
+  skills: string;
+  github: string;
+  linkedin: string;
+  website: string;
 }
 
 export const ProfilePage = () => {
@@ -41,6 +46,11 @@ export const ProfilePage = () => {
     email: student?.email || '',
     contactNo: student?.contactNo || '',
     semester: student?.semester || '',
+    bio: student?.bio || '',
+    skills: student?.skills?.join(', ') || '',
+    github: student?.github || '',
+    linkedin: student?.linkedin || '',
+    website: student?.website || '',
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -65,6 +75,11 @@ export const ProfilePage = () => {
         email: student.email || '',
         contactNo: student.contactNo || '',
         semester: student.semester || '',
+        bio: student.bio || '',
+        skills: student.skills?.join(', ') || '',
+        github: student.github || '',
+        linkedin: student.linkedin || '',
+        website: student.website || '',
       });
     }
   }, [student]);
@@ -90,6 +105,11 @@ export const ProfilePage = () => {
         name: formData.name,
         contactNo: formData.contactNo || undefined,
         semester: formData.semester || undefined,
+        bio: formData.bio || undefined,
+        skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+        github: formData.github || undefined,
+        linkedin: formData.linkedin || undefined,
+        website: formData.website || undefined,
       });
 
       if (response.status === 'success' && response.data) {
@@ -240,15 +260,31 @@ export const ProfilePage = () => {
                 </div>
 
                 {/* Edit Button */}
-                {!isEditing && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => setIsEditing(true)}
-                    className="shrink-0"
-                  >
-                    Edit Profile
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {student?.username && (
+                    <Link 
+                      to={`/portfolio/${student.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        variant="secondary"
+                        className="shrink-0"
+                      >
+                        View Portfolio
+                      </Button>
+                    </Link>
+                  )}
+                  {!isEditing && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsEditing(true)}
+                      className="shrink-0"
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
               </div>
             </motion.div>
 
@@ -399,6 +435,94 @@ export const ProfilePage = () => {
                   </select>
                 </div>
 
+                {/* Bio */}
+                <div>
+                  <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    Bio
+                    <span className={cn('ml-2 text-xs', isDark ? 'text-gray-500' : 'text-gray-400')}>(shown on portfolio)</span>
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange as any}
+                    disabled={!isEditing}
+                    rows={3}
+                    maxLength={500}
+                    placeholder="Tell us about yourself..."
+                    className={cn(
+                      'w-full px-4 py-3 rounded-xl border transition-all resize-none',
+                      isDark 
+                        ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500' 
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400',
+                      !isEditing && 'opacity-60'
+                    )}
+                  />
+                  <p className={cn('text-xs mt-1', isDark ? 'text-gray-500' : 'text-gray-400')}>
+                    {formData.bio.length}/500 characters
+                  </p>
+                </div>
+
+                {/* Skills */}
+                <div>
+                  <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    Skills
+                    <span className={cn('ml-2 text-xs', isDark ? 'text-gray-500' : 'text-gray-400')}>(comma separated)</span>
+                  </label>
+                  <Input
+                    type="text"
+                    name="skills"
+                    value={formData.skills}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="React, Node.js, Python, etc."
+                  />
+                </div>
+
+                {/* GitHub */}
+                <div>
+                  <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    GitHub Profile
+                  </label>
+                  <Input
+                    type="url"
+                    name="github"
+                    value={formData.github}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="https://github.com/yourusername"
+                  />
+                </div>
+
+                {/* LinkedIn */}
+                <div>
+                  <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    LinkedIn Profile
+                  </label>
+                  <Input
+                    type="url"
+                    name="linkedin"
+                    value={formData.linkedin}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="https://linkedin.com/in/yourusername"
+                  />
+                </div>
+
+                {/* Website */}
+                <div>
+                  <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    Personal Website
+                  </label>
+                  <Input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+
                 {/* Action Buttons */}
                 {isEditing && (
                   <div className="flex gap-3 pt-4">
@@ -412,6 +536,11 @@ export const ProfilePage = () => {
                           email: student?.email || '',
                           contactNo: student?.contactNo || '',
                           semester: student?.semester || '',
+                          bio: student?.bio || '',
+                          skills: student?.skills?.join(', ') || '',
+                          github: student?.github || '',
+                          linkedin: student?.linkedin || '',
+                          website: student?.website || '',
                         });
                       }}
                     >
