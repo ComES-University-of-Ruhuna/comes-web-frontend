@@ -460,7 +460,7 @@ export const StudentRegisterPage = () => {
           <p className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
             Already have an account?{' '}
             <Link
-              to="/admin/login"
+              to="/login"
               className={cn(
                 'font-medium hover:underline',
                 isDark ? 'text-blue-400' : 'text-blue-600'
