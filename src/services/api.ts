@@ -17,6 +17,7 @@ const api = axios.create({
 
 // Token management
 let accessToken: string | null = localStorage.getItem(STORAGE_KEYS.accessToken);
+let studentAccessToken: string | null = localStorage.getItem(STORAGE_KEYS.studentAccessToken);
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
@@ -27,13 +28,27 @@ export const setAccessToken = (token: string | null) => {
   }
 };
 
+export const setStudentAccessToken = (token: string | null) => {
+  studentAccessToken = token;
+  if (token) {
+    localStorage.setItem(STORAGE_KEYS.studentAccessToken, token);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.studentAccessToken);
+  }
+};
+
 export const getAccessToken = () => accessToken;
+export const getStudentAccessToken = () => studentAccessToken;
 
 // Request interceptor - add auth token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (accessToken && config.headers) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    // Check if this is a student endpoint
+    const isStudentEndpoint = config.url?.includes('/students');
+    const token = isStudentEndpoint ? studentAccessToken : accessToken;
+    
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { studentService, type Student, type StudentRegisterData } from '@/services/student.service';
-import { setAccessToken } from '@/services/api';
+import { setStudentAccessToken } from '@/services/api';
 
 interface StudentState {
   student: Student | null;
@@ -43,7 +43,7 @@ export const useStudentStore = create<StudentState>()(
           const data = await response.json();
           
           if (data.success && data.data) {
-            setAccessToken(data.data.accessToken);
+            setStudentAccessToken(data.data.accessToken);
             localStorage.setItem('studentRefreshToken', data.data.refreshToken);
             set({
               student: data.data.student,
@@ -67,7 +67,7 @@ export const useStudentStore = create<StudentState>()(
         try {
           const response = await studentService.register(data);
           if (response.status === 'success' && response.data) {
-            setAccessToken(response.data.accessToken);
+            setStudentAccessToken(response.data.accessToken);
             localStorage.setItem('studentRefreshToken', response.data.refreshToken);
             set({
               student: response.data.student,
@@ -86,7 +86,7 @@ export const useStudentStore = create<StudentState>()(
       },
 
       logout: () => {
-        setAccessToken(null);
+        setStudentAccessToken(null);
         localStorage.removeItem('studentRefreshToken');
         set({
           student: null,

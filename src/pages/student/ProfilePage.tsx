@@ -119,8 +119,10 @@ export const ProfilePage = () => {
       } else {
         setError(response.message || 'Failed to update profile');
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to update profile';
+      setError(errorMessage);
+      console.error('Profile update error:', err);
     } finally {
       setIsLoading(false);
     }

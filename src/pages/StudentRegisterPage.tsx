@@ -154,11 +154,11 @@ export const StudentRegisterPage = () => {
       
       if (response.status === 'success') {
         setIsSuccess(true);
-        toast.success('Registration successful! Please check your email.');
-        // Redirect after showing success message
+        toast.success('Registration successful! Redirecting to login...');
+        // Redirect to login page after showing success message
         setTimeout(() => {
-          navigate('/');
-        }, 3000);
+          navigate('/login');
+        }, 2000);
       } else {
         toast.error(response.message || 'Registration failed');
       }
