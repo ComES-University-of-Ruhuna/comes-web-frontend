@@ -19,7 +19,7 @@ import {
 import { useThemeStore, toast } from '@/store';
 import { cn } from '@/utils';
 import { Button, Input } from '@/components/ui';
-import { studentService, validateRegistrationNo, extractBatchFromRegNo } from '@/services/student.service';
+import { validateRegistrationNo, extractBatchFromRegNo } from '@/services/student.service';
 
 interface FormData {
   name: string;
@@ -143,24 +143,42 @@ export const StudentRegisterPage = () => {
     setErrors({});
     
     try {
-      const response = await studentService.register({
-        name: formData.name.trim(),
-        email: formData.email.toLowerCase().trim(),
-        registrationNo: formData.registrationNo,
-        contactNo: formData.contactNo || undefined,
-        password: formData.password,
-        passwordConfirm: formData.passwordConfirm,
+      // Call register API without storing tokens (we'll require manual login)
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/students/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.toLowerCase().trim(),
+          registrationNo: formData.registrationNo,
+          contactNo: formData.contactNo || undefined,
+          password: formData.password,
+          passwordConfirm: formData.passwordConfirm,
+        }),
       });
       
-      if (response.status === 'success') {
+      const data = await response.json();
+      
+      if (data.success) {
         setIsSuccess(true);
         toast.success('Registration successful! Redirecting to login...');
+        // Clear form
+        setFormData({
+          name: '',
+          email: '',
+          registrationNo: '',
+          contactNo: '',
+          password: '',
+          passwordConfirm: '',
+        });
         // Redirect to login page after showing success message
         setTimeout(() => {
           navigate('/login');
         }, 2000);
       } else {
-        toast.error(response.message || 'Registration failed');
+        toast.error(data.message || 'Registration failed');
       }
     } catch (error: any) {
       // Handle API error response
