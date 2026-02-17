@@ -66,7 +66,7 @@ export const useStudentStore = create<StudentState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await studentService.register(data);
-          if (response.status === 'success' && response.data) {
+          if (response.success && response.data) {
             setStudentAccessToken(response.data.accessToken);
             localStorage.setItem('studentRefreshToken', response.data.refreshToken);
             set({
@@ -106,7 +106,7 @@ export const useStudentStore = create<StudentState>()(
         set({ isLoading: true });
         try {
           const response = await studentService.getProfile();
-          if (response.status === 'success' && response.data) {
+          if (response.success && response.data) {
             set({
               student: response.data.student,
               isAuthenticated: true,

@@ -43,10 +43,10 @@ export const TeamsPage = () => {
         competitionTeamService.getPendingInvitations()
       ]);
 
-      if (teamsRes.status === 'success' && teamsRes.data) {
+      if (teamsRes.success && teamsRes.data) {
         setTeams(teamsRes.data.teams);
       }
-      if (invitationsRes.status === 'success' && invitationsRes.data) {
+      if (invitationsRes.success && invitationsRes.data) {
         setInvitations(invitationsRes.data.invitations);
       }
     } catch (error) {

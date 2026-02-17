@@ -103,16 +103,16 @@ export const ProfilePage = () => {
     try {
       const response = await studentService.updateProfile({
         name: formData.name,
-        contactNo: formData.contactNo || undefined,
+        contactNo: formData.contactNo || '',
         semester: formData.semester || undefined,
-        bio: formData.bio || undefined,
-        skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
-        github: formData.github || undefined,
-        linkedin: formData.linkedin || undefined,
-        website: formData.website || undefined,
+        bio: formData.bio || '',
+        skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+        github: formData.github || '',
+        linkedin: formData.linkedin || '',
+        website: formData.website || '',
       });
 
-      if (response.status === 'success' && response.data) {
+      if (response.success && response.data) {
         updateStudent(response.data.student);
         setSuccess('Profile updated successfully!');
         setIsEditing(false);
@@ -145,30 +145,21 @@ export const ProfilePage = () => {
 
     setIsLoading(true);
     try {
-      // API call to change password
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/students/change-password`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword,
-        }),
+      const response = await studentService.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword,
       });
 
-      const data = await response.json();
-
-      if (data.status === 'success') {
+      if (response.success) {
         setPasswordSuccess('Password changed successfully!');
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         setShowPasswordForm(false);
       } else {
-        setPasswordError(data.message || 'Failed to change password');
+        setPasswordError(response.message || 'Failed to change password');
       }
-    } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : 'Failed to change password');
+    } catch (err: any) {
+      setPasswordError(err.response?.data?.message || err.message || 'Failed to change password');
     } finally {
       setIsLoading(false);
     }
@@ -194,7 +185,7 @@ export const ProfilePage = () => {
           'min-h-screen py-8',
           isDark ? 'bg-slate-950' : 'bg-gray-50'
         )}>
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl px-4 mx-auto sm:px-6 lg:px-8">
             {/* Back Button */}
             <Link 
               to="/student/dashboard"
@@ -216,7 +207,7 @@ export const ProfilePage = () => {
                 isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200 shadow-sm'
               )}
             >
-              <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex flex-col items-center gap-6 sm:flex-row">
                 {/* Avatar */}
                 <div className="relative group">
                   <div className={cn(
@@ -227,7 +218,7 @@ export const ProfilePage = () => {
                       <img 
                         src={student.avatar} 
                         alt={student.name} 
-                        className="w-full h-full rounded-full object-cover"
+                        className="object-cover w-full h-full rounded-full"
                       />
                     ) : (
                       getInitials(student?.name || 'S')
@@ -245,14 +236,14 @@ export const ProfilePage = () => {
                 </div>
 
                 {/* Info */}
-                <div className="text-center sm:text-left flex-1">
+                <div className="flex-1 text-center sm:text-left">
                   <h1 className={cn('text-2xl font-bold mb-1', isDark ? 'text-white' : 'text-gray-900')}>
                     {student?.name}
                   </h1>
                   <p className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
                     {student?.email}
                   </p>
-                  <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                  <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                     <Badge variant="primary">{student?.registrationNo}</Badge>
                     <Badge variant="secondary">Batch {student?.batch}</Badge>
                     {student?.semester && (
@@ -295,7 +286,7 @@ export const ProfilePage = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3"
+                className="flex items-center gap-3 p-4 mb-6 border rounded-xl bg-green-500/10 border-green-500/20"
               >
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <p className="text-sm text-green-500">{success}</p>
@@ -306,7 +297,7 @@ export const ProfilePage = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3"
+                className="flex items-center gap-3 p-4 mb-6 border rounded-xl bg-red-500/10 border-red-500/20"
               >
                 <AlertCircle className="w-5 h-5 text-red-500" />
                 <p className="text-sm text-red-500">{error}</p>
@@ -555,7 +546,7 @@ export const ProfilePage = () => {
                     >
                       {isLoading ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
                           Saving...
                         </>
                       ) : (
@@ -598,14 +589,14 @@ export const ProfilePage = () => {
               </div>
 
               {passwordSuccess && (
-                <div className="mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
+                <div className="flex items-center gap-3 p-3 mb-4 border rounded-xl bg-green-500/10 border-green-500/20">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <p className="text-sm text-green-500">{passwordSuccess}</p>
                 </div>
               )}
 
               {passwordError && (
-                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+                <div className="flex items-center gap-3 p-3 mb-4 border rounded-xl bg-red-500/10 border-red-500/20">
                   <AlertCircle className="w-5 h-5 text-red-500" />
                   <p className="text-sm text-red-500">{passwordError}</p>
                 </div>

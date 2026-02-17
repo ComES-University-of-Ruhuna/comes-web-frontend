@@ -211,7 +211,7 @@ export const EventsPage = () => {
       setIsLoading(true);
       try {
         const response = await eventsService.getAll({ status: 'published', limit: 50 });
-        if (response.status === 'success' && response.data) {
+        if (response.success && response.data) {
           setEvents(response.data.items);
         }
       } catch (err) {
@@ -237,7 +237,7 @@ export const EventsPage = () => {
 
     try {
       const response = await eventsService.register(eventId);
-      if (response.status === 'success' && response.data) {
+      if (response.success && response.data) {
         setEvents(prev => prev.map(e => 
           e._id === eventId ? response.data!.event : e
         ));
@@ -261,7 +261,7 @@ export const EventsPage = () => {
 
     try {
       const response = await eventsService.unregister(eventId);
-      if (response.status === 'success' && response.data) {
+      if (response.success && response.data) {
         setEvents(prev => prev.map(e => 
           e._id === eventId ? response.data!.event : e
         ));

@@ -103,7 +103,7 @@ export default api;
 
 // API Response types
 export interface ApiResponse<T> {
-  status: 'success' | 'error';
+  success: boolean;
   data?: T;
   message?: string;
   error?: string;

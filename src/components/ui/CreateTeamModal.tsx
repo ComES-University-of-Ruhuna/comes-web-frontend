@@ -55,7 +55,7 @@ export const CreateTeamModal = ({ isOpen, onClose, onSuccess }: CreateTeamModalP
         setSearchError(null);
         try {
           const response = await competitionTeamService.searchStudents(searchQuery);
-          if (response.status === 'success' && response.data) {
+          if (response.success && response.data) {
             // Filter out already selected members and current user
             const filtered = response.data.students.filter(
               (s) => 
@@ -141,7 +141,7 @@ export const CreateTeamModal = ({ isOpen, onClose, onSuccess }: CreateTeamModalP
         memberIds: selectedMembers.map((m) => m._id)
       });
 
-      if (response.status === 'success') {
+      if (response.success) {
         onSuccess?.();
         handleClose();
       } else {
