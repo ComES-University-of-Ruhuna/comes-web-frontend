@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   // TEMPORARY: Bypass authentication for development
   // TODO: Remove this bypass before production!
-  const BYPASS_AUTH = true;
+  const BYPASS_AUTH = false;
 
   if (BYPASS_AUTH) {
     return <>{children}</>;
