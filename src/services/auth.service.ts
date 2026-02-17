@@ -29,7 +29,7 @@ export interface RegisterData {
 
 export interface AuthResponse {
   user: User;
-  accessToken: string;
+  token: string;
   refreshToken: string;
 }
 
@@ -38,7 +38,7 @@ export const authService = {
   register: async (data: RegisterData): Promise<ApiResponse<AuthResponse>> => {
     const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
     if (response.data.data) {
-      setAccessToken(response.data.data.accessToken);
+      setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
@@ -48,7 +48,7 @@ export const authService = {
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
     if (response.data.data) {
-      setAccessToken(response.data.data.accessToken);
+      setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
@@ -78,7 +78,7 @@ export const authService = {
   }): Promise<ApiResponse<AuthResponse>> => {
     const response = await api.patch<ApiResponse<AuthResponse>>('/auth/update-password', data);
     if (response.data.data) {
-      setAccessToken(response.data.data.accessToken);
+      setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
@@ -97,7 +97,7 @@ export const authService = {
   }): Promise<ApiResponse<AuthResponse>> => {
     const response = await api.patch<ApiResponse<AuthResponse>>(`/auth/reset-password/${token}`, data);
     if (response.data.data) {
-      setAccessToken(response.data.data.accessToken);
+      setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
     }
     return response.data;
