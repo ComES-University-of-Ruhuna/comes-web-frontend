@@ -62,8 +62,8 @@ const HeroSection = () => {
         )} 
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+      <div className="relative z-10 px-4 py-20 mx-auto max-w-7xl">
+        <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
           {/* Left Side - Content */}
           <div className="flex-1 text-center lg:text-left">
             {/* Badge */}
@@ -77,7 +77,7 @@ const HeroSection = () => {
                 isDark && 'bg-blue-500/20 text-blue-300 border-blue-500/30'
               )}>
                 <Sparkles className="w-4 h-4" />
-                Registration Open for Hackathon 2026
+                Registration Open for Membership
               </Badge>
             </motion.div>
 
@@ -86,7 +86,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6"
+              className="mb-6 text-5xl font-extrabold md:text-7xl lg:text-8xl"
             >
               <span className={cn(
                 'bg-clip-text text-transparent',
@@ -132,7 +132,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start"
             >
               <HoverScale>
                 <Button
@@ -168,7 +168,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16"
+          className="grid grid-cols-2 gap-4 mt-16 md:grid-cols-4 md:gap-6"
         >
           {STATISTICS.map((stat, index) => (
             <motion.div
@@ -204,7 +204,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          className="absolute transform -translate-x-1/2 bottom-8 left-1/2"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
@@ -255,7 +255,7 @@ const AboutPreviewSection = () => {
 
   return (
     <Section background={isDark ? 'dark' : 'white'}>
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="grid items-center gap-12 lg:grid-cols-2">
         <FadeInView direction="right">
           <h2 className={cn(
             'text-3xl md:text-4xl font-bold mb-6',
@@ -335,7 +335,7 @@ const EventsPreviewSection = () => {
         />
       </FadeInView>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div className="grid gap-6 mb-12 md:grid-cols-2 lg:grid-cols-3">
         {featuredEvents.map((event, index) => (
           <FadeInView key={event.id} direction="up" delay={index * 0.1}>
             <motion.div whileHover={{ y: -10 }}>
@@ -343,15 +343,15 @@ const EventsPreviewSection = () => {
                 isDark && 'bg-slate-800 border-slate-700'
               )}>
                 <div className={`bg-gradient-to-r ${event.color} p-6 text-white relative overflow-hidden`}>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute top-0 right-0 w-32 h-32 translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-2xl" />
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-4xl">{event.icon}</span>
-                      <Badge variant="secondary" size="sm" className="bg-white/20 text-white border-white/30">
+                      <Badge variant="secondary" size="sm" className="text-white bg-white/20 border-white/30">
                         {event.type}
                       </Badge>
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                    <h3 className="mb-2 text-xl font-bold">{event.title}</h3>
                     <div className="flex items-center gap-4 text-sm opacity-90">
                       <span className="flex items-center gap-1">
                         <Calendar size={14} />
@@ -380,7 +380,7 @@ const EventsPreviewSection = () => {
                         initial={{ width: 0 }}
                         whileInView={{ width: `${(event.registered / event.capacity) * 100}%` }}
                         transition={{ duration: 1, delay: 0.5 }}
-                        className="h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
+                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
                       />
                     </div>
                   </div>
@@ -420,7 +420,7 @@ const ProjectsPreviewSection = () => {
         />
       </FadeInView>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
+      <div className="grid gap-6 mb-12 md:grid-cols-2">
         {featuredProjects.map((project, index) => (
           <FadeInView key={project.id} direction={index % 2 === 0 ? 'left' : 'right'} delay={index * 0.1}>
             <motion.div whileHover={{ y: -5 }}>
@@ -428,7 +428,7 @@ const ProjectsPreviewSection = () => {
                 'flex flex-col overflow-hidden',
                 isDark && 'bg-slate-800/50 border-slate-700/50'
               )}>
-                <div className="p-6 flex-1">
+                <div className="flex-1 p-6">
                   <div className="flex items-start justify-between mb-4">
                     <Badge
                       variant={project.status === 'Completed' ? 'success' : 'info'}
@@ -498,7 +498,7 @@ const TestimonialsSection = () => {
         />
       </FadeInView>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {testimonials.slice(0, 3).map((testimonial, index) => (
           <FadeInView key={testimonial.id} direction="up" delay={index * 0.15}>
             <motion.div
@@ -515,7 +515,7 @@ const TestimonialsSection = () => {
                   whileHover={{ scale: 1.1 }}
                   src={testimonial.image}
                   alt={testimonial.name}
-                  className="w-14 h-14 rounded-full object-cover ring-2 ring-white/20"
+                  className="object-cover rounded-full w-14 h-14 ring-2 ring-white/20"
                 />
                 <div>
                   <h4 className="font-semibold text-white">{testimonial.name}</h4>
@@ -562,24 +562,24 @@ const CTASection = () => {
       )}
     >
       <FadeInView direction="up">
-        <div className="text-center relative">
+        <div className="relative text-center">
           {/* Decorative elements */}
           <motion.div 
             animate={{ rotate: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute top-0 left-1/4 w-20 h-20 border border-dashed border-blue-300/30 rounded-full"
+            className="absolute top-0 w-20 h-20 border border-dashed rounded-full left-1/4 border-blue-300/30"
           />
           <motion.div 
             animate={{ rotate: -360 }}
             transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            className="absolute bottom-0 right-1/4 w-16 h-16 border border-dashed border-amber-300/30 rounded-full"
+            className="absolute bottom-0 w-16 h-16 border border-dashed rounded-full right-1/4 border-amber-300/30"
           />
 
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-6 shadow-lg shadow-blue-500/30"
+            className="inline-flex items-center justify-center w-16 h-16 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
           >
             <TrendingUp className="w-8 h-8 text-white" />
           </motion.div>
@@ -597,7 +597,7 @@ const CTASection = () => {
             Be part of a vibrant community of future engineers. Learn, grow, and
             make lasting connections.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <HoverScale>
               <Button href="/contact" size="lg" icon={<Rocket className="w-5 h-5" />}>
                 Get Started

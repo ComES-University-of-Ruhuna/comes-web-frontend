@@ -83,10 +83,10 @@ export const seniorAdvisors: TeamMember[] = [
 export const coordinators: TeamMember[] = [
   {
     id: 'coord-1',
-    name: 'Chamindu Dissanayake',
-    role: 'Head of Marketing and Finance - Chamindu Dissanayake',
+    name: 'janith Chamikara',
+    role: 'Head of Marketing and Finance - janith Chamikara',
     position: 'coordinator',
-    image: getAvatarUrl('Chamindu Dissanayake'),
+    image: getAvatarUrl('janith Chamikara'),
     bio: 'Leading marketing initiatives and financial operations to drive ComES growth and sustainability.',
     email: 'marketing@comes.ruh.ac.lk',
   },
