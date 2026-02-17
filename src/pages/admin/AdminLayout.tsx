@@ -36,6 +36,7 @@ const navItems = [
   { path: '/admin/blog', label: 'Blog Posts', icon: FileText },
   { path: '/admin/team', label: 'Team Members', icon: Users },
   { path: '/admin/contacts', label: 'Contact Messages', icon: Mail },
+  { path: '/admin/notifications', label: 'Notifications', icon: Bell },
   { path: '/admin/newsletter', label: 'Newsletter', icon: Newspaper },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
 ];
