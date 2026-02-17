@@ -14,11 +14,13 @@ import {
   X,
   Download,
   User,
+  Send,
+  Users,
 } from 'lucide-react';
 import { useThemeStore } from '@/store';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui';
-import axios from 'axios';
+import api from '@/services/api';
 
 interface Student {
   _id: string;
@@ -43,6 +45,194 @@ interface NotificationModalProps {
   isDark: boolean;
   onSend: (subject: string, message: string) => Promise<void>;
 }
+
+interface BroadcastModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isDark: boolean;
+  totalMembers: number;
+  onSend: (subject: string, message: string) => Promise<void>;
+}
+
+const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onSend }: BroadcastModalProps) => {
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(false);
+
+  const handleSend = async () => {
+    if (!confirmStep) {
+      setConfirmStep(true);
+      return;
+    }
+    if (!subject.trim() || !message.trim()) return;
+    
+    setSending(true);
+    try {
+      await onSend(subject, message);
+      setSubject('');
+      setMessage('');
+      setConfirmStep(false);
+      onClose();
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleClose = () => {
+    setConfirmStep(false);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className={cn(
+            'w-full max-w-lg rounded-2xl p-6',
+            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-2xl'
+          )}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+              Broadcast Notification
+            </h3>
+            <button
+              onClick={handleClose}
+              className={cn(
+                'p-2 rounded-lg transition-colors',
+                isDark ? 'hover:bg-slate-800 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+              )}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className={cn(
+            'flex items-center gap-3 p-3 mb-4 rounded-lg',
+            isDark ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
+          )}>
+            <Users className="w-5 h-5 text-blue-500" />
+            <p className={cn('text-sm font-medium', isDark ? 'text-blue-300' : 'text-blue-700')}>
+              This notification will be sent to all <strong>{totalMembers}</strong> registered members via email.
+            </p>
+          </div>
+
+          {confirmStep ? (
+            <div className="space-y-4">
+              <div className={cn(
+                'p-4 rounded-lg border',
+                isDark ? 'bg-yellow-500/10 border-yellow-500/20' : 'bg-yellow-50 border-yellow-200'
+              )}>
+                <p className={cn('text-sm font-medium mb-2', isDark ? 'text-yellow-300' : 'text-yellow-800')}>
+                  Are you sure you want to send this notification?
+                </p>
+                <p className={cn('text-sm', isDark ? 'text-yellow-400' : 'text-yellow-700')}>
+                  <strong>Subject:</strong> {subject}
+                </p>
+                <p className={cn('text-sm mt-1', isDark ? 'text-yellow-400' : 'text-yellow-700')}>
+                  <strong>Recipients:</strong> {totalMembers} members
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmStep(false)}
+                  disabled={sending}
+                  className="flex-1"
+                >
+                  Go Back
+                </Button>
+                <Button
+                  onClick={handleSend}
+                  disabled={sending}
+                  className="flex-1"
+                >
+                  {sending ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
+                      <span>Sending...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Send className="w-4 h-4" />
+                      <span>Confirm & Send</span>
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                <div>
+                  <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className={cn(
+                      'w-full px-4 py-2 rounded-lg border transition-colors',
+                      isDark
+                        ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    )}
+                    placeholder="e.g., Upcoming Event Announcement"
+                  />
+                </div>
+
+                <div>
+                  <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                    Message
+                  </label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={6}
+                    className={cn(
+                      'w-full px-4 py-2 rounded-lg border transition-colors resize-none',
+                      isDark
+                        ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    )}
+                    placeholder="Enter the notification message for all members..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSend}
+                  disabled={!subject.trim() || !message.trim()}
+                  className="flex-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <Send className="w-4 h-4" />
+                    <span>Review & Send</span>
+                  </div>
+                </Button>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
 
 const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: NotificationModalProps) => {
   const [subject, setSubject] = useState('');
@@ -192,6 +382,7 @@ export const MembersManagementPage = () => {
     isOpen: false,
     student: null,
   });
+  const [broadcastModal, setBroadcastModal] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [filterVerified, setFilterVerified] = useState<'all' | 'verified' | 'unverified'>('all');
   const { resolvedTheme } = useThemeStore();
@@ -208,11 +399,7 @@ export const MembersManagementPage = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/students', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
+      const response = await api.get('/students');
       setStudents(response.data.data.students || []);
     } catch (error) {
       showToast('error', 'Failed to fetch students');
@@ -254,11 +441,7 @@ export const MembersManagementPage = () => {
 
     try {
       setDeleteLoading(studentId);
-      await axios.delete(`/api/v1/students/${studentId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
+      await api.delete(`/students/${studentId}`);
       setStudents(students.filter((s) => s._id !== studentId));
       showToast('success', `Successfully deleted ${studentName}`);
     } catch (error) {
@@ -273,23 +456,26 @@ export const MembersManagementPage = () => {
     if (!notificationModal.student) return;
 
     try {
-      await axios.post(
-        '/api/v1/students/notify',
-        {
-          studentId: notificationModal.student._id,
-          subject,
-          message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        }
-      );
+      await api.post('/students/notify', {
+        studentId: notificationModal.student._id,
+        subject,
+        message,
+      });
       showToast('success', `Notification sent to ${notificationModal.student.name}`);
     } catch (error) {
       showToast('error', 'Failed to send notification');
       console.error('Error sending notification:', error);
+    }
+  };
+
+  const handleBroadcastNotification = async (subject: string, message: string) => {
+    try {
+      const response = await api.post('/students/notify-all', { subject, message });
+      const sentCount = response.data.data?.sentCount || students.length;
+      showToast('success', `Notification sent to ${sentCount} members`);
+    } catch (error) {
+      showToast('error', 'Failed to send broadcast notification');
+      console.error('Error sending broadcast notification:', error);
     }
   };
 
@@ -356,6 +542,15 @@ export const MembersManagementPage = () => {
         student={notificationModal.student}
         isDark={isDark}
         onSend={handleSendNotification}
+      />
+
+      {/* Broadcast Notification Modal */}
+      <BroadcastNotificationModal
+        isOpen={broadcastModal}
+        onClose={() => setBroadcastModal(false)}
+        isDark={isDark}
+        totalMembers={students.length}
+        onSend={handleBroadcastNotification}
       />
 
       {/* Header */}
@@ -484,6 +679,11 @@ export const MembersManagementPage = () => {
               <option value="verified">Verified Only</option>
               <option value="unverified">Unverified Only</option>
             </select>
+
+            <Button onClick={() => setBroadcastModal(true)}>
+              <Send className="w-4 h-4 mr-2" />
+              Notify All
+            </Button>
 
             <Button variant="outline" onClick={exportToCSV}>
               <Download className="w-4 h-4 mr-2" />
