@@ -17,7 +17,8 @@ export const executiveCommittee: TeamMember[] = [
     position: 'president',
     image: getAvatarUrl('Kavishka Kalhara'),
     email: 'president@comesuor.lk',
-    contactNo: '',
+    contactNo: '+9470 111 7791',
+    linkedin: 'https://www.linkedin.com/in/kavishkakalhara',
   },
   {
     id: 'exec-2',
