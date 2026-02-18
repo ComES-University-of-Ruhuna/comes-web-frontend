@@ -136,7 +136,7 @@ const HeroSection = () => {
             >
               <HoverScale>
                 <Button
-                  href="/contact"
+                  href="/register"
                   size="lg"
                   icon={<Rocket className="w-5 h-5" />}
                   className="shadow-lg shadow-comesBlue/25"
@@ -490,7 +490,7 @@ const TestimonialsSection = () => {
   const isDark = resolvedTheme === 'dark';
 
   return (
-    <Section background="dark" className={isDark ? 'bg-slate-900' : ''}>
+    <Section background="dark" className={isDark ? 'bg-slate-900 ' : ''}>
       <FadeInView>
         <SectionHeader
           title="What Our Alumni Say"

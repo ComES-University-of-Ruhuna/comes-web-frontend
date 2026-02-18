@@ -53,7 +53,7 @@ export const executiveCommittee: TeamMember[] = [
     role: 'Assistant Secretary - Dilmi Prasadi',
     position: 'assistant-secretary',
     image: getAvatarUrl('Dilmi Prasadi'),
-    email: 'asstsecretary@comesuor.lk',
+    //email: 'asstsecretary@comesuor.lk',
     contactNo: '',
   },
 ];
@@ -66,7 +66,7 @@ export const seniorAdvisors: TeamMember[] = [
     role: 'Ex-Officio Member - Dr. Chatura Senevirathne',
     position: 'ex-officio',
     image: getAvatarUrl('Chatura Senevirathne', '1E40AF'),
-    email: 'chatura@comesuor.lk',
+    //email: 'chatura@comesuor.lk',
     contactNo: '',
   },
   {
@@ -75,7 +75,7 @@ export const seniorAdvisors: TeamMember[] = [
     role: 'Senior Treasurer - Dr. Kushan Sudheera',
     position: 'senior-treasurer',
     image: getAvatarUrl('Kushan Sudheera', '1E40AF'),
-    email: 'kushan@comesuor.lk',
+    //email: 'kushan@comesuor.lk',
     contactNo: '',
   },
 ];
@@ -97,7 +97,7 @@ export const coordinators: TeamMember[] = [
     role: 'Head of Public Relations - Sachinthana',
     position: 'coordinator',
     image: getAvatarUrl('Sachinthana'),
-    email: 'pr@comesuor.lk',
+    //email: 'pr@comesuor.lk',
     contactNo: '',
   },
   {
@@ -106,7 +106,7 @@ export const coordinators: TeamMember[] = [
     role: 'Head of Web and Creative Design - Malitha Jeewaka',
     position: 'coordinator',
     image: getAvatarUrl('Malitha Jeewaka'),
-    email: 'web@comesuor.lk',
+    //email: 'web@comesuor.lk',
     contactNo: '',
   },
 ];
@@ -119,7 +119,7 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Software Engineering - Chamara Vishwajith',
     position: 'chairperson',
     image: getAvatarUrl('Chamara Vishwajith'),
-    email: 'se@comesuor.lk',
+    //email: 'se@comesuor.lk',
     contactNo: '',
   },
   {
@@ -128,7 +128,7 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Electronic and Embedded Systems - Hirushan',
     position: 'chairperson',
     image: getAvatarUrl('Hirushan'),
-    email: 'embedded@comesuor.lk',
+    //email: 'embedded@comesuor.lk',
     contactNo: '',
   },
   {
@@ -137,7 +137,7 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - AI and Data Science - Viranga Weerabandara',
     position: 'chairperson',
     image: getAvatarUrl('Viranga Weerabandara'),
-    email: 'ai@comesuor.lk',
+    //email: 'ai@comesuor.lk',
     contactNo: '',
   },
   {
@@ -146,7 +146,7 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Network and Security - Tharindu Nadun',
     position: 'chairperson',
     image: getAvatarUrl('Tharindu Nadun'),
-    email: 'security@comesuor.lk',
+    //email: 'security@comesuor.lk',
     contactNo: '',
   },
 ];
@@ -159,7 +159,7 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 1 - Senura Koshala',
     position: 'board-member',
     image: getAvatarUrl('Senura Koshala'),
-    email: 'board1@comesuor.lk',
+    //email: 'board1@comesuor.lk',
     contactNo: '',
   },
   {
@@ -168,7 +168,7 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 2 - Praveen Dilshan',
     position: 'board-member',
     image: getAvatarUrl('Praveen Dilshan'),
-    email: 'board2@comesuor.lk',
+    //email: 'board2@comesuor.lk',
     contactNo: '',
   },
   {
@@ -177,7 +177,7 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 3 - Iman Sharinda',
     position: 'board-member',
     image: getAvatarUrl('Iman Sharinda'),
-    email: 'board3@comesuor.lk',
+    //email: 'board3@comesuor.lk',
     contactNo: '',
   },
   {
@@ -186,7 +186,7 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 4 - Ms. Sithara Madhubhashini',
     position: 'board-member',
     image: getAvatarUrl('Sithara Madhubhashini'),
-    email: 'board4@comesuor.lk',
+    //email: 'board4@comesuor.lk',
     contactNo: '',
   },
   {
@@ -195,7 +195,7 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 5 - Tishan Shamika',
     position: 'board-member',
     image: getAvatarUrl('Tishan Shamika'),
-    email: 'board5@comesuor.lk',
+    //email: 'board5@comesuor.lk',
     contactNo: '',
   },
 ];

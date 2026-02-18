@@ -41,7 +41,7 @@ export const Section: FC<SectionProps> = ({
       {...props}
     >
       {container ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">{children}</div>
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">{children}</div>
       ) : (
         children
       )}
@@ -67,11 +67,11 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
       className={cn('mb-12', centered && 'text-center', className)}
       {...props}
     >
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-comesBlue mb-4">
+      <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
         {title}
       </h2>
       {subtitle && (
-        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        <p className="max-w-3xl mx-auto text-lg leading-relaxed text-gray-200 md:text-xl">
           {subtitle}
         </p>
       )}
