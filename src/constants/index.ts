@@ -11,9 +11,9 @@ export const SITE_CONFIG = {
   tagline: 'Empowering Future Engineers',
   description:
     'The official student society for Computer Engineering at the Faculty of Engineering, University of Ruhuna.',
-  url: 'https://comes.eng.ruh.ac.lk',
-  email: 'comes@eng.ruh.ac.lk',
-  phone: '+94 41 205 001',
+  url: 'https://comesuor.lk',
+  email: 'contact@comesuor.lk',
+  phone: '+9470 111 7791',
   address: {
     line1: 'Faculty of Engineering',
     line2: 'University of Ruhuna',
@@ -22,8 +22,8 @@ export const SITE_CONFIG = {
     postalCode: '81000',
   },
   contact: {
-    email: 'comes@eng.ruh.ac.lk',
-    phone: '+94 41 205 001',
+    email: 'contact@comesuor.lk',
+    phone: '+9470 111 7791',
     address: 'Faculty of Engineering, University of Ruhuna, Hapugala, Galle, Sri Lanka',
   },
   foundedYear: 2026,

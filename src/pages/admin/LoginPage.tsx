@@ -78,8 +78,8 @@ export const LoginPage = () => {
         )}
       >
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-500/30 mb-4">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 text-2xl font-bold text-white shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30">
             CE
           </div>
           <h1 className={cn(
@@ -101,9 +101,9 @@ export const LoginPage = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-500"
+            className="flex items-center gap-3 p-4 mb-6 text-red-500 border rounded-xl bg-red-500/10 border-red-500/20"
           >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="flex-shrink-0 w-5 h-5" />
             <span className="text-sm">{error}</span>
           </motion.div>
         )}
@@ -127,7 +127,7 @@ export const LoginPage = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@comes.lk"
+                placeholder="youremail@domain.lk"
                 required
                 className={cn(
                   'w-full pl-12 pr-4 py-3 rounded-xl border transition-colors',

@@ -341,8 +341,8 @@ Department of Electrical and Information Engineering
 Faculty of Engineering  
 University of Ruhuna, Sri Lanka
 
-- 🌐 Website: [comes.eng.ruh.ac.lk](https://comes.eng.ruh.ac.lk)
-- 📧 Email: comes@eng.ruh.ac.lk
+- 🌐 Website: [comesuor.lk](https://comesuor.lk)
+- 📧 Email: contact@comesuor.lk
 - 📍 Location: Faculty of Engineering, University of Ruhuna, Hapugala, Galle
 
 ---
