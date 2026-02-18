@@ -17,8 +17,9 @@ export interface TeamMember {
   role: string;
   position: TeamPosition;
   image: string;
-  bio: string;
+  bio?: string;
   email?: string;
+  contactNo?: string;
   linkedin?: string;
   github?: string;
   twitter?: string;

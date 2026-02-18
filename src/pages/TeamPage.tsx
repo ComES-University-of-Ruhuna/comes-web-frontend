@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Linkedin, Github, Mail, Users, UserPlus, Sparkles, Crown, GraduationCap, Shield } from 'lucide-react';
+import { Linkedin, Github, Mail, Phone, Users, UserPlus, Sparkles, Crown, GraduationCap, Shield } from 'lucide-react';
 import { Section, SectionHeader, Card, Button, PageTransition, FadeInView, HoverScale } from '@/components/ui';
 import {
   executiveCommittee,
@@ -88,10 +88,24 @@ const TeamMemberCard = ({ member, index = 0 }: { member: TeamMember; index?: num
               isDark ? 'text-white' : 'text-comesBlue'
             )}>{member.name}</h3>
             <p className="text-amber-500 font-semibold mb-3">{member.role}</p>
-            <p className={cn(
-              'text-sm',
-              isDark ? 'text-gray-400' : 'text-gray-600'
-            )}>{member.bio}</p>
+            {member.email && (
+              <p className={cn(
+                'text-sm flex items-center gap-2',
+                isDark ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                <Mail className="w-4 h-4 text-cyan-500 shrink-0" />
+                <a href={`mailto:${member.email}`} className="hover:text-cyan-500 transition-colors truncate">{member.email}</a>
+              </p>
+            )}
+            {member.contactNo && (
+              <p className={cn(
+                'text-sm flex items-center gap-2 mt-1',
+                isDark ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                <Phone className="w-4 h-4 text-cyan-500 shrink-0" />
+                <a href={`tel:${member.contactNo}`} className="hover:text-cyan-500 transition-colors">{member.contactNo}</a>
+              </p>
+            )}
             {member.batch && (
               <p className={cn(
                 'text-sm mt-2',

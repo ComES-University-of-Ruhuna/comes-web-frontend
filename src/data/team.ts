@@ -16,8 +16,8 @@ export const executiveCommittee: TeamMember[] = [
     role: 'President - Kavishka Kalhara',
     position: 'president',
     image: getAvatarUrl('Kavishka Kalhara'),
-    bio: 'Leading ComES with vision and passion for technology education. Focused on creating opportunities for students to excel in their careers.',
-    email: 'president@comes.ruh.ac.lk',
+    email: 'president@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'exec-2',
@@ -25,8 +25,8 @@ export const executiveCommittee: TeamMember[] = [
     role: 'President Elect - Pasindu Isiwara',
     position: 'president-elect',
     image: getAvatarUrl('Pasindu Isiwara'),
-    bio: 'Supporting the president and preparing to lead ComES into the future. Passionate about innovation and student development.',
-    email: 'presidentelect@comes.ruh.ac.lk',
+    email: '',
+    contactNo: '',
   },
   {
     id: 'exec-3',
@@ -34,8 +34,8 @@ export const executiveCommittee: TeamMember[] = [
     role: 'Vice President - Sandaru Heshan',
     position: 'vice-president',
     image: getAvatarUrl('Sandaru Heshan'),
-    bio: 'Driving innovation and supporting student initiatives across all domains. Passionate about community building and mentorship.',
-    email: 'vp@comes.ruh.ac.lk',
+    email: 'vp@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'exec-4',
@@ -43,8 +43,8 @@ export const executiveCommittee: TeamMember[] = [
     role: 'Secretary - Sanuvi Gamage',
     position: 'secretary',
     image: getAvatarUrl('Sanuvi Gamage'),
-    bio: 'Managing communications and ensuring smooth operations of all activities. Expert in organizational management and documentation.',
-    email: 'secretary@comes.ruh.ac.lk',
+    email: 'secretary@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'exec-5',
@@ -52,8 +52,8 @@ export const executiveCommittee: TeamMember[] = [
     role: 'Assistant Secretary - Dilmi Prasadi',
     position: 'assistant-secretary',
     image: getAvatarUrl('Dilmi Prasadi'),
-    bio: 'Assisting in communications and administrative tasks. Ensuring seamless coordination across all ComES activities.',
-    email: 'asstsecretary@comes.ruh.ac.lk',
+    email: 'asstsecretary@comesuor.lk',
+    contactNo: '',
   },
 ];
 
@@ -65,8 +65,8 @@ export const seniorAdvisors: TeamMember[] = [
     role: 'Ex-Officio Member - Dr. Chatura Senevirathne',
     position: 'ex-officio',
     image: getAvatarUrl('Chatura Senevirathne', '1E40AF'),
-    bio: 'Providing strategic guidance and institutional support to the ComES executive committee.',
-    email: 'chatura@eng.ruh.ac.lk',
+    email: 'chatura@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'advisor-2',
@@ -74,8 +74,8 @@ export const seniorAdvisors: TeamMember[] = [
     role: 'Senior Treasurer - Dr. Kushan Sudheera',
     position: 'senior-treasurer',
     image: getAvatarUrl('Kushan Sudheera', '1E40AF'),
-    bio: 'Providing financial oversight and guidance to ensure sustainable growth and transparency in all financial matters.',
-    email: 'kushan@eng.ruh.ac.lk',
+    email: 'kushan@comesuor.lk',
+    contactNo: '',
   },
 ];
 
@@ -87,8 +87,8 @@ export const coordinators: TeamMember[] = [
     role: 'Head of Marketing and Finance - janith Chamikara',
     position: 'coordinator',
     image: getAvatarUrl('janith Chamikara'),
-    bio: 'Leading marketing initiatives and financial operations to drive ComES growth and sustainability.',
-    email: 'marketing@comes.ruh.ac.lk',
+    email: 'marketing@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'coord-2',
@@ -96,8 +96,8 @@ export const coordinators: TeamMember[] = [
     role: 'Head of Public Relations - Sachinthana',
     position: 'coordinator',
     image: getAvatarUrl('Sachinthana'),
-    bio: 'Managing public relations and external communications to enhance ComES visibility and partnerships.',
-    email: 'pr@comes.ruh.ac.lk',
+    email: 'pr@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'coord-3',
@@ -105,8 +105,8 @@ export const coordinators: TeamMember[] = [
     role: 'Head of Web and Creative Design - Malitha Jeewaka',
     position: 'coordinator',
     image: getAvatarUrl('Malitha Jeewaka'),
-    bio: 'Leading web development and creative design initiatives to build an engaging digital presence for ComES.',
-    email: 'web@comes.ruh.ac.lk',
+    email: 'web@comesuor.lk',
+    contactNo: '',
   },
 ];
 
@@ -118,8 +118,8 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Software Engineering - Chamara Vishwajith',
     position: 'chairperson',
     image: getAvatarUrl('Chamara Vishwajith'),
-    bio: 'Leading the Software Engineering subgroup to foster excellence in software development practices and innovation.',
-    email: 'se@comes.ruh.ac.lk',
+    email: 'se@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'chair-2',
@@ -127,8 +127,8 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Electronic and Embedded Systems - Hirushan',
     position: 'chairperson',
     image: getAvatarUrl('Hirushan'),
-    bio: 'Leading the Electronic and Embedded Systems subgroup to advance knowledge in hardware and embedded technologies.',
-    email: 'embedded@comes.ruh.ac.lk',
+    email: 'embedded@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'chair-3',
@@ -136,8 +136,8 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - AI and Data Science - Viranga Weerabandara',
     position: 'chairperson',
     image: getAvatarUrl('Viranga Weerabandara'),
-    bio: 'Leading the AI and Data Science subgroup to explore cutting-edge developments in artificial intelligence and data analytics.',
-    email: 'ai@comes.ruh.ac.lk',
+    email: 'ai@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'chair-4',
@@ -145,8 +145,8 @@ export const subgroupChairpersons: TeamMember[] = [
     role: 'Subgroup Chairperson - Network and Security - Tharindu Nadun',
     position: 'chairperson',
     image: getAvatarUrl('Tharindu Nadun'),
-    bio: 'Leading the Network and Security subgroup to promote cybersecurity awareness and networking expertise.',
-    email: 'security@comes.ruh.ac.lk',
+    email: 'security@comesuor.lk',
+    contactNo: '',
   },
 ];
 
@@ -158,8 +158,8 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 1 - Senura Koshala',
     position: 'board-member',
     image: getAvatarUrl('Senura Koshala'),
-    bio: 'Contributing to ComES strategic decisions and supporting organizational initiatives.',
-    email: 'board1@comes.ruh.ac.lk',
+    email: 'board1@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'board-2',
@@ -167,8 +167,8 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 2 - Praveen Dilshan',
     position: 'board-member',
     image: getAvatarUrl('Praveen Dilshan'),
-    bio: 'Contributing to ComES strategic decisions and supporting organizational initiatives.',
-    email: 'board2@comes.ruh.ac.lk',
+    email: 'board2@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'board-3',
@@ -176,8 +176,8 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 3 - Iman Sharinda',
     position: 'board-member',
     image: getAvatarUrl('Iman Sharinda'),
-    bio: 'Contributing to ComES strategic decisions and supporting organizational initiatives.',
-    email: 'board3@comes.ruh.ac.lk',
+    email: 'board3@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'board-4',
@@ -185,8 +185,8 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 4 - Ms. Sithara Madhubhashini',
     position: 'board-member',
     image: getAvatarUrl('Sithara Madhubhashini'),
-    bio: 'Contributing to ComES strategic decisions and supporting organizational initiatives.',
-    email: 'board4@comes.ruh.ac.lk',
+    email: 'board4@comesuor.lk',
+    contactNo: '',
   },
   {
     id: 'board-5',
@@ -194,8 +194,8 @@ export const boardMembers: TeamMember[] = [
     role: 'Board Member 5 - Tishan Shamika',
     position: 'board-member',
     image: getAvatarUrl('Tishan Shamika'),
-    bio: 'Contributing to ComES strategic decisions and supporting organizational initiatives.',
-    email: 'board5@comes.ruh.ac.lk',
+    email: 'board5@comesuor.lk',
+    contactNo: '',
   },
 ];
 
