@@ -5,8 +5,8 @@
 import type { FC } from 'react';
 import { Outlet } from 'react-router';
 import { motion } from 'framer-motion';
-import { Navbar } from './Navbar';
-import { Footer } from './Footer';
+// import { Navbar } from './Navbar';
+// import { Footer } from './Footer';
 import { useThemeStore } from '@/store';
 
 export const Layout: FC = () => {
