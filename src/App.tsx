@@ -2,23 +2,23 @@
 // ComES Website - Main App Component
 // ============================================
 
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
-import { AnimatePresence } from 'framer-motion';
-import { Layout } from '@/components/layout';
-import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from '@/components/ui';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { initializeTheme, initializeCookies } from '@/store';
+import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
+import { AnimatePresence } from "framer-motion";
+import { Layout } from "@/components/layout";
+import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { initializeTheme, initializeCookies } from "@/store";
 import {
-  HomePage,
-  AboutPage,
-  EventsPage,
-  TeamPage,
-  ProjectsPage,
-  GalleryPage,
-  BlogPage,
-  ContactPage,
-  FAQPage,
+  // HomePage,
+  // AboutPage,
+  // EventsPage,
+  // TeamPage,
+  // ProjectsPage,
+  // GalleryPage,
+  // BlogPage,
+  // ContactPage,
+  // FAQPage,
   NotFoundPage,
   StudentRegisterPage,
   StudentLoginPage,
@@ -28,11 +28,11 @@ import {
   StudentEventsPage,
   StudentSettingsPage,
   StudentTeamsPage,
-  SoftwareEngineeringPage,
-  AIDataSciencePage,
-  EmbeddedElectronicsPage,
-  NetworkSecurityPage,
-} from '@/pages';
+  // SoftwareEngineeringPage,
+  // AIDataSciencePage,
+  // EmbeddedElectronicsPage,
+  // NetworkSecurityPage,
+} from "@/pages";
 import {
   AdminLayout,
   LoginPage as AdminLoginPage,
@@ -47,7 +47,7 @@ import {
   AnalyticsPage,
   MembersManagementPage,
   NotificationsPage,
-} from '@/pages/admin';
+} from "@/pages/admin";
 
 // Initialize theme and cookies on app load
 initializeTheme();
@@ -60,9 +60,8 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-      
         {/* Public Routes */}
-    
+
         <Route element={<Layout />}>
           {/* <Route path="/" element={<HomePage />} /> */}
           <Route path="/" element={<NotFoundPage />} />
@@ -79,7 +78,7 @@ const AnimatedRoutes = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} /> */}
         </Route>
-        
+
         {/* Student Registration Route (public) */}
         <Route path="/register" element={<StudentRegisterPage />} />
 
@@ -138,7 +137,7 @@ function App() {
 
   useEffect(() => {
     // Check if user has already visited (skip loading on subsequent visits)
-    const hasVisited = sessionStorage.getItem('comes-visited');
+    const hasVisited = sessionStorage.getItem("comes-visited");
     if (hasVisited) {
       setIsLoading(false);
       setShowApp(true);
@@ -146,7 +145,7 @@ function App() {
   }, []);
 
   const handleLoadingComplete = () => {
-    sessionStorage.setItem('comes-visited', 'true');
+    sessionStorage.setItem("comes-visited", "true");
     setIsLoading(false);
     setTimeout(() => setShowApp(true), 100);
   };
