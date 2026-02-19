@@ -62,7 +62,8 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="*" element={<NotFoundPage />} />
         {/* Public Routes */}
-        <Route element={<Layout />}>
+    
+        {/* <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
@@ -76,8 +77,8 @@ const AnimatedRoutes = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
-        </Route>
-
+        </Route> */}
+        
         {/* Student Registration Route (public) */}
         <Route path="/register" element={<StudentRegisterPage />} />
 
