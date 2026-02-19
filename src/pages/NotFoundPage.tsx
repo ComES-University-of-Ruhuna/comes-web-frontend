@@ -145,7 +145,7 @@ export const NotFoundPage = () => {
           </FadeInView>
 
           {/* Actions */}
-          {/* <FadeInView delay={0.4}>
+          <FadeInView delay={0.4}>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <HoverScale>
                 <Button
@@ -164,10 +164,10 @@ export const NotFoundPage = () => {
                 </Button>
               </HoverScale>
             </div>
-          </FadeInView> */}
+          </FadeInView>
 
           {/* Helpful Links */}
-          {/* <FadeInView delay={0.5}>
+          <FadeInView delay={0.5}>
             <div
               className={cn("mt-12 border-t pt-8", isDark ? "border-slate-700" : "border-gray-200")}
             >
@@ -197,7 +197,7 @@ export const NotFoundPage = () => {
                 ))}
               </div>
             </div>
-          </FadeInView> */}
+          </FadeInView>
         </div>
       </div>
     </PageTransition>

@@ -60,11 +60,12 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="*" element={<NotFoundPage />} />
+      
         {/* Public Routes */}
     
-        {/* <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
+        <Route element={<Layout />}>
+          {/* <Route path="/" element={<HomePage />} /> */}
+          <Route path="/" element={<NotFoundPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
           <Route path="/subgroups/ai-data-science" element={<AIDataSciencePage />} />
@@ -77,7 +78,7 @@ const AnimatedRoutes = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
-        </Route> */}
+        </Route>
         
         {/* Student Registration Route (public) */}
         <Route path="/register" element={<StudentRegisterPage />} />
