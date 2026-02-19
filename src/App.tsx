@@ -60,6 +60,7 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        <Route path="*" element={<NotFoundPage />} />
         {/* Public Routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
