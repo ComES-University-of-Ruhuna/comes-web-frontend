@@ -5,8 +5,8 @@
 import type { FC } from 'react';
 import { Outlet } from 'react-router';
 import { motion } from 'framer-motion';
-// import { Navbar } from './Navbar';
-// import { Footer } from './Footer';
+import { Navbar } from './Navbar';
+import { Footer } from './Footer';
 import { useThemeStore } from '@/store';
 
 export const Layout: FC = () => {
@@ -20,7 +20,7 @@ export const Layout: FC = () => {
           : 'bg-white text-gray-900'
       }`}
     >
-      {/* <Navbar /> */}
+      <Navbar />
       <motion.main 
         className="flex-1 pt-16 md:pt-20"
         initial={{ opacity: 0 }}
@@ -29,7 +29,7 @@ export const Layout: FC = () => {
       >
         <Outlet />
       </motion.main>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };

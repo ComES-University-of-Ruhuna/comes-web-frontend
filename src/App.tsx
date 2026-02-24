@@ -10,15 +10,15 @@ import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/co
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { initializeTheme, initializeCookies } from "@/store";
 import {
-  // HomePage,
-  // AboutPage,
-  // EventsPage,
-  // TeamPage,
-  // ProjectsPage,
-  // GalleryPage,
-  // BlogPage,
-  // ContactPage,
-  // FAQPage,
+  HomePage,
+  AboutPage,
+  EventsPage,
+  TeamPage,
+  ProjectsPage,
+  GalleryPage,
+  BlogPage,
+  ContactPage,
+  FAQPage,
   NotFoundPage,
   StudentRegisterPage,
   StudentLoginPage,
@@ -28,10 +28,10 @@ import {
   StudentEventsPage,
   StudentSettingsPage,
   StudentTeamsPage,
-  // SoftwareEngineeringPage,
-  // AIDataSciencePage,
-  // EmbeddedElectronicsPage,
-  // NetworkSecurityPage,
+  SoftwareEngineeringPage,
+  AIDataSciencePage,
+  EmbeddedElectronicsPage,
+  NetworkSecurityPage,
 } from "@/pages";
 import {
   AdminLayout,
@@ -63,9 +63,9 @@ const AnimatedRoutes = () => {
         {/* Public Routes */}
 
         <Route element={<Layout />}>
-          {/* <Route path="/" element={<HomePage />} /> */}
-          <Route path="/" element={<NotFoundPage />} />
-          {/* <Route path="/about" element={<AboutPage />} />
+          <Route path="/" element={<HomePage />} />
+          {/* <Route path="/" element={<NotFoundPage />} /> */}
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
           <Route path="/subgroups/ai-data-science" element={<AIDataSciencePage />} />
           <Route path="/subgroups/embedded-electronics" element={<EmbeddedElectronicsPage />} />
@@ -76,7 +76,7 @@ const AnimatedRoutes = () => {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} /> */}
+          <Route path="/faq" element={<FAQPage />} />
         </Route>
 
         {/* Student Registration Route (public) */}
