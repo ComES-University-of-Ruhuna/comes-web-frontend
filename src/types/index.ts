@@ -28,19 +28,19 @@ export interface TeamMember {
 }
 
 export type TeamPosition =
-  | 'president'
-  | 'president-elect'
-  | 'vice-president'
-  | 'secretary'
-  | 'assistant-secretary'
-  | 'treasurer'
-  | 'senior-treasurer'
-  | 'ex-officio'
-  | 'coordinator'
-  | 'chairperson'
-  | 'board-member'
-  | 'member'
-  | 'advisor';
+  | "president"
+  | "president-elect"
+  | "vice-president"
+  | "secretary"
+  | "assistant-secretary"
+  | "treasurer"
+  | "senior-treasurer"
+  | "ex-officio"
+  | "coordinator"
+  | "chairperson"
+  | "board-member"
+  | "member"
+  | "advisor";
 
 // Event Types
 export interface Event {
@@ -62,14 +62,14 @@ export interface Event {
 }
 
 export type EventType =
-  | 'Workshop'
-  | 'Seminar'
-  | 'Competition'
-  | 'Hackathon'
-  | 'Social'
-  | 'Conference'
-  | 'Webinar'
-  | 'Meetup';
+  | "Workshop"
+  | "Seminar"
+  | "Competition"
+  | "Hackathon"
+  | "Social"
+  | "Conference"
+  | "Webinar"
+  | "Meetup";
 
 // Project Types
 export interface Project {
@@ -90,20 +90,16 @@ export interface Project {
 }
 
 export type ProjectCategory =
-  | 'Web Development'
-  | 'Mobile App'
-  | 'AI/ML'
-  | 'IoT'
-  | 'Cybersecurity'
-  | 'Data Science'
-  | 'Game Development'
-  | 'Other';
+  | "Web Development"
+  | "Mobile App"
+  | "AI/ML"
+  | "IoT"
+  | "Cybersecurity"
+  | "Data Science"
+  | "Game Development"
+  | "Other";
 
-export type ProjectStatus =
-  | 'Planning'
-  | 'In Progress'
-  | 'Completed'
-  | 'On Hold';
+export type ProjectStatus = "Planning" | "In Progress" | "Completed" | "On Hold";
 
 // Competition Team Types
 export interface CompetitionTeam {
@@ -127,8 +123,8 @@ export interface CompetitionTeamMember {
   joinedAt?: string;
 }
 
-export type TeamStatus = 'pending' | 'active' | 'disbanded';
-export type TeamMemberStatus = 'pending' | 'approved' | 'rejected';
+export type TeamStatus = "pending" | "active" | "disbanded";
+export type TeamMemberStatus = "pending" | "approved" | "rejected";
 
 export interface TeamInvitation {
   _id: string;
@@ -152,13 +148,7 @@ export interface GalleryImage {
   featured?: boolean;
 }
 
-export type GalleryCategory =
-  | 'Events'
-  | 'Workshops'
-  | 'Team'
-  | 'Campus'
-  | 'Awards'
-  | 'Other';
+export type GalleryCategory = "Events" | "Workshops" | "Team" | "Campus" | "Awards" | "Other";
 
 // Blog/News Types
 export interface BlogAuthor {
@@ -184,28 +174,28 @@ export interface BlogPost {
 }
 
 export type BlogCategory =
-  | 'News'
-  | 'Announcements'
-  | 'Tech'
-  | 'Events'
-  | 'Achievements'
-  | 'Tutorials';
+  | "News"
+  | "Announcements"
+  | "Tech"
+  | "Events"
+  | "Achievements"
+  | "Tutorials";
 
 // Contact Form Types
 export interface ContactFormData {
   name: string;
   email: string;
-  subject: ContactSubject | '';
+  subject: ContactSubject | "";
   message: string;
 }
 
 export type ContactSubject =
-  | 'membership'
-  | 'events'
-  | 'partnership'
-  | 'technical'
-  | 'feedback'
-  | 'other';
+  | "membership"
+  | "events"
+  | "partnership"
+  | "technical"
+  | "feedback"
+  | "other";
 
 // Testimonial Types
 export interface Testimonial {
@@ -228,12 +218,7 @@ export interface Partner {
   type: PartnerType;
 }
 
-export type PartnerType =
-  | 'Platinum'
-  | 'Gold'
-  | 'Silver'
-  | 'Bronze'
-  | 'Partner';
+export type PartnerType = "Platinum" | "Gold" | "Silver" | "Bronze" | "Partner";
 
 // Statistics Types
 export interface Statistic {
@@ -260,13 +245,13 @@ export interface SocialLink {
 }
 
 export type SocialPlatform =
-  | 'facebook'
-  | 'twitter'
-  | 'linkedin'
-  | 'instagram'
-  | 'github'
-  | 'youtube'
-  | 'discord';
+  | "facebook"
+  | "twitter"
+  | "linkedin"
+  | "instagram"
+  | "github"
+  | "youtube"
+  | "discord";
 
 // Achievement Types
 export interface Achievement {
@@ -281,13 +266,13 @@ export interface Achievement {
 // Component Props Types
 export interface ButtonProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   href?: string;
 }
 
@@ -295,14 +280,14 @@ export interface CardProps {
   children: React.ReactNode;
   className?: string;
   hoverable?: boolean;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  padding?: "none" | "sm" | "md" | "lg";
 }
 
 export interface SectionProps {
   children: React.ReactNode;
   className?: string;
   id?: string;
-  background?: 'white' | 'gray' | 'gradient' | 'dark';
+  background?: "white" | "gray" | "gradient" | "dark";
 }
 
 // API Response Types

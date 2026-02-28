@@ -2,7 +2,7 @@
 // ComES Website - Blog Service
 // ============================================
 
-import api, { type ApiResponse, type PaginatedData } from './api';
+import api, { type ApiResponse, type PaginatedData } from "./api";
 
 export interface ApiBlogPost {
   _id: string;
@@ -20,7 +20,7 @@ export interface ApiBlogPost {
   tags: string[];
   image: string;
   readTime: number;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   featured: boolean;
   likes: number;
   views: number;
@@ -54,19 +54,19 @@ export const blogService = {
 
   // Get featured posts
   getFeatured: async (): Promise<ApiResponse<{ posts: ApiBlogPost[] }>> => {
-    const response = await api.get<ApiResponse<{ posts: ApiBlogPost[] }>>('/blog/featured');
+    const response = await api.get<ApiResponse<{ posts: ApiBlogPost[] }>>("/blog/featured");
     return response.data;
   },
 
   // Get categories
   getCategories: async (): Promise<ApiResponse<{ categories: string[] }>> => {
-    const response = await api.get<ApiResponse<{ categories: string[] }>>('/blog/categories');
+    const response = await api.get<ApiResponse<{ categories: string[] }>>("/blog/categories");
     return response.data;
   },
 
   // Get tags
   getTags: async (): Promise<ApiResponse<{ tags: string[] }>> => {
-    const response = await api.get<ApiResponse<{ tags: string[] }>>('/blog/tags');
+    const response = await api.get<ApiResponse<{ tags: string[] }>>("/blog/tags");
     return response.data;
   },
 

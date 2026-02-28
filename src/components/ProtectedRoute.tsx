@@ -2,8 +2,8 @@
 // ComES Website - Protected Route Component
 // ============================================
 
-import { Navigate, useLocation } from 'react-router';
-import { useAuthStore } from '@/store/authStore';
+import { Navigate, useLocation } from "react-router";
+import { useAuthStore } from "@/store/authStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,6 +11,9 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+  const { user, isAuthenticated, isLoading } = useAuthStore();
+  const location = useLocation();
+
   // TEMPORARY: Bypass authentication for development
   // TODO: Remove this bypass before production!
   const BYPASS_AUTH = false;
@@ -19,14 +22,11 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <>{children}</>;
   }
 
-  const { user, isAuthenticated, isLoading } = useAuthStore();
-  const location = useLocation();
-
   // Show loading state while checking auth
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-950">
-        <div className="w-8 h-8 border-2 border-blue-500 rounded-full animate-spin border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
       </div>
     );
   }
@@ -37,7 +37,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   // Check admin role if required
-  if (requireAdmin && user.role !== 'admin') {
+  if (requireAdmin && user.role !== "admin") {
     return <Navigate to="/" replace />;
   }
 

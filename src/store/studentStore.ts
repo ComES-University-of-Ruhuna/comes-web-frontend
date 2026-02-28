@@ -2,10 +2,10 @@
 // ComES Website - Student Store (Zustand)
 // ============================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { studentService, type Student, type StudentRegisterData } from '@/services/student.service';
-import { setStudentAccessToken } from '@/services/api';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { studentService, type Student, type StudentRegisterData } from "@/services/student.service";
+import { setStudentAccessToken } from "@/services/api";
 
 interface StudentState {
   student: Student | null;
@@ -34,17 +34,20 @@ export const useStudentStore = create<StudentState>()(
         set({ isLoading: true, error: null });
         try {
           // Use the student login endpoint
-          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/students/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials),
-          });
-          
+          const response = await fetch(
+            `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/students/login`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(credentials),
+            },
+          );
+
           const data = await response.json();
-          
+
           if (data.success && data.data) {
             setStudentAccessToken(data.data.accessToken);
-            localStorage.setItem('studentRefreshToken', data.data.refreshToken);
+            localStorage.setItem("studentRefreshToken", data.data.refreshToken);
             set({
               student: data.data.student,
               isAuthenticated: true,
@@ -52,11 +55,11 @@ export const useStudentStore = create<StudentState>()(
             });
             return true;
           }
-          
-          set({ isLoading: false, error: data.message || 'Login failed' });
+
+          set({ isLoading: false, error: data.message || "Login failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Login failed';
+          const message = error instanceof Error ? error.message : "Login failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -68,7 +71,7 @@ export const useStudentStore = create<StudentState>()(
           const response = await studentService.register(data);
           if (response.success && response.data) {
             setStudentAccessToken(response.data.accessToken);
-            localStorage.setItem('studentRefreshToken', response.data.refreshToken);
+            localStorage.setItem("studentRefreshToken", response.data.refreshToken);
             set({
               student: response.data.student,
               isAuthenticated: true,
@@ -76,10 +79,10 @@ export const useStudentStore = create<StudentState>()(
             });
             return true;
           }
-          set({ isLoading: false, error: response.message || 'Registration failed' });
+          set({ isLoading: false, error: response.message || "Registration failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Registration failed';
+          const message = error instanceof Error ? error.message : "Registration failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -87,7 +90,7 @@ export const useStudentStore = create<StudentState>()(
 
       logout: () => {
         setStudentAccessToken(null);
-        localStorage.removeItem('studentRefreshToken');
+        localStorage.removeItem("studentRefreshToken");
         set({
           student: null,
           isAuthenticated: false,
@@ -97,7 +100,7 @@ export const useStudentStore = create<StudentState>()(
       },
 
       checkAuth: async () => {
-        const token = localStorage.getItem('studentRefreshToken');
+        const token = localStorage.getItem("studentRefreshToken");
         if (!token) {
           set({ isAuthenticated: false, student: null });
           return;
@@ -124,11 +127,11 @@ export const useStudentStore = create<StudentState>()(
       updateStudent: (student: Student) => set({ student }),
     }),
     {
-      name: 'student-auth-storage',
+      name: "student-auth-storage",
       partialize: (state) => ({
         student: state.student,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

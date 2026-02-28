@@ -2,15 +2,15 @@
 // ComES Website - API Client Configuration
 // ============================================
 
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { API_CONFIG, STORAGE_KEYS } from '@/config';
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { API_CONFIG, STORAGE_KEYS } from "@/config";
 
 // Create axios instance with centralized config
 const api = axios.create({
   baseURL: API_CONFIG.baseUrl,
   timeout: API_CONFIG.timeout,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: API_CONFIG.withCredentials,
 });
@@ -45,21 +45,24 @@ api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Check if this is a student-specific endpoint (me, my-events, etc.)
     // Admin endpoints to /students (GET all, DELETE, notify) should use admin token
-    const isStudentAuthEndpoint = 
-      config.url?.includes('/students/me') || 
-      config.url?.includes('/students/my-') ||
-      config.url?.includes('/students/events/') ||
-      config.url?.includes('/students/change-password') ||
-      config.url?.includes('/students/search');
-    
+    const isStudentAuthEndpoint =
+      config.url?.includes("/students/me") ||
+      config.url?.includes("/students/my-") ||
+      config.url?.includes("/students/events/") ||
+      config.url?.includes("/students/change-password") ||
+      config.url?.includes("/students/search") ||
+      (config.url?.includes("/quizzes/") &&
+        config.url?.includes("/attempt") &&
+        config.method === "post");
+
     const token = isStudentAuthEndpoint ? studentAccessToken : accessToken;
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor - handle token refresh
@@ -75,9 +78,13 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
         if (refreshToken) {
-          const response = await axios.post(`${API_CONFIG.baseUrl}/auth/refresh-token`, {
-            refreshToken,
-          }, { withCredentials: true });
+          const response = await axios.post(
+            `${API_CONFIG.baseUrl}/auth/refresh-token`,
+            {
+              refreshToken,
+            },
+            { withCredentials: true },
+          );
 
           const { token } = response.data.data;
           setAccessToken(token);
@@ -91,12 +98,12 @@ api.interceptors.response.use(
         // Refresh failed - clear tokens and redirect to login
         setAccessToken(null);
         localStorage.removeItem(STORAGE_KEYS.refreshToken);
-        window.dispatchEvent(new CustomEvent('auth:logout'));
+        window.dispatchEvent(new CustomEvent("auth:logout"));
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

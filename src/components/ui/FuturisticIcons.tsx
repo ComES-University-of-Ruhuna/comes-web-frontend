@@ -28,7 +28,7 @@ export {
   MoreHorizontal,
   MoreVertical,
   Grip,
-  
+
   // Actions
   Plus,
   Minus,
@@ -41,13 +41,13 @@ export {
   Info,
   HelpCircle,
   Ban,
-  
+
   // Theme
   Sun,
   Moon,
   Monitor,
   Palette,
-  
+
   // Communication
   Mail,
   Phone,
@@ -57,7 +57,7 @@ export {
   Bell,
   BellRing,
   Inbox,
-  
+
   // Social Media
   Github,
   Linkedin,
@@ -67,7 +67,7 @@ export {
   Youtube,
   Globe,
   Link2,
-  
+
   // Users & People
   User,
   Users,
@@ -78,7 +78,7 @@ export {
   PersonStanding,
   Handshake,
   HeartHandshake,
-  
+
   // Content
   FileText,
   File,
@@ -90,7 +90,7 @@ export {
   Video,
   Play,
   Pause,
-  
+
   // Calendar & Time
   Calendar,
   CalendarDays,
@@ -99,7 +99,7 @@ export {
   Timer,
   History,
   Hourglass,
-  
+
   // Location
   MapPin,
   Map,
@@ -107,7 +107,7 @@ export {
   Compass,
   Building,
   Building2,
-  
+
   // Tech & Development
   Code,
   Code2,
@@ -124,7 +124,7 @@ export {
   Braces,
   Binary,
   CircuitBoard,
-  
+
   // Security
   Shield,
   ShieldCheck,
@@ -137,7 +137,7 @@ export {
   EyeOff,
   Scan,
   ScanFace,
-  
+
   // Awards & Achievements
   Award,
   Trophy,
@@ -148,7 +148,7 @@ export {
   Target,
   Flag,
   Rocket,
-  
+
   // Education
   GraduationCap,
   BookOpen,
@@ -158,7 +158,7 @@ export {
   Brain,
   Microscope,
   FlaskConical,
-  
+
   // Business
   Briefcase,
   TrendingUp,
@@ -168,7 +168,7 @@ export {
   PieChart,
   LineChart,
   Activity,
-  
+
   // Interface Elements
   Layers,
   Layout as LayoutIcon,
@@ -179,7 +179,7 @@ export {
   Rows,
   Maximize,
   Minimize,
-  
+
   // Misc Futuristic
   Atom,
   Orbit,
@@ -193,7 +193,7 @@ export {
   Box,
   Package,
   Puzzle,
-  
+
   // Arrows & Directions
   MoveRight,
   MoveLeft,
@@ -205,13 +205,13 @@ export {
   RotateCw,
   Repeat,
   Shuffle,
-  
+
   // Loading States
   Loader,
   Loader2,
   LoaderCircle,
   LoaderPinwheel,
-  
+
   // Scroll & Chevrons
   ChevronsRight,
   ChevronsLeft,
@@ -221,7 +221,7 @@ export {
   MousePointer,
   MousePointerClick,
   Hand,
-  
+
   // Creative
   Wand2,
   Brush,
@@ -229,7 +229,7 @@ export {
   Pencil,
   Eraser,
   Paintbrush,
-  
+
   // Network & Connection
   Network,
   Share2,
@@ -237,7 +237,7 @@ export {
   GitFork,
   GitMerge,
   Workflow,
-  
+
   // Reactions
   Heart,
   ThumbsUp,
@@ -245,7 +245,7 @@ export {
   Smile,
   Frown,
   Laugh,
-  
+
   // Volume & Media
   Volume,
   Volume1,
@@ -256,14 +256,14 @@ export {
   Headphones,
   Radio,
   Music,
-  
+
   // Download & Upload
   Download,
   Upload,
   CloudDownload,
   CloudUpload,
   Import,
-  
+
   // Edit
   Edit,
   Edit2,
@@ -274,13 +274,13 @@ export {
   Trash,
   Trash2,
   Save,
-  
+
   // Contact & Form
   Contact,
   Contact2,
   AtSign,
   Hash,
-  
+
   // Misc
   Quote,
   Newspaper,
@@ -293,14 +293,14 @@ export {
   Flame,
   Snowflake,
   Anchor,
-} from 'lucide-react';
+} from "lucide-react";
 
 // Icon component with preset sizes
-import type { LucideIcon, LucideProps } from 'lucide-react';
+import type { LucideIcon, LucideProps } from "lucide-react";
 
-export interface IconProps extends Omit<LucideProps, 'ref'> {
+export interface IconProps extends Omit<LucideProps, "ref"> {
   icon: LucideIcon;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
 const sizeMap = {
@@ -313,15 +313,9 @@ const sizeMap = {
 
 export const Icon: React.FC<IconProps> = ({
   icon: IconComponent,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
   ...props
 }) => {
-  return (
-    <IconComponent
-      size={sizeMap[size]}
-      className={className}
-      {...props}
-    />
-  );
+  return <IconComponent size={sizeMap[size]} className={className} {...props} />;
 };

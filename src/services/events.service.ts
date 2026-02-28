@@ -2,7 +2,7 @@
 // ComES Website - Events Service
 // ============================================
 
-import api, { type ApiResponse, type PaginatedData } from './api';
+import api, { type ApiResponse, type PaginatedData } from "./api";
 
 export interface ApiEvent {
   _id: string;
@@ -22,7 +22,7 @@ export interface ApiEvent {
   icon?: string;
   color?: string;
   tags: string[];
-  status: 'draft' | 'published' | 'cancelled' | 'completed';
+  status: "draft" | "published" | "cancelled" | "completed";
   featured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +53,7 @@ export const eventsService = {
 
   // Get featured events
   getFeatured: async (): Promise<ApiResponse<{ events: ApiEvent[] }>> => {
-    const response = await api.get<ApiResponse<{ events: ApiEvent[] }>>('/events/featured');
+    const response = await api.get<ApiResponse<{ events: ApiEvent[] }>>("/events/featured");
     return response.data;
   },
 
@@ -71,13 +71,17 @@ export const eventsService = {
 
   // Register for event
   register: async (eventId: string): Promise<ApiResponse<{ event: ApiEvent }>> => {
-    const response = await api.post<ApiResponse<{ event: ApiEvent }>>(`/events/${eventId}/register`);
+    const response = await api.post<ApiResponse<{ event: ApiEvent }>>(
+      `/events/${eventId}/register`,
+    );
     return response.data;
   },
 
   // Unregister from event
   unregister: async (eventId: string): Promise<ApiResponse<{ event: ApiEvent }>> => {
-    const response = await api.delete<ApiResponse<{ event: ApiEvent }>>(`/events/${eventId}/register`);
+    const response = await api.delete<ApiResponse<{ event: ApiEvent }>>(
+      `/events/${eventId}/register`,
+    );
     return response.data;
   },
 };

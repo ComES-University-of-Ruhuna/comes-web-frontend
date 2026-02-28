@@ -2,8 +2,8 @@
 // ComES Website - Input Components
 // ============================================
 
-import type { FC, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
-import { cn } from '@/utils';
+import type { FC, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from "react";
+import { cn } from "@/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -15,7 +15,7 @@ export const Input: FC<InputProps> = ({
   label,
   error,
   helperText,
-  className = '',
+  className = "",
   id,
   ...props
 }) => {
@@ -24,30 +24,23 @@ export const Input: FC<InputProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label
-          htmlFor={inputId}
-          className="block text-gray-700 font-medium mb-2"
-        >
+        <label htmlFor={inputId} className="mb-2 block font-medium text-gray-700">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <input
         id={inputId}
         className={cn(
-          'w-full px-4 py-3 rounded-lg border transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-comesBlue focus:border-transparent',
-          error
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 hover:border-gray-400',
-          className
+          "w-full rounded-lg border px-4 py-3 transition-all duration-200",
+          "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
+          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          className,
         )}
         {...props}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-      )}
+      {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
     </div>
   );
 };
@@ -62,7 +55,7 @@ export const Textarea: FC<TextareaProps> = ({
   label,
   error,
   helperText,
-  className = '',
+  className = "",
   id,
   rows = 4,
   ...props
@@ -72,31 +65,24 @@ export const Textarea: FC<TextareaProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label
-          htmlFor={textareaId}
-          className="block text-gray-700 font-medium mb-2"
-        >
+        <label htmlFor={textareaId} className="mb-2 block font-medium text-gray-700">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <textarea
         id={textareaId}
         rows={rows}
         className={cn(
-          'w-full px-4 py-3 rounded-lg border transition-all duration-200 resize-none',
-          'focus:outline-none focus:ring-2 focus:ring-comesBlue focus:border-transparent',
-          error
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 hover:border-gray-400',
-          className
+          "w-full resize-none rounded-lg border px-4 py-3 transition-all duration-200",
+          "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
+          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          className,
         )}
         {...props}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-      )}
+      {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
     </div>
   );
 };
@@ -105,7 +91,9 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   helperText?: string;
-  options: readonly { readonly value: string; readonly label: string }[] | { value: string; label: string }[];
+  options:
+    | readonly { readonly value: string; readonly label: string }[]
+    | { value: string; label: string }[];
   placeholder?: string;
 }
 
@@ -115,7 +103,7 @@ export const Select: FC<SelectProps> = ({
   helperText,
   options,
   placeholder,
-  className = '',
+  className = "",
   id,
   ...props
 }) => {
@@ -124,23 +112,18 @@ export const Select: FC<SelectProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label
-          htmlFor={selectId}
-          className="block text-gray-700 font-medium mb-2"
-        >
+        <label htmlFor={selectId} className="mb-2 block font-medium text-gray-700">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <select
         id={selectId}
         className={cn(
-          'w-full px-4 py-3 rounded-lg border transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-comesBlue focus:border-transparent',
-          error
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 hover:border-gray-400',
-          className
+          "w-full rounded-lg border px-4 py-3 transition-all duration-200",
+          "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
+          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          className,
         )}
         {...props}
       >
@@ -156,9 +139,7 @@ export const Select: FC<SelectProps> = ({
         ))}
       </select>
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-      )}
+      {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
     </div>
   );
 };

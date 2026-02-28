@@ -28,6 +28,8 @@ import {
   StudentEventsPage,
   StudentSettingsPage,
   StudentTeamsPage,
+  StudentQuizzesPage,
+  StudentQuizTakePage,
   SoftwareEngineeringPage,
   AIDataSciencePage,
   EmbeddedElectronicsPage,
@@ -47,6 +49,7 @@ import {
   AnalyticsPage,
   MembersManagementPage,
   NotificationsPage,
+  QuizManagementPage,
 } from "@/pages/admin";
 
 // Initialize theme and cookies on app load
@@ -94,7 +97,8 @@ const AnimatedRoutes = () => {
         <Route path="/student/events" element={<StudentEventsPage />} />
         <Route path="/student/settings" element={<StudentSettingsPage />} />
         <Route path="/student/teams" element={<StudentTeamsPage />} />
-        <Route path="/student/quizzes" element={<StudentDashboardPage />} />
+        <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
+        <Route path="/student/quizzes/:id" element={<StudentQuizTakePage />} />
         <Route path="/student/certificates" element={<StudentDashboardPage />} />
         <Route path="/student/resources" element={<StudentDashboardPage />} />
 
@@ -121,6 +125,7 @@ const AnimatedRoutes = () => {
           <Route path="contacts" element={<AdminContactsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="newsletter" element={<NewsletterPage />} />
+          <Route path="quizzes" element={<QuizManagementPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 

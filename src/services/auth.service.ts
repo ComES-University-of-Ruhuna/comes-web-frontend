@@ -2,14 +2,14 @@
 // ComES Website - Auth Service
 // ============================================
 
-import api, { setAccessToken, type ApiResponse } from './api';
-import { STORAGE_KEYS } from '@/config';
+import api, { setAccessToken, type ApiResponse } from "./api";
+import { STORAGE_KEYS } from "@/config";
 
 export interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
   avatar?: string;
   isEmailVerified: boolean;
   createdAt: string;
@@ -36,7 +36,7 @@ export interface AuthResponse {
 export const authService = {
   // Register new user
   register: async (data: RegisterData): Promise<ApiResponse<AuthResponse>> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
+    const response = await api.post<ApiResponse<AuthResponse>>("/auth/register", data);
     if (response.data.data) {
       setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
@@ -46,7 +46,7 @@ export const authService = {
 
   // Login user
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
+    const response = await api.post<ApiResponse<AuthResponse>>("/auth/login", credentials);
     if (response.data.data) {
       setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
@@ -57,7 +57,7 @@ export const authService = {
   // Logout user
   logout: async (): Promise<void> => {
     try {
-      await api.post('/auth/logout');
+      await api.post("/auth/logout");
     } finally {
       setAccessToken(null);
       localStorage.removeItem(STORAGE_KEYS.refreshToken);
@@ -66,7 +66,7 @@ export const authService = {
 
   // Get current user
   getMe: async (): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
+    const response = await api.get<ApiResponse<{ user: User }>>("/auth/me");
     return response.data;
   },
 
@@ -76,7 +76,7 @@ export const authService = {
     password: string;
     passwordConfirm: string;
   }): Promise<ApiResponse<AuthResponse>> => {
-    const response = await api.patch<ApiResponse<AuthResponse>>('/auth/update-password', data);
+    const response = await api.patch<ApiResponse<AuthResponse>>("/auth/update-password", data);
     if (response.data.data) {
       setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
@@ -86,16 +86,22 @@ export const authService = {
 
   // Forgot password
   forgotPassword: async (email: string): Promise<ApiResponse<null>> => {
-    const response = await api.post<ApiResponse<null>>('/auth/forgot-password', { email });
+    const response = await api.post<ApiResponse<null>>("/auth/forgot-password", { email });
     return response.data;
   },
 
   // Reset password
-  resetPassword: async (token: string, data: {
-    password: string;
-    passwordConfirm: string;
-  }): Promise<ApiResponse<AuthResponse>> => {
-    const response = await api.patch<ApiResponse<AuthResponse>>(`/auth/reset-password/${token}`, data);
+  resetPassword: async (
+    token: string,
+    data: {
+      password: string;
+      passwordConfirm: string;
+    },
+  ): Promise<ApiResponse<AuthResponse>> => {
+    const response = await api.patch<ApiResponse<AuthResponse>>(
+      `/auth/reset-password/${token}`,
+      data,
+    );
     if (response.data.data) {
       setAccessToken(response.data.data.token);
       localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);

@@ -2,13 +2,20 @@
 // ComES Website - Team Service
 // ============================================
 
-import api, { type ApiResponse } from './api';
+import api, { type ApiResponse } from "./api";
 
 export interface ApiTeamMember {
   _id: string;
   name: string;
   role: string;
-  department: 'executive' | 'technical' | 'creative' | 'marketing' | 'events' | 'finance' | 'advisory';
+  department:
+    | "executive"
+    | "technical"
+    | "creative"
+    | "marketing"
+    | "events"
+    | "finance"
+    | "advisory";
   image?: string;
   bio?: string;
   email?: string;
@@ -49,8 +56,12 @@ export const teamService = {
   },
 
   // Get members by department
-  getByDepartment: async (department: string): Promise<ApiResponse<{ members: ApiTeamMember[] }>> => {
-    const response = await api.get<ApiResponse<{ members: ApiTeamMember[] }>>(`/team/department/${department}`);
+  getByDepartment: async (
+    department: string,
+  ): Promise<ApiResponse<{ members: ApiTeamMember[] }>> => {
+    const response = await api.get<ApiResponse<{ members: ApiTeamMember[] }>>(
+      `/team/department/${department}`,
+    );
     return response.data;
   },
 

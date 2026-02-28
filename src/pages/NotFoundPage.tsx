@@ -36,7 +36,7 @@ export const NotFoundPage = () => {
             opacity: [0.2, 0.4, 0.2],
           }}
           transition={{ duration: 10, repeat: Infinity }}
-          className="absolute w-64 h-64 rounded-full top-20 left-1/4 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
+          className="absolute top-20 left-1/4 h-64 w-64 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
         />
         <motion.div
           animate={{
@@ -46,7 +46,7 @@ export const NotFoundPage = () => {
             opacity: [0.4, 0.2, 0.4],
           }}
           transition={{ duration: 10, repeat: Infinity }}
-          className="absolute rounded-full right-1/4 bottom-20 h-72 w-72 bg-gradient-to-br from-purple-400/20 to-pink-500/20 blur-3xl"
+          className="absolute right-1/4 bottom-20 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-500/20 blur-3xl"
         />
 
         {/* Floating particles */}
@@ -74,7 +74,7 @@ export const NotFoundPage = () => {
           />
         ))}
 
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
+        <div className="relative z-10 mx-auto max-w-2xl text-center">
           {/* 404 Illustration */}
           <FadeInView>
             <div className="relative mb-8">
@@ -98,7 +98,7 @@ export const NotFoundPage = () => {
               </motion.span>
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.span
-                  className="text-6xl font-bold text-transparent bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 bg-clip-text md:text-8xl"
+                  className="bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 bg-clip-text text-6xl font-bold text-transparent md:text-8xl"
                   animate={{
                     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                   }}
@@ -117,9 +117,9 @@ export const NotFoundPage = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", delay: 0.3 }}
-              className="flex items-center justify-center w-16 h-16 mx-auto mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/30"
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
             >
-              <Compass className="w-8 h-8 text-white" />
+              <Compass className="h-8 w-8 text-white" />
             </motion.div>
           </FadeInView>
 
@@ -131,7 +131,7 @@ export const NotFoundPage = () => {
               )}
             >
               Page Not{" "}
-              <span className="text-transparent bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text">
+              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
                 Found
               </span>
             </h1>
@@ -152,14 +152,14 @@ export const NotFoundPage = () => {
                   onClick={() => window.history.back()}
                   variant="outline"
                   size="lg"
-                  icon={<ArrowLeft className="w-5 h-5" />}
+                  icon={<ArrowLeft className="h-5 w-5" />}
                   iconPosition="left"
                 >
                   Go Back
                 </Button>
               </HoverScale>
               <HoverScale>
-                <Button href="/" size="lg" icon={<Home className="w-5 h-5" />} iconPosition="left">
+                <Button href="/" size="lg" icon={<Home className="h-5 w-5" />} iconPosition="left">
                   Back to Home
                 </Button>
               </HoverScale>
@@ -191,7 +191,7 @@ export const NotFoundPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 + index * 0.1 }}
                   >
-                    <link.icon className="w-4 h-4" />
+                    <link.icon className="h-4 w-4" />
                     <span className="font-medium">{link.label}</span>
                   </motion.a>
                 ))}

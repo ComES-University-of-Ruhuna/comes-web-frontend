@@ -3,10 +3,10 @@
 // ============================================
 
 // UI Components
-export * from './ui';
+export * from "./ui";
 
 // Layout Components
-export * from './layout';
+export * from "./layout";
 
 // Auth Components
-export { ProtectedRoute } from './ProtectedRoute';
+export { ProtectedRoute } from "./ProtectedRoute";

@@ -2,32 +2,32 @@
 // ComES Website - Student Teams Page
 // ============================================
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Users, 
-  UserPlus, 
-  Crown, 
-  Check, 
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Users,
+  UserPlus,
+  Crown,
+  Check,
   X,
   Loader2,
   Mail,
   Clock,
   Trash2,
-  LogOut
-} from 'lucide-react';
-import { useStudentStore } from '@/store/studentStore';
-import { useThemeStore } from '@/store';
-import { cn } from '@/utils';
-import { Button, Badge, CreateTeamModal } from '@/components/ui';
-import { Navbar, Footer } from '@/components/layout';
-import { competitionTeamService } from '@/services/competitionTeam.service';
-import type { CompetitionTeam, TeamInvitation } from '@/types';
+  LogOut,
+} from "lucide-react";
+import { useStudentStore } from "@/store/studentStore";
+import { useThemeStore } from "@/store";
+import { cn } from "@/utils";
+import { Button, Badge, CreateTeamModal } from "@/components/ui";
+import { Navbar, Footer } from "@/components/layout";
+import { competitionTeamService } from "@/services/competitionTeam.service";
+import type { CompetitionTeam, TeamInvitation } from "@/types";
 
 export const TeamsPage = () => {
   const { student } = useStudentStore();
   const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === 'dark';
+  const isDark = resolvedTheme === "dark";
 
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
   const [teams, setTeams] = useState<CompetitionTeam[]>([]);
@@ -40,7 +40,7 @@ export const TeamsPage = () => {
     try {
       const [teamsRes, invitationsRes] = await Promise.all([
         competitionTeamService.getMyTeams(),
-        competitionTeamService.getPendingInvitations()
+        competitionTeamService.getPendingInvitations(),
       ]);
 
       if (teamsRes.success && teamsRes.data) {
@@ -50,7 +50,7 @@ export const TeamsPage = () => {
         setInvitations(invitationsRes.data.invitations);
       }
     } catch (error) {
-      console.error('Failed to fetch teams data:', error);
+      console.error("Failed to fetch teams data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -63,10 +63,10 @@ export const TeamsPage = () => {
   const handleRespondToInvitation = async (teamId: string, accept: boolean) => {
     setRespondingTo(teamId);
     try {
-      await competitionTeamService.respondToInvitation(teamId, accept ? 'approved' : 'rejected');
+      await competitionTeamService.respondToInvitation(teamId, accept ? "approved" : "rejected");
       await fetchData();
     } catch (error) {
-      console.error('Failed to respond to invitation:', error);
+      console.error("Failed to respond to invitation:", error);
     } finally {
       setRespondingTo(null);
     }
@@ -74,11 +74,11 @@ export const TeamsPage = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge variant="success">Active</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge variant="warning">Pending</Badge>;
-      case 'disbanded':
+      case "disbanded":
         return <Badge variant="secondary">Disbanded</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
@@ -86,44 +86,47 @@ export const TeamsPage = () => {
   };
 
   return (
-    <div className={cn(
-      'min-h-screen flex flex-col font-comes transition-colors duration-300',
-      isDark ? 'bg-slate-950 text-gray-100' : 'bg-white text-gray-900'
-    )}>
+    <div
+      className={cn(
+        "font-comes flex min-h-screen flex-col transition-colors duration-300",
+        isDark ? "bg-slate-950 text-gray-100" : "bg-white text-gray-900",
+      )}
+    >
       <Navbar />
       <main className="flex-1 pt-16 md:pt-20">
-        <div className={cn(
-          'min-h-screen pt-8 pb-12',
-          isDark ? 'bg-slate-950' : 'bg-gray-50'
-        )}>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={cn("min-h-screen pt-8 pb-12", isDark ? "bg-slate-950" : "bg-gray-50")}>
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
+              className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <h1 className={cn('text-3xl font-bold mb-2', isDark ? 'text-white' : 'text-gray-900')}>
+                <h1
+                  className={cn("mb-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}
+                >
                   My Teams
                 </h1>
-                <p className={cn('text-lg', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <p className={cn("text-lg", isDark ? "text-gray-400" : "text-gray-600")}>
                   Manage your competition teams and invitations
                 </p>
               </div>
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 className="gap-2"
                 onClick={() => setIsCreateTeamModalOpen(true)}
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="h-4 w-4" />
                 Create Team
               </Button>
             </motion.div>
 
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 className={cn('w-8 h-8 animate-spin', isDark ? 'text-gray-400' : 'text-gray-500')} />
+                <Loader2
+                  className={cn("h-8 w-8 animate-spin", isDark ? "text-gray-400" : "text-gray-500")}
+                />
               </div>
             ) : (
               <>
@@ -134,8 +137,13 @@ export const TeamsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                   >
-                    <h2 className={cn('text-xl font-semibold mb-4 flex items-center gap-2', isDark ? 'text-white' : 'text-gray-900')}>
-                      <Mail className="w-5 h-5" />
+                    <h2
+                      className={cn(
+                        "mb-4 flex items-center gap-2 text-xl font-semibold",
+                        isDark ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      <Mail className="h-5 w-5" />
                       Pending Invitations
                       <Badge variant="warning">{invitations.length}</Badge>
                     </h2>
@@ -146,21 +154,34 @@ export const TeamsPage = () => {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           className={cn(
-                            'flex items-center gap-4 p-4 rounded-xl border',
-                            isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200 shadow-sm'
+                            "flex items-center gap-4 rounded-xl border p-4",
+                            isDark
+                              ? "border-slate-800 bg-slate-900/50"
+                              : "border-gray-200 bg-white shadow-sm",
                           )}
                         >
-                          <div className={cn(
-                            'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
-                            isDark ? 'bg-amber-500/20' : 'bg-amber-100'
-                          )}>
-                            <Users className={cn('w-6 h-6', isDark ? 'text-amber-400' : 'text-amber-600')} />
+                          <div
+                            className={cn(
+                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                              isDark ? "bg-amber-500/20" : "bg-amber-100",
+                            )}
+                          >
+                            <Users
+                              className={cn(
+                                "h-6 w-6",
+                                isDark ? "text-amber-400" : "text-amber-600",
+                              )}
+                            />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={cn('font-medium', isDark ? 'text-white' : 'text-gray-900')}>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}
+                            >
                               {invitation.teamName}
                             </p>
-                            <p className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-500')}>
+                            <p
+                              className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}
+                            >
                               Invited by {invitation.leaderName}
                             </p>
                           </div>
@@ -172,7 +193,7 @@ export const TeamsPage = () => {
                               disabled={respondingTo === invitation.teamId}
                               className="gap-1"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="h-4 w-4" />
                               Decline
                             </Button>
                             <Button
@@ -183,9 +204,9 @@ export const TeamsPage = () => {
                               className="gap-1"
                             >
                               {respondingTo === invitation.teamId ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                <Check className="w-4 h-4" />
+                                <Check className="h-4 w-4" />
                               )}
                               Accept
                             </Button>
@@ -202,29 +223,46 @@ export const TeamsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h2 className={cn('text-xl font-semibold mb-4 flex items-center gap-2', isDark ? 'text-white' : 'text-gray-900')}>
-                    <Users className="w-5 h-5" />
+                  <h2
+                    className={cn(
+                      "mb-4 flex items-center gap-2 text-xl font-semibold",
+                      isDark ? "text-white" : "text-gray-900",
+                    )}
+                  >
+                    <Users className="h-5 w-5" />
                     Your Teams
                   </h2>
 
                   {teams.length === 0 ? (
-                    <div className={cn(
-                      'text-center py-16 rounded-2xl border',
-                      isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200'
-                    )}>
-                      <Users className={cn('w-16 h-16 mx-auto mb-4', isDark ? 'text-gray-600' : 'text-gray-300')} />
-                      <h3 className={cn('text-xl font-semibold mb-2', isDark ? 'text-white' : 'text-gray-900')}>
+                    <div
+                      className={cn(
+                        "rounded-2xl border py-16 text-center",
+                        isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
+                      )}
+                    >
+                      <Users
+                        className={cn(
+                          "mx-auto mb-4 h-16 w-16",
+                          isDark ? "text-gray-600" : "text-gray-300",
+                        )}
+                      />
+                      <h3
+                        className={cn(
+                          "mb-2 text-xl font-semibold",
+                          isDark ? "text-white" : "text-gray-900",
+                        )}
+                      >
                         No Teams Yet
                       </h3>
-                      <p className={cn('mb-6', isDark ? 'text-gray-400' : 'text-gray-500')}>
+                      <p className={cn("mb-6", isDark ? "text-gray-400" : "text-gray-500")}>
                         Create your first team for competitions and hackathons
                       </p>
-                      <Button 
-                        variant="primary" 
+                      <Button
+                        variant="primary"
                         className="gap-2"
                         onClick={() => setIsCreateTeamModalOpen(true)}
                       >
-                        <UserPlus className="w-4 h-4" />
+                        <UserPlus className="h-4 w-4" />
                         Create Team
                       </Button>
                     </div>
@@ -235,33 +273,50 @@ export const TeamsPage = () => {
                           key={team._id}
                           whileHover={{ y: -2 }}
                           className={cn(
-                            'p-6 rounded-2xl border transition-all',
-                            isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200 shadow-sm'
+                            "rounded-2xl border p-6 transition-all",
+                            isDark
+                              ? "border-slate-800 bg-slate-900/50"
+                              : "border-gray-200 bg-white shadow-sm",
                           )}
                         >
-                          <div className="flex items-start justify-between mb-4">
+                          <div className="mb-4 flex items-start justify-between">
                             <div>
-                              <div className="flex items-center gap-3 mb-1">
-                                <h3 className={cn('text-xl font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
+                              <div className="mb-1 flex items-center gap-3">
+                                <h3
+                                  className={cn(
+                                    "text-xl font-semibold",
+                                    isDark ? "text-white" : "text-gray-900",
+                                  )}
+                                >
                                   {team.name}
                                 </h3>
                                 {getStatusBadge(team.status)}
                               </div>
-                              <p className={cn('text-sm flex items-center gap-2', isDark ? 'text-gray-400' : 'text-gray-500')}>
-                                <Clock className="w-4 h-4" />
+                              <p
+                                className={cn(
+                                  "flex items-center gap-2 text-sm",
+                                  isDark ? "text-gray-400" : "text-gray-500",
+                                )}
+                              >
+                                <Clock className="h-4 w-4" />
                                 Created {new Date(team.createdAt).toLocaleDateString()}
                               </p>
                             </div>
                             {team.leaderId === student?._id && (
                               <Badge variant="warning" className="flex items-center gap-1">
-                                <Crown className="w-3 h-3" />
+                                <Crown className="h-3 w-3" />
                                 You're the Leader
                               </Badge>
                             )}
                           </div>
 
                           <div className="mb-4">
-                            <p className={cn('text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                            <p
+                              className={cn(
+                                "mb-2 text-sm font-medium",
+                                isDark ? "text-gray-300" : "text-gray-700",
+                              )}
+                            >
                               Team Members ({team.members.length}/5)
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -269,26 +324,44 @@ export const TeamsPage = () => {
                                 <div
                                   key={member.id}
                                   className={cn(
-                                    'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-                                    member.status === 'approved'
-                                      ? isDark ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'
-                                      : isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'
+                                    "flex items-center gap-2 rounded-lg px-3 py-1.5",
+                                    member.status === "approved"
+                                      ? isDark
+                                        ? "border border-green-500/20 bg-green-500/10"
+                                        : "border border-green-200 bg-green-50"
+                                      : isDark
+                                        ? "border border-amber-500/20 bg-amber-500/10"
+                                        : "border border-amber-200 bg-amber-50",
                                   )}
                                 >
-                                  <div className={cn(
-                                    'w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium',
-                                    isDark ? 'bg-slate-700 text-gray-300' : 'bg-gray-200 text-gray-600'
-                                  )}>
+                                  <div
+                                    className={cn(
+                                      "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
+                                      isDark
+                                        ? "bg-slate-700 text-gray-300"
+                                        : "bg-gray-200 text-gray-600",
+                                    )}
+                                  >
                                     {member.name.charAt(0).toUpperCase()}
                                   </div>
-                                  <span className={cn('text-sm', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                                  <span
+                                    className={cn(
+                                      "text-sm",
+                                      isDark ? "text-gray-300" : "text-gray-700",
+                                    )}
+                                  >
                                     {member.name}
                                   </span>
                                   {member.id === team.leaderId && (
-                                    <Crown className="w-3 h-3 text-amber-500" />
+                                    <Crown className="h-3 w-3 text-amber-500" />
                                   )}
-                                  {member.status === 'pending' && (
-                                    <span className={cn('text-xs', isDark ? 'text-amber-400' : 'text-amber-600')}>
+                                  {member.status === "pending" && (
+                                    <span
+                                      className={cn(
+                                        "text-xs",
+                                        isDark ? "text-amber-400" : "text-amber-600",
+                                      )}
+                                    >
                                       (pending)
                                     </span>
                                   )}
@@ -300,13 +373,17 @@ export const TeamsPage = () => {
                           <div className="flex items-center justify-end gap-2">
                             {team.leaderId !== student?._id && (
                               <Button variant="secondary" size="sm" className="gap-1">
-                                <LogOut className="w-4 h-4" />
+                                <LogOut className="h-4 w-4" />
                                 Leave Team
                               </Button>
                             )}
                             {team.leaderId === student?._id && (
-                              <Button variant="secondary" size="sm" className="gap-1 text-red-500 hover:text-red-600">
-                                <Trash2 className="w-4 h-4" />
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="gap-1 text-red-500 hover:text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4" />
                                 Disband Team
                               </Button>
                             )}

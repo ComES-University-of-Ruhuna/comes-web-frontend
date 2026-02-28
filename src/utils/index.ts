@@ -6,22 +6,19 @@
  * Combines class names, filtering out falsy values
  */
 export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 /**
  * Format date to readable string
  */
-export function formatDate(
-  date: string | Date,
-  options?: Intl.DateTimeFormatOptions
-): string {
+export function formatDate(date: string | Date, options?: Intl.DateTimeFormatOptions): string {
   const defaultOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   };
-  return new Date(date).toLocaleDateString('en-US', options || defaultOptions);
+  return new Date(date).toLocaleDateString("en-US", options || defaultOptions);
 }
 
 /**
@@ -33,23 +30,23 @@ export function formatRelativeTime(date: string | Date): string {
   const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
 
   const intervals = [
-    { label: 'year', seconds: 31536000 },
-    { label: 'month', seconds: 2592000 },
-    { label: 'week', seconds: 604800 },
-    { label: 'day', seconds: 86400 },
-    { label: 'hour', seconds: 3600 },
-    { label: 'minute', seconds: 60 },
-    { label: 'second', seconds: 1 },
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "week", seconds: 604800 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+    { label: "second", seconds: 1 },
   ];
 
   for (const interval of intervals) {
     const count = Math.floor(diffInSeconds / interval.seconds);
     if (count >= 1) {
-      return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+      return `${count} ${interval.label}${count !== 1 ? "s" : ""} ago`;
     }
   }
 
-  return 'just now';
+  return "just now";
 }
 
 /**
@@ -57,7 +54,7 @@ export function formatRelativeTime(date: string | Date): string {
  */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + '...';
+  return text.slice(0, maxLength).trim() + "...";
 }
 
 /**
@@ -66,9 +63,9 @@ export function truncateText(text: string, maxLength: number): string {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/--+/g, '-')
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-")
     .trim();
 }
 
@@ -85,7 +82,7 @@ export function calculateReadTime(content: string, wordsPerMinute = 200): number
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout>;
 
@@ -100,7 +97,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
-  limit: number
+  limit: number,
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
 
@@ -132,7 +129,7 @@ export function scrollToElement(elementId: string, offset = 0): void {
   const element = document.getElementById(elementId);
   if (element) {
     const top = element.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top, behavior: 'smooth' });
+    window.scrollTo({ top, behavior: "smooth" });
   }
 }
 
@@ -144,8 +141,7 @@ export function isInViewport(element: HTMLElement): boolean {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
@@ -161,10 +157,7 @@ export function getRandomItems<T>(array: T[], count: number): T[] {
 /**
  * Group array by key
  */
-export function groupBy<T>(
-  array: T[],
-  key: keyof T
-): Record<string, T[]> {
+export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
   return array.reduce(
     (groups, item) => {
       const groupKey = String(item[key]);
@@ -174,7 +167,7 @@ export function groupBy<T>(
       groups[groupKey].push(item);
       return groups;
     },
-    {} as Record<string, T[]>
+    {} as Record<string, T[]>,
   );
 }
 
@@ -190,7 +183,7 @@ export function isValidEmail(email: string): boolean {
  * Format number with commas
  */
 export function formatNumber(num: number): string {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 /**
@@ -198,9 +191,9 @@ export function formatNumber(num: number): string {
  */
 export function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((word) => word[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 }
@@ -210,18 +203,16 @@ export function getInitials(name: string): string {
  */
 export function generateAvatarUrl(
   name: string,
-  options?: { bg?: string; color?: string; size?: number }
+  options?: { bg?: string; color?: string; size?: number },
 ): string {
-  const { bg = '003366', color = 'fff', size = 128 } = options || {};
+  const { bg = "003366", color = "fff", size = 128 } = options || {};
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=${color}&size=${size}&bold=true`;
 }
 
 /**
  * Parse query string to object
  */
-export function parseQueryString(
-  queryString: string
-): Record<string, string> {
+export function parseQueryString(queryString: string): Record<string, string> {
   const params = new URLSearchParams(queryString);
   const result: Record<string, string> = {};
   params.forEach((value, key) => {
@@ -237,7 +228,7 @@ export function toQueryString(params: Record<string, string | number | boolean>)
   return Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-    .join('&');
+    .join("&");
 }
 
 /**
@@ -251,7 +242,7 @@ export function sleep(ms: number): Promise<void> {
  * Check if user prefers reduced motion
  */
 export function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 /**
@@ -265,5 +256,5 @@ export function isMobile(): boolean {
  * Check if device supports touch
  */
 export function isTouchDevice(): boolean {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
 }
