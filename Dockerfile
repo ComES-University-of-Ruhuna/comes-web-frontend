@@ -46,8 +46,4 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Dokploy / most reverse proxies expect the container to listen on 80
 EXPOSE 80
 
-# Healthcheck so Dokploy can detect when the container is ready
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost/ || exit 1
-
 CMD ["nginx", "-g", "daemon off;"]
