@@ -19,7 +19,7 @@ import {
 import { useThemeStore, toast } from "@/store";
 import { cn } from "@/utils";
 import { Button, Input } from "@/components/ui";
-import { validateRegistrationNo, extractBatchFromRegNo } from "@/services/student.service";
+import { validateRegistrationNo, extractBatchFromRegNo, studentService } from "@/services/student.service";
 
 interface FormData {
   name: string;
@@ -143,26 +143,14 @@ export const StudentRegisterPage = () => {
     setErrors({});
 
     try {
-      // Call register API without storing tokens (we'll require manual login)
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}/students/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            email: formData.email.toLowerCase().trim(),
-            registrationNo: formData.registrationNo,
-            contactNo: formData.contactNo || undefined,
-            password: formData.password,
-            passwordConfirm: formData.passwordConfirm,
-          }),
-        },
-      );
-
-      const data = await response.json();
+      const data = await studentService.register({
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        registrationNo: formData.registrationNo,
+        contactNo: formData.contactNo || undefined,
+        password: formData.password,
+        passwordConfirm: formData.passwordConfirm,
+      });
 
       if (data.success) {
         setIsSuccess(true);
