@@ -81,6 +81,7 @@ const NetworkSecurityPage = () => {
         <SectionHeader
           title="Focus Areas"
           subtitle="Our areas of expertise in network and cybersecurity"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {focusAreas.map((area, index) => (
@@ -117,6 +118,7 @@ const NetworkSecurityPage = () => {
         <SectionHeader
           title="Our Activities"
           subtitle="Building cybersecurity skills through practical experience"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <FadeInView>

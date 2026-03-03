@@ -59,7 +59,10 @@ const ContactInfoCard = ({
         <Card
           hoverable
           padding="lg"
-          className={cn("h-full text-center", isDark && "border-slate-700/50 bg-slate-800/50")}
+          className={cn(
+            "flex h-full min-h-[200px] flex-col items-center justify-center text-center",
+            isDark && "border-slate-700/50 bg-slate-800/50",
+          )}
         >
           <motion.div
             className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
@@ -71,7 +74,7 @@ const ContactInfoCard = ({
             {title}
           </h3>
           {details.map((detail, idx) => (
-            <p key={idx} className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p key={idx} className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-600")}>
               {detail}
             </p>
           ))}
@@ -290,7 +293,7 @@ const ContactHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >

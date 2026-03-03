@@ -137,7 +137,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className={cn(
-                "mb-10 max-w-2xl text-lg leading-relaxed md:text-xl",
+                "mb-10 max-w-2xl text-justify text-lg leading-relaxed md:text-xl",
                 isDark ? "text-gray-400" : "text-gray-600",
                 "mx-auto lg:mx-0",
               )}
@@ -165,7 +165,14 @@ const HeroSection = () => {
                 </Button>
               </HoverScale>
               <HoverScale>
-                <Button href="/about" variant="outline" size="lg">
+                <Button
+                  href="/about"
+                  variant="outline"
+                  size="lg"
+                  className={cn(
+                    isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+                  )}
+                >
                   Learn More
                 </Button>
               </HoverScale>
@@ -282,8 +289,8 @@ const AboutPreviewSection = () => {
           </h2>
           <p
             className={cn(
-              "mb-6 text-lg leading-relaxed",
-              isDark ? "text-gray-400" : "text-gray-600",
+              "mb-6 text-lg leading-relaxed font-medium",
+              isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
             ComES is dedicated to creating an environment where students can thrive, innovate, and
@@ -293,14 +300,21 @@ const AboutPreviewSection = () => {
           </p>
           <p
             className={cn(
-              "mb-8 text-lg leading-relaxed",
-              isDark ? "text-gray-400" : "text-gray-600",
+              "mb-8 text-lg leading-relaxed font-medium",
+              isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
             Join our community of passionate learners and future tech leaders.
           </p>
           <HoverScale>
-            <Button href="/about" variant="outline" icon={<ArrowRight className="h-4 w-4" />}>
+            <Button
+              href="/about"
+              variant="outline"
+              icon={<ArrowRight className="h-4 w-4" />}
+              className={cn(
+                isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+              )}
+            >
               Discover Our Story
             </Button>
           </HoverScale>
@@ -346,11 +360,12 @@ const EventsPreviewSection = () => {
   const featuredEvents = getFeaturedEvents(3);
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "white"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="Upcoming Events"
           subtitle="Join us for exciting events that foster learning, innovation, and community building."
+          light={isDark}
         />
       </FadeInView>
 
@@ -361,7 +376,7 @@ const EventsPreviewSection = () => {
               <Card
                 hoverable
                 padding="none"
-                className={cn(isDark && "border-slate-700 bg-slate-800")}
+                className={cn("flex h-full flex-col", isDark && "border-slate-700 bg-slate-800")}
               >
                 <div
                   className={`bg-gradient-to-r ${event.color} relative overflow-hidden p-6 text-white`}
@@ -387,7 +402,7 @@ const EventsPreviewSection = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="flex flex-1 flex-col p-6">
                   <p
                     className={cn("mb-4 line-clamp-2", isDark ? "text-gray-400" : "text-gray-600")}
                   >
@@ -411,7 +426,7 @@ const EventsPreviewSection = () => {
                       />
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full" href="/events">
                     Register Now
                   </Button>
                 </div>
@@ -439,7 +454,7 @@ const ProjectsPreviewSection = () => {
   const featuredProjects = getFeaturedProjects(4);
 
   return (
-    <Section background={isDark ? "dark" : "white"}>
+    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
       <FadeInView>
         <SectionHeader
           title="Our Projects"
@@ -473,15 +488,8 @@ const ProjectsPreviewSection = () => {
                       {project.category}
                     </Badge>
                   </div>
-                  <h3
-                    className={cn(
-                      "mb-2 text-xl font-bold",
-                      isDark ? "text-white" : "text-comesBlue",
-                    )}
-                  >
-                    {project.title}
-                  </h3>
-                  <p className={cn("mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+                  <h3 className="mb-2 text-xl font-bold text-white">{project.title}</h3>
+                  <p className={cn("mb-4", isDark ? "text-gray-300" : "text-blue-100")}>
                     {project.shortDescription}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -490,7 +498,7 @@ const ProjectsPreviewSection = () => {
                         key={tech}
                         className={cn(
                           "rounded-lg px-2 py-1 text-xs",
-                          isDark ? "bg-slate-700 text-gray-300" : "bg-gray-100 text-gray-600",
+                          isDark ? "bg-slate-700 text-gray-300" : "bg-white/20 text-blue-100",
                         )}
                       >
                         {tech}
@@ -535,7 +543,7 @@ const TestimonialsSection = () => {
             <motion.div
               whileHover={{ y: -10, scale: 1.02 }}
               className={cn(
-                "rounded-2xl border p-6 backdrop-blur-sm transition-all",
+                "flex h-full flex-col rounded-2xl border p-6 backdrop-blur-sm transition-all",
                 isDark ? "border-slate-700/50 bg-slate-800/50" : "border-white/10 bg-white/10",
               )}
             >
@@ -561,7 +569,7 @@ const TestimonialsSection = () => {
                   <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <p className={cn("italic", isDark ? "text-gray-300" : "text-blue-100")}>
+              <p className={cn("flex-1 italic", isDark ? "text-gray-300" : "text-blue-100")}>
                 "{testimonial.quote}"
               </p>
             </motion.div>
@@ -585,18 +593,6 @@ const CTASection = () => {
     >
       <FadeInView direction="up">
         <div className="relative text-center">
-          {/* Decorative elements */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-0 left-1/4 h-20 w-20 rounded-full border border-dashed border-blue-300/30"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute right-1/4 bottom-0 h-16 w-16 rounded-full border border-dashed border-amber-300/30"
-          />
-
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
@@ -625,7 +621,7 @@ const CTASection = () => {
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <HoverScale>
-              <Button href="/contact" size="lg" icon={<Rocket className="h-5 w-5" />}>
+              <Button href="/register" size="lg" icon={<Rocket className="h-5 w-5" />}>
                 Get Started
               </Button>
             </HoverScale>

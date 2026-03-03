@@ -81,6 +81,7 @@ const AIDataSciencePage = () => {
         <SectionHeader
           title="Focus Areas"
           subtitle="Discover our areas of expertise in AI and data science"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {focusAreas.map((area, index) => (
@@ -119,6 +120,7 @@ const AIDataSciencePage = () => {
         <SectionHeader
           title="Our Activities"
           subtitle="How we nurture AI and data science skills"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <FadeInView>
