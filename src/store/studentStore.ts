@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { studentService, type Student, type StudentRegisterData } from '@/services/student.service';
-import { setStudentAccessToken } from '@/services/api';
+import { setStudentAccessToken } from '@/services/student.service';
 
 interface StudentState {
   student: Student | null;
@@ -33,27 +33,18 @@ export const useStudentStore = create<StudentState>()(
       login: async (credentials) => {
         set({ isLoading: true, error: null });
         try {
-          // Use the student login endpoint
-          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/students/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials),
-          });
+          const response = await studentService.login(credentials);
           
-          const data = await response.json();
-          
-          if (data.success && data.data) {
-            setStudentAccessToken(data.data.accessToken);
-            localStorage.setItem('studentRefreshToken', data.data.refreshToken);
+          if (response.success && response.data) {
             set({
-              student: data.data.student,
+              student: response.data.student,
               isAuthenticated: true,
               isLoading: false,
             });
             return true;
           }
           
-          set({ isLoading: false, error: data.message || 'Login failed' });
+          set({ isLoading: false, error: response.message || 'Login failed' });
           return false;
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Login failed';
