@@ -56,11 +56,22 @@ import {
 initializeTheme();
 initializeCookies();
 
+// Scroll to top on route change
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 // Animated Routes Component
 const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
+    <>
+      <ScrollToTop />
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
@@ -133,6 +144,7 @@ const AnimatedRoutes = () => {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
+    </>
   );
 };
 

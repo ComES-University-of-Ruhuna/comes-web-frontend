@@ -81,6 +81,7 @@ const EmbeddedElectronicsPage = () => {
         <SectionHeader
           title="Focus Areas"
           subtitle="Explore our expertise in embedded systems and electronics"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {focusAreas.map((area, index) => (
@@ -119,6 +120,7 @@ const EmbeddedElectronicsPage = () => {
         <SectionHeader
           title="Our Activities"
           subtitle="Hands-on learning in embedded systems and electronics"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <FadeInView>

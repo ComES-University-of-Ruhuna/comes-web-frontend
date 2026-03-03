@@ -81,7 +81,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
               <span className="text-sm">{event.location}</span>
             </div>
 
-            <p className={cn("mb-4 flex-1", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p className={cn("mb-4 flex-1 line-clamp-3", isDark ? "text-gray-400" : "text-gray-600")}>
               {event.description}
             </p>
 
@@ -210,7 +210,7 @@ const EventsHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
@@ -277,6 +277,7 @@ const UpcomingEventsSection = () => {
         <SectionHeader
           title="Upcoming Events"
           subtitle="Don't miss out on these exciting opportunities to learn and connect."
+          light={isDark}
         />
       </FadeInView>
 
@@ -317,11 +318,12 @@ const PastEventsSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="Past Events"
           subtitle="A look back at our previous events and achievements."
+          light={false}
         />
       </FadeInView>
 
@@ -428,6 +430,7 @@ export const EventsPage = () => {
       <NewsletterSection
         title="Stay Updated"
         description="Subscribe to our newsletter and be the first to know about new events and opportunities."
+        compact
       />
       <CTASection />
     </PageTransition>

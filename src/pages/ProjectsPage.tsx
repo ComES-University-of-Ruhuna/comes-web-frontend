@@ -70,7 +70,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
             <h3 className={cn("mb-3 text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
               {project.title}
             </h3>
-            <p className={cn("mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p className={cn("mb-4 line-clamp-3", isDark ? "text-gray-400" : "text-gray-600")}>
               {project.shortDescription}
             </p>
 
@@ -210,7 +210,7 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
               <Badge variant={project.status === "Completed" ? "success" : "info"} size="sm">
                 {project.status}
               </Badge>
-              <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
+              <span className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-500")}>
                 {project.category}
               </span>
             </div>
@@ -274,7 +274,7 @@ const ProjectsHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
@@ -338,6 +338,7 @@ const FeaturedProjectsSection = () => {
         <SectionHeader
           title="Featured Projects"
           subtitle="Highlighted projects showcasing our community's best work."
+          light={isDark}
         />
       </FadeInView>
 
@@ -360,9 +361,9 @@ const AllProjectsSection = () => {
     activeCategory === "All" ? projects : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
-        <SectionHeader title="All Projects" subtitle="Browse through all our community projects." />
+        <SectionHeader title="All Projects" subtitle="Browse through all our community projects." light={isDark} />
       </FadeInView>
 
       {/* Category Filter */}
