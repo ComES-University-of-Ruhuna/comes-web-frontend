@@ -2,8 +2,8 @@
 // ComES Website - Admin Members Management Page
 // ============================================
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Trash2,
@@ -16,11 +16,11 @@ import {
   User,
   Send,
   Users,
-} from 'lucide-react';
-import { useThemeStore } from '@/store';
-import { cn } from '@/utils';
-import { Button } from '@/components/ui';
-import api from '@/services/api';
+} from "lucide-react";
+import { useThemeStore } from "@/store";
+import { cn } from "@/utils";
+import { Button } from "@/components/ui";
+import api from "@/services/api";
 
 interface Student {
   _id: string;
@@ -54,9 +54,15 @@ interface BroadcastModalProps {
   onSend: (subject: string, message: string) => Promise<void>;
 }
 
-const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onSend }: BroadcastModalProps) => {
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+const BroadcastNotificationModal = ({
+  isOpen,
+  onClose,
+  isDark,
+  totalMembers,
+  onSend,
+}: BroadcastModalProps) => {
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [confirmStep, setConfirmStep] = useState(false);
 
@@ -66,12 +72,12 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
       return;
     }
     if (!subject.trim() || !message.trim()) return;
-    
+
     setSending(true);
     try {
       await onSend(subject, message);
-      setSubject('');
-      setMessage('');
+      setSubject("");
+      setMessage("");
       setConfirmStep(false);
       onClose();
     } finally {
@@ -88,54 +94,68 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           className={cn(
-            'w-full max-w-lg rounded-2xl p-6',
-            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-2xl'
+            "w-full max-w-lg rounded-2xl p-6",
+            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-2xl",
           )}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
               Broadcast Notification
             </h3>
             <button
               onClick={handleClose}
               className={cn(
-                'p-2 rounded-lg transition-colors',
-                isDark ? 'hover:bg-slate-800 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                "rounded-lg p-2 transition-colors",
+                isDark ? "text-gray-400 hover:bg-slate-800" : "text-gray-600 hover:bg-gray-100",
               )}
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          <div className={cn(
-            'flex items-center gap-3 p-3 mb-4 rounded-lg',
-            isDark ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
-          )}>
-            <Users className="w-5 h-5 text-blue-500" />
-            <p className={cn('text-sm font-medium', isDark ? 'text-blue-300' : 'text-blue-700')}>
-              This notification will be sent to all <strong>{totalMembers}</strong> registered members via email.
+          <div
+            className={cn(
+              "mb-4 flex items-center gap-3 rounded-lg p-3",
+              isDark
+                ? "border border-blue-500/20 bg-blue-500/10"
+                : "border border-blue-100 bg-blue-50",
+            )}
+          >
+            <Users className="h-5 w-5 text-blue-500" />
+            <p className={cn("text-sm font-medium", isDark ? "text-blue-300" : "text-blue-700")}>
+              This notification will be sent to all <strong>{totalMembers}</strong> registered
+              members via email.
             </p>
           </div>
 
           {confirmStep ? (
             <div className="space-y-4">
-              <div className={cn(
-                'p-4 rounded-lg border',
-                isDark ? 'bg-yellow-500/10 border-yellow-500/20' : 'bg-yellow-50 border-yellow-200'
-              )}>
-                <p className={cn('text-sm font-medium mb-2', isDark ? 'text-yellow-300' : 'text-yellow-800')}>
+              <div
+                className={cn(
+                  "rounded-lg border p-4",
+                  isDark
+                    ? "border-yellow-500/20 bg-yellow-500/10"
+                    : "border-yellow-200 bg-yellow-50",
+                )}
+              >
+                <p
+                  className={cn(
+                    "mb-2 text-sm font-medium",
+                    isDark ? "text-yellow-300" : "text-yellow-800",
+                  )}
+                >
                   Are you sure you want to send this notification?
                 </p>
-                <p className={cn('text-sm', isDark ? 'text-yellow-400' : 'text-yellow-700')}>
+                <p className={cn("text-sm", isDark ? "text-yellow-400" : "text-yellow-700")}>
                   <strong>Subject:</strong> {subject}
                 </p>
-                <p className={cn('text-sm mt-1', isDark ? 'text-yellow-400' : 'text-yellow-700')}>
+                <p className={cn("mt-1 text-sm", isDark ? "text-yellow-400" : "text-yellow-700")}>
                   <strong>Recipients:</strong> {totalMembers} members
                 </p>
               </div>
@@ -148,19 +168,15 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
                 >
                   Go Back
                 </Button>
-                <Button
-                  onClick={handleSend}
-                  disabled={sending}
-                  className="flex-1"
-                >
+                <Button onClick={handleSend} disabled={sending} className="flex-1">
                   {sending ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                       <span>Sending...</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <Send className="w-4 h-4" />
+                      <Send className="h-4 w-4" />
                       <span>Confirm & Send</span>
                     </div>
                   )}
@@ -171,7 +187,12 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
             <>
               <div className="space-y-4">
                 <div>
-                  <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                  <label
+                    className={cn(
+                      "mb-2 block text-sm font-medium",
+                      isDark ? "text-gray-300" : "text-gray-700",
+                    )}
+                  >
                     Subject
                   </label>
                   <input
@@ -179,17 +200,22 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     className={cn(
-                      'w-full px-4 py-2 rounded-lg border transition-colors',
+                      "w-full rounded-lg border px-4 py-2 transition-colors",
                       isDark
-                        ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                        : "border-gray-300 bg-white text-gray-900 placeholder-gray-400",
                     )}
                     placeholder="e.g., Upcoming Event Announcement"
                   />
                 </div>
 
                 <div>
-                  <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                  <label
+                    className={cn(
+                      "mb-2 block text-sm font-medium",
+                      isDark ? "text-gray-300" : "text-gray-700",
+                    )}
+                  >
                     Message
                   </label>
                   <textarea
@@ -197,22 +223,18 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
                     onChange={(e) => setMessage(e.target.value)}
                     rows={6}
                     className={cn(
-                      'w-full px-4 py-2 rounded-lg border transition-colors resize-none',
+                      "w-full resize-none rounded-lg border px-4 py-2 transition-colors",
                       isDark
-                        ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                        ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                        : "border-gray-300 bg-white text-gray-900 placeholder-gray-400",
                     )}
                     placeholder="Enter the notification message for all members..."
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={handleClose}
-                  className="flex-1"
-                >
+              <div className="mt-6 flex gap-3">
+                <Button variant="outline" onClick={handleClose} className="flex-1">
                   Cancel
                 </Button>
                 <Button
@@ -221,7 +243,7 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
                   className="flex-1"
                 >
                   <div className="flex items-center gap-2">
-                    <Send className="w-4 h-4" />
+                    <Send className="h-4 w-4" />
                     <span>Review & Send</span>
                   </div>
                 </Button>
@@ -234,19 +256,25 @@ const BroadcastNotificationModal = ({ isOpen, onClose, isDark, totalMembers, onS
   );
 };
 
-const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: NotificationModalProps) => {
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+const NotificationModal = ({
+  isOpen,
+  onClose,
+  student,
+  isDark,
+  onSend,
+}: NotificationModalProps) => {
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
 
   const handleSend = async () => {
     if (!subject.trim() || !message.trim()) return;
-    
+
     setSending(true);
     try {
       await onSend(subject, message);
-      setSubject('');
-      setMessage('');
+      setSubject("");
+      setMessage("");
       onClose();
     } finally {
       setSending(false);
@@ -257,44 +285,46 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           className={cn(
-            'w-full max-w-lg rounded-2xl p-6',
-            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-2xl'
+            "w-full max-w-lg rounded-2xl p-6",
+            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-2xl",
           )}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
               Send Notification
             </h3>
             <button
               onClick={onClose}
               className={cn(
-                'p-2 rounded-lg transition-colors',
-                isDark ? 'hover:bg-slate-800 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                "rounded-lg p-2 transition-colors",
+                isDark ? "text-gray-400 hover:bg-slate-800" : "text-gray-600 hover:bg-gray-100",
               )}
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
           {student && (
-            <div className={cn(
-              'flex items-center gap-3 p-3 mb-4 rounded-lg',
-              isDark ? 'bg-slate-800' : 'bg-gray-50'
-            )}>
-              <div className="flex items-center justify-center w-10 h-10 font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-cyan-500">
+            <div
+              className={cn(
+                "mb-4 flex items-center gap-3 rounded-lg p-3",
+                isDark ? "bg-slate-800" : "bg-gray-50",
+              )}
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 font-bold text-white">
                 {student.name.charAt(0)}
               </div>
               <div>
-                <p className={cn('font-medium', isDark ? 'text-white' : 'text-gray-900')}>
+                <p className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
                   {student.name}
                 </p>
-                <p className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                   {student.email}
                 </p>
               </div>
@@ -303,7 +333,12 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
 
           <div className="space-y-4">
             <div>
-              <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Subject
               </label>
               <input
@@ -311,17 +346,22 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 className={cn(
-                  'w-full px-4 py-2 rounded-lg border transition-colors',
+                  "w-full rounded-lg border px-4 py-2 transition-colors",
                   isDark
-                    ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-400",
                 )}
                 placeholder="Enter notification subject"
               />
             </div>
 
             <div>
-              <label className={cn('block mb-2 text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Message
               </label>
               <textarea
@@ -329,23 +369,18 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
                 onChange={(e) => setMessage(e.target.value)}
                 rows={5}
                 className={cn(
-                  'w-full px-4 py-2 rounded-lg border transition-colors resize-none',
+                  "w-full resize-none rounded-lg border px-4 py-2 transition-colors",
                   isDark
-                    ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-400",
                 )}
                 placeholder="Enter notification message"
               />
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={sending}
-              className="flex-1"
-            >
+          <div className="mt-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} disabled={sending} className="flex-1">
               Cancel
             </Button>
             <Button
@@ -355,12 +390,12 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
             >
               {sending ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                   <span>Sending...</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4" />
+                  <Bell className="h-4 w-4" />
                   <span>Send Notification</span>
                 </div>
               )}
@@ -375,18 +410,21 @@ const NotificationModal = ({ isOpen, onClose, student, isDark, onSend }: Notific
 export const MembersManagementPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [notificationModal, setNotificationModal] = useState<{ isOpen: boolean; student: Student | null }>({
+  const [notificationModal, setNotificationModal] = useState<{
+    isOpen: boolean;
+    student: Student | null;
+  }>({
     isOpen: false,
     student: null,
   });
   const [broadcastModal, setBroadcastModal] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [filterVerified, setFilterVerified] = useState<'all' | 'verified' | 'unverified'>('all');
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [filterVerified, setFilterVerified] = useState<"all" | "verified" | "unverified">("all");
   const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === 'dark';
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     fetchStudents();
@@ -399,11 +437,11 @@ export const MembersManagementPage = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/students');
+      const response = await api.get("/students");
       setStudents(response.data.data.students || []);
     } catch (error) {
-      showToast('error', 'Failed to fetch students');
-      console.error('Error fetching students:', error);
+      showToast("error", "Failed to fetch students");
+      console.error("Error fetching students:", error);
     } finally {
       setLoading(false);
     }
@@ -413,9 +451,9 @@ export const MembersManagementPage = () => {
     let filtered = students;
 
     // Filter by verification status
-    if (filterVerified === 'verified') {
+    if (filterVerified === "verified") {
       filtered = filtered.filter((s) => s.isEmailVerified);
-    } else if (filterVerified === 'unverified') {
+    } else if (filterVerified === "unverified") {
       filtered = filtered.filter((s) => !s.isEmailVerified);
     }
 
@@ -427,7 +465,7 @@ export const MembersManagementPage = () => {
           s.name.toLowerCase().includes(query) ||
           s.email.toLowerCase().includes(query) ||
           s.registrationNo.toLowerCase().includes(query) ||
-          s.username.toLowerCase().includes(query)
+          s.username.toLowerCase().includes(query),
       );
     }
 
@@ -443,10 +481,10 @@ export const MembersManagementPage = () => {
       setDeleteLoading(studentId);
       await api.delete(`/students/${studentId}`);
       setStudents(students.filter((s) => s._id !== studentId));
-      showToast('success', `Successfully deleted ${studentName}`);
+      showToast("success", `Successfully deleted ${studentName}`);
     } catch (error) {
-      showToast('error', 'Failed to delete student');
-      console.error('Error deleting student:', error);
+      showToast("error", "Failed to delete student");
+      console.error("Error deleting student:", error);
     } finally {
       setDeleteLoading(null);
     }
@@ -456,57 +494,65 @@ export const MembersManagementPage = () => {
     if (!notificationModal.student) return;
 
     try {
-      await api.post('/students/notify', {
+      await api.post("/students/notify", {
         studentId: notificationModal.student._id,
         subject,
         message,
       });
-      showToast('success', `Notification sent to ${notificationModal.student.name}`);
+      showToast("success", `Notification sent to ${notificationModal.student.name}`);
     } catch (error) {
-      showToast('error', 'Failed to send notification');
-      console.error('Error sending notification:', error);
+      showToast("error", "Failed to send notification");
+      console.error("Error sending notification:", error);
     }
   };
 
   const handleBroadcastNotification = async (subject: string, message: string) => {
     try {
-      const response = await api.post('/students/notify-all', { subject, message });
+      const response = await api.post("/students/notify-all", { subject, message });
       const sentCount = response.data.data?.sentCount || students.length;
-      showToast('success', `Notification sent to ${sentCount} members`);
+      showToast("success", `Notification sent to ${sentCount} members`);
     } catch (error) {
-      showToast('error', 'Failed to send broadcast notification');
-      console.error('Error sending broadcast notification:', error);
+      showToast("error", "Failed to send broadcast notification");
+      console.error("Error sending broadcast notification:", error);
     }
   };
 
-  const showToast = (type: 'success' | 'error', message: string) => {
+  const showToast = (type: "success" | "error", message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3000);
   };
 
   const exportToCSV = () => {
-    const headers = ['Name', 'Email', 'Registration No', 'Username', 'Email Verified', 'Events Count', 'Created At'];
+    const headers = [
+      "Name",
+      "Email",
+      "Registration No",
+      "Username",
+      "Email Verified",
+      "Events Count",
+      "Created At",
+    ];
     const rows = filteredStudents.map((s) => [
       s.name,
       s.email,
       s.registrationNo,
       s.username,
-      s.isEmailVerified ? 'Yes' : 'No',
+      s.isEmailVerified ? "Yes" : "No",
       s.registeredEvents?.length || 0,
       new Date(s.createdAt).toLocaleDateString(),
     ]);
 
-    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const csvContent = [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `members-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `members-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
@@ -518,16 +564,14 @@ export const MembersManagementPage = () => {
           >
             <div
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg',
-                toast.type === 'success'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-red-500 text-white'
+                "flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg",
+                toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white",
               )}
             >
-              {toast.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5" />
+              {toast.type === "success" ? (
+                <CheckCircle2 className="h-5 w-5" />
               ) : (
-                <AlertCircle className="w-5 h-5" />
+                <AlertCircle className="h-5 w-5" />
               )}
               <p className="font-medium">{toast.message}</p>
             </div>
@@ -556,10 +600,10 @@ export const MembersManagementPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={cn('text-2xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+          <h1 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
             Members Management
           </h1>
-          <p className={cn('mt-1 text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+          <p className={cn("mt-1 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
             Manage student accounts, send notifications, and view member details
           </p>
         </div>
@@ -571,21 +615,21 @@ export const MembersManagementPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className={cn(
-            'p-6 rounded-xl',
-            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-sm'
+            "rounded-xl p-6",
+            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-sm",
           )}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className={cn('text-sm font-medium', isDark ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn("text-sm font-medium", isDark ? "text-gray-400" : "text-gray-600")}>
                 Total Members
               </p>
-              <p className={cn('mt-2 text-3xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+              <p className={cn("mt-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
                 {students.length}
               </p>
             </div>
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-500/10">
-              <User className="w-6 h-6 text-blue-500" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
+              <User className="h-6 w-6 text-blue-500" />
             </div>
           </div>
         </motion.div>
@@ -595,21 +639,21 @@ export const MembersManagementPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className={cn(
-            'p-6 rounded-xl',
-            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-sm'
+            "rounded-xl p-6",
+            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-sm",
           )}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className={cn('text-sm font-medium', isDark ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn("text-sm font-medium", isDark ? "text-gray-400" : "text-gray-600")}>
                 Verified Accounts
               </p>
-              <p className={cn('mt-2 text-3xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+              <p className={cn("mt-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
                 {students.filter((s) => s.isEmailVerified).length}
               </p>
             </div>
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-green-500/10">
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
+              <CheckCircle2 className="h-6 w-6 text-green-500" />
             </div>
           </div>
         </motion.div>
@@ -619,47 +663,51 @@ export const MembersManagementPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={cn(
-            'p-6 rounded-xl',
-            isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-sm'
+            "rounded-xl p-6",
+            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-sm",
           )}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className={cn('text-sm font-medium', isDark ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn("text-sm font-medium", isDark ? "text-gray-400" : "text-gray-600")}>
                 Pending Verification
               </p>
-              <p className={cn('mt-2 text-3xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+              <p className={cn("mt-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
                 {students.filter((s) => !s.isEmailVerified).length}
               </p>
             </div>
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-yellow-500/10">
-              <AlertCircle className="w-6 h-6 text-yellow-500" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-500/10">
+              <AlertCircle className="h-6 w-6 text-yellow-500" />
             </div>
           </div>
         </motion.div>
       </div>
 
       {/* Filters and Search */}
-      <div className={cn(
-        'p-4 rounded-xl',
-        isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-sm'
-      )}>
+      <div
+        className={cn(
+          "rounded-xl p-4",
+          isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-sm",
+        )}
+      >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative flex-1">
-            <Search className={cn(
-              'absolute w-5 h-5 -translate-y-1/2 left-3 top-1/2',
-              isDark ? 'text-gray-500' : 'text-gray-400'
-            )} />
+            <Search
+              className={cn(
+                "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                isDark ? "text-gray-500" : "text-gray-400",
+              )}
+            />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, email, registration no, or username..."
               className={cn(
-                'w-full py-2 pl-10 pr-4 border rounded-lg transition-colors',
+                "w-full rounded-lg border py-2 pr-4 pl-10 transition-colors",
                 isDark
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                  : "border-gray-300 bg-white text-gray-900 placeholder-gray-400",
               )}
             />
           </div>
@@ -669,10 +717,10 @@ export const MembersManagementPage = () => {
               value={filterVerified}
               onChange={(e) => setFilterVerified(e.target.value as any)}
               className={cn(
-                'px-4 py-2 border rounded-lg transition-colors',
+                "rounded-lg border px-4 py-2 transition-colors",
                 isDark
-                  ? 'bg-slate-800 border-slate-700 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
+                  ? "border-slate-700 bg-slate-800 text-white"
+                  : "border-gray-300 bg-white text-gray-900",
               )}
             >
               <option value="all">All Members</option>
@@ -681,12 +729,12 @@ export const MembersManagementPage = () => {
             </select>
 
             <Button onClick={() => setBroadcastModal(true)}>
-              <Send className="w-4 h-4 mr-2" />
+              <Send className="mr-2 h-4 w-4" />
               Notify All
             </Button>
 
             <Button variant="outline" onClick={exportToCSV}>
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
           </div>
@@ -694,83 +742,129 @@ export const MembersManagementPage = () => {
       </div>
 
       {/* Members Table */}
-      <div className={cn(
-        'overflow-hidden rounded-xl',
-        isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white shadow-sm'
-      )}>
+      <div
+        className={cn(
+          "overflow-hidden rounded-xl",
+          isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-sm",
+        )}
+      >
         {loading ? (
           <div className="flex items-center justify-center p-12">
-            <div className="w-8 h-8 border-4 rounded-full border-blue-500/30 border-t-blue-500 animate-spin" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500/30 border-t-blue-500" />
           </div>
         ) : filteredStudents.length === 0 ? (
           <div className="p-12 text-center">
-            <User className={cn('w-12 h-12 mx-auto mb-4', isDark ? 'text-gray-600' : 'text-gray-400')} />
-            <p className={cn('text-lg font-medium', isDark ? 'text-gray-400' : 'text-gray-600')}>
+            <User
+              className={cn("mx-auto mb-4 h-12 w-12", isDark ? "text-gray-600" : "text-gray-400")}
+            />
+            <p className={cn("text-lg font-medium", isDark ? "text-gray-400" : "text-gray-600")}>
               No members found
             </p>
-            <p className={cn('mt-1 text-sm', isDark ? 'text-gray-500' : 'text-gray-500')}>
-              {searchQuery ? 'Try adjusting your search query' : 'No students have registered yet'}
+            <p className={cn("mt-1 text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+              {searchQuery ? "Try adjusting your search query" : "No students have registered yet"}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className={cn(
-                'border-b',
-                isDark ? 'border-slate-800 bg-slate-800/50' : 'border-gray-200 bg-gray-50'
-              )}>
+              <thead
+                className={cn(
+                  "border-b",
+                  isDark ? "border-slate-800 bg-slate-800/50" : "border-gray-200 bg-gray-50",
+                )}
+              >
                 <tr>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Member
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Registration No
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Username
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Status
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Events
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-left uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-left text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Joined
                   </th>
-                  <th className={cn('px-6 py-3 text-xs font-medium tracking-wider text-right uppercase', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <th
+                    className={cn(
+                      "px-6 py-3 text-right text-xs font-medium tracking-wider uppercase",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className={cn('divide-y', isDark ? 'divide-slate-800' : 'divide-gray-200')}>
+              <tbody className={cn("divide-y", isDark ? "divide-slate-800" : "divide-gray-200")}>
                 {filteredStudents.map((student) => (
                   <motion.tr
                     key={student._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className={cn(
-                      'transition-colors',
-                      isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
+                      "transition-colors",
+                      isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50",
                     )}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-cyan-500">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 font-bold text-white">
                           {student.name.charAt(0)}
                         </div>
                         <div>
-                          <p className={cn('font-medium', isDark ? 'text-white' : 'text-gray-900')}>
+                          <p className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
                             {student.name}
                           </p>
-                          <p className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                             {student.email}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <p className={cn('text-sm font-mono', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                      <p
+                        className={cn(
+                          "font-mono text-sm",
+                          isDark ? "text-gray-300" : "text-gray-700",
+                        )}
+                      >
                         {student.registrationNo}
                       </p>
                     </td>
@@ -780,34 +874,34 @@ export const MembersManagementPage = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          'inline-flex items-center gap-1 text-sm font-medium hover:underline',
-                          isDark ? 'text-blue-400' : 'text-blue-600'
+                          "inline-flex items-center gap-1 text-sm font-medium hover:underline",
+                          isDark ? "text-blue-400" : "text-blue-600",
                         )}
                       >
                         {student.username}
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="h-3 w-3" />
                       </a>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {student.isEmailVerified ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 rounded-full bg-green-100">
-                          <CheckCircle2 className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                          <CheckCircle2 className="h-3 w-3" />
                           Verified
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-yellow-700 rounded-full bg-yellow-100">
-                          <AlertCircle className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
+                          <AlertCircle className="h-3 w-3" />
                           Pending
                         </span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <p className={cn('text-sm', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                      <p className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
                         {student.registeredEvents?.length || 0} events
                       </p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <p className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                         {new Date(student.createdAt).toLocaleDateString()}
                       </p>
                     </td>
@@ -816,31 +910,31 @@ export const MembersManagementPage = () => {
                         <button
                           onClick={() => setNotificationModal({ isOpen: true, student })}
                           className={cn(
-                            'p-2 transition-colors rounded-lg',
+                            "rounded-lg p-2 transition-colors",
                             isDark
-                              ? 'hover:bg-slate-800 text-blue-400'
-                              : 'hover:bg-blue-50 text-blue-600'
+                              ? "text-blue-400 hover:bg-slate-800"
+                              : "text-blue-600 hover:bg-blue-50",
                           )}
                           title="Send Notification"
                         >
-                          <Bell className="w-4 h-4" />
+                          <Bell className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteStudent(student._id, student.name)}
                           disabled={deleteLoading === student._id}
                           className={cn(
-                            'p-2 transition-colors rounded-lg',
+                            "rounded-lg p-2 transition-colors",
                             isDark
-                              ? 'hover:bg-slate-800 text-red-400'
-                              : 'hover:bg-red-50 text-red-600',
-                            deleteLoading === student._id && 'opacity-50 cursor-not-allowed'
+                              ? "text-red-400 hover:bg-slate-800"
+                              : "text-red-600 hover:bg-red-50",
+                            deleteLoading === student._id && "cursor-not-allowed opacity-50",
                           )}
                           title="Delete Member"
                         >
                           {deleteLoading === student._id ? (
-                            <div className="w-4 h-4 border-2 rounded-full border-red-500/30 border-t-red-500 animate-spin" />
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500/30 border-t-red-500" />
                           ) : (
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           )}
                         </button>
                       </div>

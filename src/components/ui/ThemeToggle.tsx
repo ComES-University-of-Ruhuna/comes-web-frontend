@@ -2,38 +2,35 @@
 // ComES Website - Theme Toggle Component
 // ============================================
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Monitor } from 'lucide-react';
-import { useThemeStore } from '@/store';
-import { cn } from '@/utils';
+import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon, Monitor } from "lucide-react";
+import { useThemeStore } from "@/store";
+import { cn } from "@/utils";
 
 interface ThemeToggleProps {
   className?: string;
-  variant?: 'icon' | 'full';
+  variant?: "icon" | "full";
 }
 
-export const ThemeToggle: React.FC<ThemeToggleProps> = ({
-  className = '',
-  variant = 'icon',
-}) => {
+export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = "", variant = "icon" }) => {
   const { theme, resolvedTheme, setTheme, toggleTheme } = useThemeStore();
 
-  if (variant === 'icon') {
+  if (variant === "icon") {
     return (
       <motion.button
         onClick={toggleTheme}
         className={cn(
-          'relative p-2.5 rounded-xl transition-colors',
-          'hover:bg-gray-100 dark:hover:bg-slate-800',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500/50',
-          className
+          "relative rounded-xl p-2.5 transition-colors",
+          "hover:bg-gray-100 dark:hover:bg-slate-800",
+          "focus:ring-2 focus:ring-blue-500/50 focus:outline-none",
+          className,
         )}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+        aria-label={`Switch to ${resolvedTheme === "light" ? "dark" : "light"} mode`}
       >
         <AnimatePresence mode="wait" initial={false}>
-          {resolvedTheme === 'light' ? (
+          {resolvedTheme === "light" ? (
             <motion.div
               key="sun"
               initial={{ rotate: -90, opacity: 0 }}
@@ -41,7 +38,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <Sun className="w-5 h-5 text-amber-500" />
+              <Sun className="h-5 w-5 text-amber-500" />
             </motion.div>
           ) : (
             <motion.div
@@ -51,7 +48,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <Moon className="w-5 h-5 text-blue-400" />
+              <Moon className="h-5 w-5 text-blue-400" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -63,24 +60,24 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1 p-1 rounded-xl',
-        'bg-gray-100 dark:bg-slate-800',
-        className
+        "inline-flex items-center gap-1 rounded-xl p-1",
+        "bg-gray-100 dark:bg-slate-800",
+        className,
       )}
     >
       {[
-        { value: 'light' as const, icon: Sun, label: 'Light' },
-        { value: 'dark' as const, icon: Moon, label: 'Dark' },
-        { value: 'system' as const, icon: Monitor, label: 'System' },
+        { value: "light" as const, icon: Sun, label: "Light" },
+        { value: "dark" as const, icon: Moon, label: "Dark" },
+        { value: "system" as const, icon: Monitor, label: "System" },
       ].map(({ value, icon: Icon, label }) => (
         <motion.button
           key={value}
           onClick={() => setTheme(value)}
           className={cn(
-            'relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+            "relative rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
             theme === value
-              ? 'text-white'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              ? "text-white"
+              : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white",
           )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -89,12 +86,12 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {theme === value && (
             <motion.div
               layoutId="theme-indicator"
-              className="absolute inset-0 bg-blue-600 dark:bg-blue-500 rounded-lg"
-              transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+              className="absolute inset-0 rounded-lg bg-blue-600 dark:bg-blue-500"
+              transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
             />
           )}
           <span className="relative z-10 flex items-center gap-1.5">
-            <Icon className="w-4 h-4" />
+            <Icon className="h-4 w-4" />
             <span className="hidden sm:inline">{label}</span>
           </span>
         </motion.button>

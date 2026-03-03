@@ -2,15 +2,15 @@
 // ComES Website - Blog/News Data
 // ============================================
 
-import type { BlogPost } from '@/types';
+import type { BlogPost } from "@/types";
 
 export const blogPosts: BlogPost[] = [
   {
-    id: 'blog-1',
-    title: 'ComES Annual Hackathon 2026: Registration Now Open!',
-    slug: 'hackathon-2026-registration',
+    id: "blog-1",
+    title: "ComES Annual Hackathon 2026: Registration Now Open!",
+    slug: "hackathon-2026-registration",
     excerpt:
-      'Get ready for the biggest coding event of the year! Registration is now open for the ComES Annual Hackathon 2026.',
+      "Get ready for the biggest coding event of the year! Registration is now open for the ComES Annual Hackathon 2026.",
     content: `
       <p>We are thrilled to announce that registration for the ComES Annual Hackathon 2026 is now officially open! This year's hackathon promises to be bigger and better than ever, with exciting challenges, amazing prizes, and opportunities to network with industry professionals.</p>
       
@@ -34,23 +34,22 @@ export const blogPosts: BlogPost[] = [
       <p>Don't miss this opportunity to showcase your skills, learn new technologies, and connect with fellow developers. Register now before spots fill up!</p>
     `,
     author: {
-      name: 'Dilini Rajapaksha',
-      avatar: 'https://ui-avatars.com/api/?name=Dilini+Rajapaksha&background=003366&color=fff',
+      name: "Dilini Rajapaksha",
+      avatar: "https://ui-avatars.com/api/?name=Dilini+Rajapaksha&background=003366&color=fff",
     },
-    publishedAt: '2026-01-15',
-    category: 'Announcements',
-    tags: ['Hackathon', 'Competition', 'Registration'],
-    image:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200',
+    publishedAt: "2026-01-15",
+    category: "Announcements",
+    tags: ["Hackathon", "Competition", "Registration"],
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200",
     readTime: 3,
     featured: true,
   },
   {
-    id: 'blog-2',
-    title: 'Introducing Our New AI/ML Workshop Series',
-    slug: 'ai-ml-workshop-series',
+    id: "blog-2",
+    title: "Introducing Our New AI/ML Workshop Series",
+    slug: "ai-ml-workshop-series",
     excerpt:
-      'Learn the fundamentals of Artificial Intelligence and Machine Learning in our comprehensive workshop series starting this February.',
+      "Learn the fundamentals of Artificial Intelligence and Machine Learning in our comprehensive workshop series starting this February.",
     content: `
       <p>ComES is excited to launch a new workshop series focused on Artificial Intelligence and Machine Learning. This comprehensive program is designed for students at all levels, from beginners to advanced learners.</p>
       
@@ -76,23 +75,22 @@ export const blogPosts: BlogPost[] = [
       <p>Registration is free for all ComES members. Limited seats available!</p>
     `,
     author: {
-      name: 'Tharindu Gamage',
-      avatar: 'https://ui-avatars.com/api/?name=Tharindu+Gamage&background=003366&color=fff',
+      name: "Tharindu Gamage",
+      avatar: "https://ui-avatars.com/api/?name=Tharindu+Gamage&background=003366&color=fff",
     },
-    publishedAt: '2026-01-10',
-    category: 'Events',
-    tags: ['AI', 'Machine Learning', 'Workshop', 'Python'],
-    image:
-      'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1200',
+    publishedAt: "2026-01-10",
+    category: "Events",
+    tags: ["AI", "Machine Learning", "Workshop", "Python"],
+    image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1200",
     readTime: 4,
     featured: true,
   },
   {
-    id: 'blog-3',
-    title: 'ComES Team Wins National Coding Competition',
-    slug: 'national-coding-competition-win',
+    id: "blog-3",
+    title: "ComES Team Wins National Coding Competition",
+    slug: "national-coding-competition-win",
     excerpt:
-      'Our team secured first place at the National Coding Championship 2025, competing against 50+ universities.',
+      "Our team secured first place at the National Coding Championship 2025, competing against 50+ universities.",
     content: `
       <p>We are proud to announce that the ComES competitive programming team has won first place at the National Coding Championship 2025! Our team competed against over 50 universities from across Sri Lanka in this prestigious competition.</p>
       
@@ -110,23 +108,22 @@ export const blogPosts: BlogPost[] = [
       <p>This victory reflects the dedication and hard work of our members, as well as the supportive environment we've built at ComES. We're committed to continuing our tradition of excellence in competitive programming.</p>
     `,
     author: {
-      name: 'Nimal Perera',
-      avatar: 'https://ui-avatars.com/api/?name=Nimal+Perera&background=003366&color=fff',
+      name: "Nimal Perera",
+      avatar: "https://ui-avatars.com/api/?name=Nimal+Perera&background=003366&color=fff",
     },
-    publishedAt: '2025-12-20',
-    category: 'Achievements',
-    tags: ['Competition', 'Achievement', 'Programming'],
-    image:
-      'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200',
+    publishedAt: "2025-12-20",
+    category: "Achievements",
+    tags: ["Competition", "Achievement", "Programming"],
+    image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200",
     readTime: 3,
     featured: true,
   },
   {
-    id: 'blog-4',
-    title: 'Getting Started with Web Development in 2026',
-    slug: 'web-development-guide-2026',
+    id: "blog-4",
+    title: "Getting Started with Web Development in 2026",
+    slug: "web-development-guide-2026",
     excerpt:
-      'A comprehensive guide for beginners looking to start their journey in web development this year.',
+      "A comprehensive guide for beginners looking to start their journey in web development this year.",
     content: `
       <p>Web development continues to evolve rapidly, and 2026 brings exciting new technologies and approaches. Here's your guide to getting started.</p>
       
@@ -158,23 +155,22 @@ export const blogPosts: BlogPost[] = [
       <p>Join our upcoming Web Development Bootcamp to learn these skills hands-on!</p>
     `,
     author: {
-      name: 'Tharindu Gamage',
-      avatar: 'https://ui-avatars.com/api/?name=Tharindu+Gamage&background=003366&color=fff',
+      name: "Tharindu Gamage",
+      avatar: "https://ui-avatars.com/api/?name=Tharindu+Gamage&background=003366&color=fff",
     },
-    publishedAt: '2026-01-05',
-    category: 'Tutorials',
-    tags: ['Web Development', 'Tutorial', 'Beginners'],
-    image:
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200',
+    publishedAt: "2026-01-05",
+    category: "Tutorials",
+    tags: ["Web Development", "Tutorial", "Beginners"],
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200",
     readTime: 6,
     featured: false,
   },
   {
-    id: 'blog-5',
-    title: 'Industry Partnership Announcement: TechCorp Sri Lanka',
-    slug: 'techcorp-partnership',
+    id: "blog-5",
+    title: "Industry Partnership Announcement: TechCorp Sri Lanka",
+    slug: "techcorp-partnership",
     excerpt:
-      'ComES partners with TechCorp Sri Lanka to provide internship and mentorship opportunities for students.',
+      "ComES partners with TechCorp Sri Lanka to provide internship and mentorship opportunities for students.",
     content: `
       <p>We are excited to announce a new strategic partnership between ComES and TechCorp Sri Lanka, one of the leading technology companies in the country.</p>
       
@@ -190,23 +186,22 @@ export const blogPosts: BlogPost[] = [
       <p>This partnership opens new doors for our members to gain real-world experience and build connections in the industry. Stay tuned for upcoming opportunities!</p>
     `,
     author: {
-      name: 'Samanthi Silva',
-      avatar: 'https://ui-avatars.com/api/?name=Samanthi+Silva&background=003366&color=fff',
+      name: "Samanthi Silva",
+      avatar: "https://ui-avatars.com/api/?name=Samanthi+Silva&background=003366&color=fff",
     },
-    publishedAt: '2025-12-15',
-    category: 'News',
-    tags: ['Partnership', 'Industry', 'Career'],
-    image:
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200',
+    publishedAt: "2025-12-15",
+    category: "News",
+    tags: ["Partnership", "Industry", "Career"],
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200",
     readTime: 2,
     featured: false,
   },
   {
-    id: 'blog-6',
-    title: 'ComES Executive Committee Elections 2026',
-    slug: 'elections-2026',
+    id: "blog-6",
+    title: "ComES Executive Committee Elections 2026",
+    slug: "elections-2026",
     excerpt:
-      'Nominations are open for the ComES Executive Committee 2026. Be a leader and make a difference!',
+      "Nominations are open for the ComES Executive Committee 2026. Be a leader and make a difference!",
     content: `
       <p>The time has come to elect the new ComES Executive Committee for 2026! We invite passionate and dedicated students to step forward and lead our community.</p>
       
@@ -232,14 +227,13 @@ export const blogPosts: BlogPost[] = [
       <p>Elections will be held in the first week of March. Make your voice heard!</p>
     `,
     author: {
-      name: 'Kasun Fernando',
-      avatar: 'https://ui-avatars.com/api/?name=Kasun+Fernando&background=003366&color=fff',
+      name: "Kasun Fernando",
+      avatar: "https://ui-avatars.com/api/?name=Kasun+Fernando&background=003366&color=fff",
     },
-    publishedAt: '2026-01-20',
-    category: 'Announcements',
-    tags: ['Elections', 'Leadership', 'Community'],
-    image:
-      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+    publishedAt: "2026-01-20",
+    category: "Announcements",
+    tags: ["Elections", "Leadership", "Community"],
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200",
     readTime: 3,
     featured: false,
   },
@@ -247,13 +241,13 @@ export const blogPosts: BlogPost[] = [
 
 // Blog categories
 export const blogCategories = [
-  { id: 'all', label: 'All' },
-  { id: 'news', label: 'News' },
-  { id: 'announcements', label: 'Announcements' },
-  { id: 'tech', label: 'Tech' },
-  { id: 'events', label: 'Events' },
-  { id: 'achievements', label: 'Achievements' },
-  { id: 'tutorials', label: 'Tutorials' },
+  { id: "all", label: "All" },
+  { id: "news", label: "News" },
+  { id: "announcements", label: "Announcements" },
+  { id: "tech", label: "Tech" },
+  { id: "events", label: "Events" },
+  { id: "achievements", label: "Achievements" },
+  { id: "tutorials", label: "Tutorials" },
 ];
 
 // Get featured posts
@@ -263,7 +257,7 @@ export const getFeaturedPosts = (count = 3): BlogPost[] => {
 
 // Get posts by category
 export const getPostsByCategory = (category: string): BlogPost[] => {
-  if (category === 'All') return blogPosts;
+  if (category === "All") return blogPosts;
   return blogPosts.filter((post) => post.category === category);
 };
 
@@ -275,18 +269,12 @@ export const getPostBySlug = (slug: string): BlogPost | undefined => {
 // Get recent posts
 export const getRecentPosts = (count = 5): BlogPost[] => {
   return [...blogPosts]
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    )
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, count);
 };
 
 // Get related posts (by tags)
-export const getRelatedPosts = (
-  currentSlug: string,
-  count = 3
-): BlogPost[] => {
+export const getRelatedPosts = (currentSlug: string, count = 3): BlogPost[] => {
   const currentPost = getPostBySlug(currentSlug);
   if (!currentPost) return [];
 

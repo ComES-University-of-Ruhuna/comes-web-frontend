@@ -2,8 +2,8 @@
 // ComES Website - Page Transition Component
 // ============================================
 
-import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -30,15 +30,12 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: 'tween',
-  ease: 'anticipate',
+  type: "tween",
+  ease: "anticipate",
   duration: 0.5,
 };
 
-export const PageTransition: React.FC<PageTransitionProps> = ({
-  children,
-  className = '',
-}) => {
+export const PageTransition: React.FC<PageTransitionProps> = ({ children, className = "" }) => {
   return (
     <motion.div
       initial="initial"
@@ -73,7 +70,7 @@ const containerVariants = {
 
 export const StaggerContainer: React.FC<StaggerContainerProps> = ({
   children,
-  className = '',
+  className = "",
   staggerDelay = 0.1,
 }) => {
   return (
@@ -101,7 +98,7 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
 interface AnimatedItemProps {
   children: ReactNode;
   className?: string;
-  direction?: 'up' | 'down' | 'left' | 'right' | 'scale';
+  direction?: "up" | "down" | "left" | "right" | "scale";
 }
 
 const itemVariants = {
@@ -129,13 +126,13 @@ const itemVariants = {
 
 export const AnimatedItem: React.FC<AnimatedItemProps> = ({
   children,
-  className = '',
-  direction = 'up',
+  className = "",
+  direction = "up",
 }) => {
   return (
     <motion.div
       variants={itemVariants[direction]}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className={className}
     >
       {children}
@@ -147,7 +144,7 @@ export const AnimatedItem: React.FC<AnimatedItemProps> = ({
 interface FadeInViewProps {
   children: ReactNode;
   className?: string;
-  direction?: 'up' | 'down' | 'left' | 'right' | 'scale';
+  direction?: "up" | "down" | "left" | "right" | "scale";
   delay?: number;
   duration?: number;
   once?: boolean;
@@ -155,8 +152,8 @@ interface FadeInViewProps {
 
 export const FadeInView: React.FC<FadeInViewProps> = ({
   children,
-  className = '',
-  direction = 'up',
+  className = "",
+  direction = "up",
   delay = 0,
   duration = 0.6,
   once = true,
@@ -183,7 +180,7 @@ export const FadeInView: React.FC<FadeInViewProps> = ({
         x: 0,
         scale: 1,
       }}
-      viewport={{ once, margin: '-50px' }}
+      viewport={{ once, margin: "-50px" }}
       transition={{
         duration,
         delay,
@@ -205,7 +202,7 @@ interface HoverScaleProps {
 
 export const HoverScale: React.FC<HoverScaleProps> = ({
   children,
-  className = '',
+  className = "",
   scale = 1.05,
 }) => {
   return (
@@ -227,12 +224,8 @@ interface TextRevealProps {
   delay?: number;
 }
 
-export const TextReveal: React.FC<TextRevealProps> = ({
-  children,
-  className = '',
-  delay = 0,
-}) => {
-  const words = children.split(' ');
+export const TextReveal: React.FC<TextRevealProps> = ({ children, className = "", delay = 0 }) => {
+  const words = children.split(" ");
 
   return (
     <motion.span className={`inline-flex flex-wrap ${className}`}>
@@ -244,7 +237,7 @@ export const TextReveal: React.FC<TextRevealProps> = ({
           transition={{
             duration: 0.4,
             delay: delay + i * 0.08,
-            ease: 'easeOut',
+            ease: "easeOut",
           }}
           className="mr-[0.25em] inline-block"
         >
@@ -266,8 +259,8 @@ interface AnimatedCounterProps {
 export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   value,
   duration = 2,
-  className = '',
-  suffix = '',
+  className = "",
+  suffix = "",
 }) => {
   return (
     <motion.span
@@ -277,11 +270,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
       viewport={{ once: true }}
       transition={{ duration }}
     >
-      <motion.span
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
+      <motion.span initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
         {value}
         {suffix}
       </motion.span>

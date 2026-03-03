@@ -2,9 +2,9 @@
 // ComES Website - Auth Store (Zustand)
 // ============================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { authService, type User, type LoginCredentials, type RegisterData } from '@/services';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { authService, type User, type LoginCredentials, type RegisterData } from "@/services";
 
 interface AuthState {
   user: User | null;
@@ -41,10 +41,10 @@ export const useAuthStore = create<AuthState>()(
             });
             return true;
           }
-          set({ isLoading: false, error: response.message || 'Login failed' });
+          set({ isLoading: false, error: response.message || "Login failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Login failed';
+          const message = error instanceof Error ? error.message : "Login failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -62,10 +62,10 @@ export const useAuthStore = create<AuthState>()(
             });
             return true;
           }
-          set({ isLoading: false, error: response.message || 'Registration failed' });
+          set({ isLoading: false, error: response.message || "Registration failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Registration failed';
+          const message = error instanceof Error ? error.message : "Registration failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -86,7 +86,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkAuth: async () => {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem("accessToken");
         if (!token) {
           set({ isAuthenticated: false, user: null });
           return;
@@ -113,18 +113,18 @@ export const useAuthStore = create<AuthState>()(
       updateUser: (user: User) => set({ user }),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Listen for logout events from API interceptor
-if (typeof window !== 'undefined') {
-  window.addEventListener('auth:logout', () => {
+if (typeof window !== "undefined") {
+  window.addEventListener("auth:logout", () => {
     useAuthStore.getState().logout();
   });
 }

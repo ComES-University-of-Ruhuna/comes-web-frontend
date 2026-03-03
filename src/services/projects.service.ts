@@ -2,7 +2,7 @@
 // ComES Website - Projects Service
 // ============================================
 
-import api, { type ApiResponse, type PaginatedData } from './api';
+import api, { type ApiResponse, type PaginatedData } from "./api";
 
 export interface ApiProject {
   _id: string;
@@ -11,7 +11,7 @@ export interface ApiProject {
   description: string;
   shortDescription: string;
   category: string;
-  status: 'planning' | 'in-progress' | 'completed' | 'on-hold';
+  status: "planning" | "in-progress" | "completed" | "on-hold";
   image: string;
   images: string[];
   technologies: string[];
@@ -56,13 +56,13 @@ export const projectsService = {
 
   // Get featured projects
   getFeatured: async (): Promise<ApiResponse<{ projects: ApiProject[] }>> => {
-    const response = await api.get<ApiResponse<{ projects: ApiProject[] }>>('/projects/featured');
+    const response = await api.get<ApiResponse<{ projects: ApiProject[] }>>("/projects/featured");
     return response.data;
   },
 
   // Get categories
   getCategories: async (): Promise<ApiResponse<{ categories: string[] }>> => {
-    const response = await api.get<ApiResponse<{ categories: string[] }>>('/projects/categories');
+    const response = await api.get<ApiResponse<{ categories: string[] }>>("/projects/categories");
     return response.data;
   },
 

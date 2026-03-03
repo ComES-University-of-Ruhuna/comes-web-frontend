@@ -2,9 +2,25 @@
 // ComES Website - API Hooks
 // ============================================
 
-import { useState, useEffect, useCallback } from 'react';
-import { eventsService, projectsService, blogService, teamService, contactService, newsletterService } from '@/services';
-import type { ApiEvent, EventFilters, ApiProject, ProjectFilters, ApiBlogPost, BlogFilters, ApiTeamMember, TeamFilters } from '@/services';
+import { useState, useEffect, useCallback } from "react";
+import {
+  eventsService,
+  projectsService,
+  blogService,
+  teamService,
+  contactService,
+  newsletterService,
+} from "@/services";
+import type {
+  ApiEvent,
+  EventFilters,
+  ApiProject,
+  ProjectFilters,
+  ApiBlogPost,
+  BlogFilters,
+  ApiTeamMember,
+  TeamFilters,
+} from "@/services";
 
 // Generic async state hook
 interface AsyncState<T> {
@@ -16,9 +32,15 @@ interface AsyncState<T> {
 
 // ==================== Events Hooks ====================
 
-export function useEvents(filters?: EventFilters): AsyncState<ApiEvent[]> & { pagination: { page: number; pages: number; total: number } | null } {
+export function useEvents(
+  filters?: EventFilters,
+): AsyncState<ApiEvent[]> & { pagination: { page: number; pages: number; total: number } | null } {
   const [data, setData] = useState<ApiEvent[] | null>(null);
-  const [pagination, setPagination] = useState<{ page: number; pages: number; total: number } | null>(null);
+  const [pagination, setPagination] = useState<{
+    page: number;
+    pages: number;
+    total: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +58,7 @@ export function useEvents(filters?: EventFilters): AsyncState<ApiEvent[]> & { pa
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch events');
+      setError(err instanceof Error ? err.message : "Failed to fetch events");
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +85,7 @@ export function useFeaturedEvents(): AsyncState<ApiEvent[]> {
         setData(response.data.events);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch featured events');
+      setError(err instanceof Error ? err.message : "Failed to fetch featured events");
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +109,7 @@ export function useEventRegistration() {
       await eventsService.register(eventId);
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to register');
+      setError(err instanceof Error ? err.message : "Failed to register");
       return false;
     } finally {
       setIsLoading(false);
@@ -101,7 +123,7 @@ export function useEventRegistration() {
       await eventsService.unregister(eventId);
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to unregister');
+      setError(err instanceof Error ? err.message : "Failed to unregister");
       return false;
     } finally {
       setIsLoading(false);
@@ -113,9 +135,15 @@ export function useEventRegistration() {
 
 // ==================== Projects Hooks ====================
 
-export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> & { pagination: { page: number; pages: number; total: number } | null } {
+export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> & {
+  pagination: { page: number; pages: number; total: number } | null;
+} {
   const [data, setData] = useState<ApiProject[] | null>(null);
-  const [pagination, setPagination] = useState<{ page: number; pages: number; total: number } | null>(null);
+  const [pagination, setPagination] = useState<{
+    page: number;
+    pages: number;
+    total: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -133,7 +161,7 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch projects');
+      setError(err instanceof Error ? err.message : "Failed to fetch projects");
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +188,7 @@ export function useFeaturedProjects(): AsyncState<ApiProject[]> {
         setData(response.data.projects);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch featured projects');
+      setError(err instanceof Error ? err.message : "Failed to fetch featured projects");
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +215,7 @@ export function useProjectCategories(): AsyncState<string[]> {
         setData(response.data.categories);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch categories');
+      setError(err instanceof Error ? err.message : "Failed to fetch categories");
     } finally {
       setIsLoading(false);
     }
@@ -202,9 +230,15 @@ export function useProjectCategories(): AsyncState<string[]> {
 
 // ==================== Blog Hooks ====================
 
-export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> & { pagination: { page: number; pages: number; total: number } | null } {
+export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> & {
+  pagination: { page: number; pages: number; total: number } | null;
+} {
   const [data, setData] = useState<ApiBlogPost[] | null>(null);
-  const [pagination, setPagination] = useState<{ page: number; pages: number; total: number } | null>(null);
+  const [pagination, setPagination] = useState<{
+    page: number;
+    pages: number;
+    total: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -222,7 +256,7 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch blog posts');
+      setError(err instanceof Error ? err.message : "Failed to fetch blog posts");
     } finally {
       setIsLoading(false);
     }
@@ -249,7 +283,7 @@ export function useFeaturedBlogPosts(): AsyncState<ApiBlogPost[]> {
         setData(response.data.posts);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch featured posts');
+      setError(err instanceof Error ? err.message : "Failed to fetch featured posts");
     } finally {
       setIsLoading(false);
     }
@@ -278,7 +312,7 @@ export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[
         setData(response.data.members);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch team members');
+      setError(err instanceof Error ? err.message : "Failed to fetch team members");
     } finally {
       setIsLoading(false);
     }
@@ -298,7 +332,12 @@ export function useContactForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const submit = async (data: { name: string; email: string; subject: string; message: string }): Promise<boolean> => {
+  const submit = async (data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }): Promise<boolean> => {
     setIsSubmitting(true);
     setError(null);
     try {
@@ -306,7 +345,7 @@ export function useContactForm() {
       setIsSubmitted(true);
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit contact form');
+      setError(err instanceof Error ? err.message : "Failed to submit contact form");
       return false;
     } finally {
       setIsSubmitting(false);
@@ -336,7 +375,7 @@ export function useNewsletter() {
       setIsSubscribed(true);
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to subscribe');
+      setError(err instanceof Error ? err.message : "Failed to subscribe");
       return false;
     } finally {
       setIsSubmitting(false);

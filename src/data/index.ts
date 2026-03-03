@@ -3,19 +3,19 @@
 // ============================================
 
 // Team Data
-export * from './team';
+export * from "./team";
 
 // Events Data
-export * from './events';
+export * from "./events";
 
 // Projects Data
-export * from './projects';
+export * from "./projects";
 
 // Gallery Data
-export * from './gallery';
+export * from "./gallery";
 
 // Blog Data
-export * from './blog';
+export * from "./blog";
 
 // Testimonials, FAQs, Partners, Achievements
-export * from './testimonials';
+export * from "./testimonials";

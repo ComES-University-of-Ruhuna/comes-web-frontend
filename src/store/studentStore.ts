@@ -47,7 +47,7 @@ export const useStudentStore = create<StudentState>()(
           set({ isLoading: false, error: response.message || 'Login failed' });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Login failed';
+          const message = error instanceof Error ? error.message : "Login failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -59,7 +59,7 @@ export const useStudentStore = create<StudentState>()(
           const response = await studentService.register(data);
           if (response.success && response.data) {
             setStudentAccessToken(response.data.accessToken);
-            localStorage.setItem('studentRefreshToken', response.data.refreshToken);
+            localStorage.setItem("studentRefreshToken", response.data.refreshToken);
             set({
               student: response.data.student,
               isAuthenticated: true,
@@ -67,10 +67,10 @@ export const useStudentStore = create<StudentState>()(
             });
             return true;
           }
-          set({ isLoading: false, error: response.message || 'Registration failed' });
+          set({ isLoading: false, error: response.message || "Registration failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Registration failed';
+          const message = error instanceof Error ? error.message : "Registration failed";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -78,7 +78,7 @@ export const useStudentStore = create<StudentState>()(
 
       logout: () => {
         setStudentAccessToken(null);
-        localStorage.removeItem('studentRefreshToken');
+        localStorage.removeItem("studentRefreshToken");
         set({
           student: null,
           isAuthenticated: false,
@@ -88,7 +88,7 @@ export const useStudentStore = create<StudentState>()(
       },
 
       checkAuth: async () => {
-        const token = localStorage.getItem('studentRefreshToken');
+        const token = localStorage.getItem("studentRefreshToken");
         if (!token) {
           set({ isAuthenticated: false, student: null });
           return;
@@ -115,11 +115,11 @@ export const useStudentStore = create<StudentState>()(
       updateStudent: (student: Student) => set({ student }),
     }),
     {
-      name: 'student-auth-storage',
+      name: "student-auth-storage",
       partialize: (state) => ({
         student: state.student,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

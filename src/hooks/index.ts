@@ -2,7 +2,7 @@
 // ComES Website - Custom React Hooks
 // ============================================
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 
 /**
  * Hook for handling window scroll position
@@ -18,10 +18,10 @@ export function useScrollPosition() {
       setIsScrolled(position > 50);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return { scrollPosition, isScrolled };
@@ -32,8 +32,8 @@ export function useScrollPosition() {
  */
 export function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
   });
 
   useEffect(() => {
@@ -44,10 +44,10 @@ export function useWindowSize() {
       });
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return windowSize;
@@ -70,9 +70,7 @@ export function useBreakpoint() {
 /**
  * Hook for handling clicks outside an element
  */
-export function useClickOutside<T extends HTMLElement>(
-  handler: () => void
-) {
+export function useClickOutside<T extends HTMLElement>(handler: () => void) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
@@ -82,12 +80,12 @@ export function useClickOutside<T extends HTMLElement>(
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [handler]);
 
@@ -110,15 +108,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   const setValue = useCallback(
     (value: T | ((val: T) => T)) => {
       try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
-        console.error('Error saving to localStorage:', error);
+        console.error("Error saving to localStorage:", error);
       }
     },
-    [key, storedValue]
+    [key, storedValue],
   );
 
   return [storedValue, setValue] as const;
@@ -149,7 +146,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 export function useKeyPress(
   targetKey: string,
   handler: () => void,
-  options?: { ctrl?: boolean; shift?: boolean; alt?: boolean }
+  options?: { ctrl?: boolean; shift?: boolean; alt?: boolean },
 ) {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -166,17 +163,15 @@ export function useKeyPress(
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
   }, [targetKey, handler, options]);
 }
 
 /**
  * Hook for intersection observer (element visibility)
  */
-export function useIntersectionObserver(
-  options?: IntersectionObserverInit
-) {
+export function useIntersectionObserver(options?: IntersectionObserverInit) {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [hasIntersected, setHasIntersected] = useState(false);
   const ref = useRef<HTMLElement>(null);
@@ -214,8 +209,8 @@ export function useMediaQuery(query: string): boolean {
       setMatches(event.matches);
     };
 
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, [query]);
 
   return matches;
@@ -332,4 +327,4 @@ export {
   useTeamMembers,
   useContactForm,
   useNewsletter,
-} from './useApi';
+} from "./useApi";

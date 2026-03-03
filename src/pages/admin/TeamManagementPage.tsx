@@ -2,8 +2,8 @@
 // ComES Website - Admin Team Management
 // ============================================
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Search,
@@ -20,11 +20,11 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
-} from 'lucide-react';
-import { useThemeStore } from '@/store';
-import { cn } from '@/utils';
-import { Button } from '@/components/ui';
-import api from '@/services/api';
+} from "lucide-react";
+import { useThemeStore } from "@/store";
+import { cn } from "@/utils";
+import { Button } from "@/components/ui";
+import api from "@/services/api";
 
 interface TeamMember {
   _id: string;
@@ -48,24 +48,24 @@ interface TeamMember {
 }
 
 const departments = [
-  { value: 'all', label: 'All Departments' },
-  { value: 'executive', label: 'Executive' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'creative', label: 'Creative' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'events', label: 'Events' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'advisory', label: 'Advisory' },
+  { value: "all", label: "All Departments" },
+  { value: "executive", label: "Executive" },
+  { value: "technical", label: "Technical" },
+  { value: "creative", label: "Creative" },
+  { value: "marketing", label: "Marketing" },
+  { value: "events", label: "Events" },
+  { value: "finance", label: "Finance" },
+  { value: "advisory", label: "Advisory" },
 ];
 
 const departmentColors: Record<string, string> = {
-  executive: 'bg-blue-500/10 text-blue-500',
-  technical: 'bg-green-500/10 text-green-500',
-  creative: 'bg-purple-500/10 text-purple-500',
-  marketing: 'bg-amber-500/10 text-amber-500',
-  events: 'bg-pink-500/10 text-pink-500',
-  finance: 'bg-cyan-500/10 text-cyan-500',
-  advisory: 'bg-indigo-500/10 text-indigo-500',
+  executive: "bg-blue-500/10 text-blue-500",
+  technical: "bg-green-500/10 text-green-500",
+  creative: "bg-purple-500/10 text-purple-500",
+  marketing: "bg-amber-500/10 text-amber-500",
+  events: "bg-pink-500/10 text-pink-500",
+  finance: "bg-cyan-500/10 text-cyan-500",
+  advisory: "bg-indigo-500/10 text-indigo-500",
 };
 
 const TeamEditor = ({
@@ -80,28 +80,26 @@ const TeamEditor = ({
   saving: boolean;
 }) => {
   const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === 'dark';
+  const isDark = resolvedTheme === "dark";
   const isEditing = !!member;
 
   const [formData, setFormData] = useState({
-    name: member?.name || '',
-    role: member?.role || '',
-    department: member?.department || 'technical',
-    batch: member?.batch || '',
-    email: member?.email || '',
-    bio: member?.bio || '',
-    avatar: member?.avatar || '',
-    linkedin: member?.linkedin || '',
-    github: member?.github || '',
-    twitter: member?.twitter || '',
+    name: member?.name || "",
+    role: member?.role || "",
+    department: member?.department || "technical",
+    batch: member?.batch || "",
+    email: member?.email || "",
+    bio: member?.bio || "",
+    avatar: member?.avatar || "",
+    linkedin: member?.linkedin || "",
+    github: member?.github || "",
+    twitter: member?.twitter || "",
     order: member?.order ?? 0,
     isActive: member?.isActive ?? true,
     termStart: member?.term?.start
-      ? new Date(member.term.start).toISOString().split('T')[0]
-      : new Date().toISOString().split('T')[0],
-    termEnd: member?.term?.end
-      ? new Date(member.term.end).toISOString().split('T')[0]
-      : '',
+      ? new Date(member.term.start).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
+    termEnd: member?.term?.end ? new Date(member.term.end).toISOString().split("T")[0] : "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,11 +125,11 @@ const TeamEditor = ({
   };
 
   const inputCn = cn(
-    'w-full px-4 py-3 rounded-xl border transition-colors',
+    "w-full px-4 py-3 rounded-xl border transition-colors",
     isDark
-      ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400',
-    'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+      ? "bg-slate-800 border-slate-700 text-white placeholder-gray-500"
+      : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400",
+    "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
   );
 
   return (
@@ -139,7 +137,7 @@ const TeamEditor = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -148,32 +146,37 @@ const TeamEditor = ({
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl',
-          isDark ? 'bg-slate-900' : 'bg-white'
+          "max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl shadow-2xl",
+          isDark ? "bg-slate-900" : "bg-white",
         )}
       >
         <div
           className={cn(
-            'sticky top-0 z-10 flex items-center justify-between p-6 border-b',
-            isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'
+            "sticky top-0 z-10 flex items-center justify-between border-b p-6",
+            isDark ? "border-slate-800 bg-slate-900" : "border-gray-200 bg-white",
           )}
         >
-          <h2 className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
-            {isEditing ? 'Edit Team Member' : 'Add Team Member'}
+          <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            {isEditing ? "Edit Team Member" : "Add Team Member"}
           </h2>
           <button
             onClick={onClose}
-            className={cn('p-2 rounded-lg', isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}
+            className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
-            <X className={cn('w-5 h-5', isDark ? 'text-gray-400' : 'text-gray-500')} />
+            <X className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-500")} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-6">
           {/* Name & Role */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Full Name *
               </label>
               <input
@@ -186,7 +189,12 @@ const TeamEditor = ({
               />
             </div>
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Role *
               </label>
               <input
@@ -203,7 +211,12 @@ const TeamEditor = ({
           {/* Department, Batch, Order */}
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Department *
               </label>
               <select
@@ -213,7 +226,7 @@ const TeamEditor = ({
                 required
               >
                 {departments
-                  .filter((d) => d.value !== 'all')
+                  .filter((d) => d.value !== "all")
                   .map((dept) => (
                     <option key={dept.value} value={dept.value}>
                       {dept.label}
@@ -222,7 +235,12 @@ const TeamEditor = ({
               </select>
             </div>
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Batch *
               </label>
               <input
@@ -235,7 +253,12 @@ const TeamEditor = ({
               />
             </div>
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Display Order
               </label>
               <input
@@ -250,7 +273,12 @@ const TeamEditor = ({
           {/* Email & Avatar */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Email
               </label>
               <input
@@ -262,7 +290,12 @@ const TeamEditor = ({
               />
             </div>
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Avatar URL
               </label>
               <input
@@ -277,7 +310,12 @@ const TeamEditor = ({
 
           {/* Bio */}
           <div>
-            <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+            <label
+              className={cn(
+                "mb-2 block text-sm font-medium",
+                isDark ? "text-gray-300" : "text-gray-700",
+              )}
+            >
               Bio
             </label>
             <textarea
@@ -285,10 +323,10 @@ const TeamEditor = ({
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Short bio about the team member..."
               rows={3}
-              className={cn(inputCn, 'resize-none')}
+              className={cn(inputCn, "resize-none")}
               maxLength={500}
             />
-            <p className={cn('text-xs mt-1', isDark ? 'text-gray-500' : 'text-gray-400')}>
+            <p className={cn("mt-1 text-xs", isDark ? "text-gray-500" : "text-gray-400")}>
               {formData.bio.length}/500 characters
             </p>
           </div>
@@ -296,7 +334,12 @@ const TeamEditor = ({
           {/* Term */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Term Start *
               </label>
               <input
@@ -308,7 +351,12 @@ const TeamEditor = ({
               />
             </div>
             <div>
-              <label className={cn('block text-sm font-medium mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
                 Term End
               </label>
               <input
@@ -322,15 +370,20 @@ const TeamEditor = ({
 
           {/* Social Links */}
           <div className="space-y-3">
-            <label className={cn('block text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+            <label
+              className={cn(
+                "block text-sm font-medium",
+                isDark ? "text-gray-300" : "text-gray-700",
+              )}
+            >
               Social Links
             </label>
             <div className="grid grid-cols-3 gap-4">
               <div className="relative">
                 <Linkedin
                   className={cn(
-                    'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-                    isDark ? 'text-gray-500' : 'text-gray-400'
+                    "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
                   )}
                 />
                 <input
@@ -339,19 +392,19 @@ const TeamEditor = ({
                   onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
                   placeholder="LinkedIn URL"
                   className={cn(
-                    'w-full pl-10 pr-4 py-2.5 rounded-xl border transition-colors text-sm',
+                    "w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors",
                     isDark
-                      ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                   )}
                 />
               </div>
               <div className="relative">
                 <Github
                   className={cn(
-                    'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-                    isDark ? 'text-gray-500' : 'text-gray-400'
+                    "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
                   )}
                 />
                 <input
@@ -360,19 +413,19 @@ const TeamEditor = ({
                   onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                   placeholder="GitHub URL"
                   className={cn(
-                    'w-full pl-10 pr-4 py-2.5 rounded-xl border transition-colors text-sm',
+                    "w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors",
                     isDark
-                      ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                   )}
                 />
               </div>
               <div className="relative">
                 <Twitter
                   className={cn(
-                    'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-                    isDark ? 'text-gray-500' : 'text-gray-400'
+                    "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
                   )}
                 />
                 <input
@@ -381,11 +434,11 @@ const TeamEditor = ({
                   onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                   placeholder="Twitter URL"
                   className={cn(
-                    'w-full pl-10 pr-4 py-2.5 rounded-xl border transition-colors text-sm',
+                    "w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors",
                     isDark
-                      ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                   )}
                 />
               </div>
@@ -394,16 +447,16 @@ const TeamEditor = ({
 
           {/* Active Toggle */}
           <div className="flex items-center gap-3">
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                className="sr-only peer"
+                className="peer sr-only"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
+              <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-500 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700"></div>
             </label>
-            <span className={cn('text-sm font-medium', isDark ? 'text-gray-300' : 'text-gray-700')}>
+            <span className={cn("text-sm font-medium", isDark ? "text-gray-300" : "text-gray-700")}>
               Active Member
             </span>
           </div>
@@ -413,8 +466,13 @@ const TeamEditor = ({
             <Button type="button" variant="outline" onClick={onClose} disabled={saving}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" icon={<Save className="w-4 h-4" />} disabled={saving}>
-              {saving ? 'Saving...' : isEditing ? 'Update Member' : 'Add Member'}
+            <Button
+              type="submit"
+              variant="primary"
+              icon={<Save className="h-4 w-4" />}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : isEditing ? "Update Member" : "Add Member"}
             </Button>
           </div>
         </form>
@@ -425,22 +483,22 @@ const TeamEditor = ({
 
 export const TeamManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === 'dark';
+  const isDark = resolvedTheme === "dark";
 
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
     fetchTeam();
   }, []);
 
-  const showToast = (type: 'success' | 'error', message: string) => {
+  const showToast = (type: "success" | "error", message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3000);
   };
@@ -448,11 +506,11 @@ export const TeamManagementPage = () => {
   const fetchTeam = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/team');
+      const response = await api.get("/team");
       setTeam(response.data.data.members || []);
     } catch (error) {
-      showToast('error', 'Failed to fetch team members');
-      console.error('Error fetching team:', error);
+      showToast("error", "Failed to fetch team members");
+      console.error("Error fetching team:", error);
     } finally {
       setLoading(false);
     }
@@ -462,8 +520,9 @@ export const TeamManagementPage = () => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (member.email || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDepartment = selectedDepartment === 'all' || member.department === selectedDepartment;
+      (member.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDepartment =
+      selectedDepartment === "all" || member.department === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
 
@@ -473,18 +532,18 @@ export const TeamManagementPage = () => {
       if (editingMember) {
         const response = await api.patch(`/team/${editingMember._id}`, data);
         setTeam(team.map((m) => (m._id === editingMember._id ? response.data.data.member : m)));
-        showToast('success', 'Team member updated successfully');
+        showToast("success", "Team member updated successfully");
       } else {
-        const response = await api.post('/team', data);
+        const response = await api.post("/team", data);
         setTeam([...team, response.data.data.member]);
-        showToast('success', 'Team member added successfully');
+        showToast("success", "Team member added successfully");
       }
       setEditingMember(null);
       setIsCreating(false);
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to save team member';
-      showToast('error', message);
-      console.error('Error saving team member:', error);
+      const message = error.response?.data?.message || "Failed to save team member";
+      showToast("error", message);
+      console.error("Error saving team member:", error);
     } finally {
       setSaving(false);
     }
@@ -495,10 +554,10 @@ export const TeamManagementPage = () => {
     try {
       await api.delete(`/team/${id}`);
       setTeam(team.filter((m) => m._id !== id));
-      showToast('success', `${name} removed from the team`);
+      showToast("success", `${name} removed from the team`);
     } catch (error) {
-      showToast('error', 'Failed to delete team member');
-      console.error('Error deleting team member:', error);
+      showToast("error", "Failed to delete team member");
+      console.error("Error deleting team member:", error);
     }
   };
 
@@ -506,15 +565,15 @@ export const TeamManagementPage = () => {
     try {
       const response = await api.patch(`/team/${member._id}`, { isActive: !member.isActive });
       setTeam(team.map((m) => (m._id === member._id ? response.data.data.member : m)));
-      showToast('success', `${member.name} ${!member.isActive ? 'activated' : 'deactivated'}`);
-    } catch (error) {
-      showToast('error', 'Failed to update member status');
+      showToast("success", `${member.name} ${!member.isActive ? "activated" : "deactivated"}`);
+    } catch {
+      showToast("error", "Failed to update member status");
     }
   };
 
   // Department stats
   const deptStats = departments
-    .filter((d) => d.value !== 'all')
+    .filter((d) => d.value !== "all")
     .map((dept) => ({
       ...dept,
       count: team.filter((m) => m.department === dept.value).length,
@@ -534,14 +593,14 @@ export const TeamManagementPage = () => {
           >
             <div
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg',
-                toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                "flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg",
+                toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white",
               )}
             >
-              {toast.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5" />
+              {toast.type === "success" ? (
+                <CheckCircle2 className="h-5 w-5" />
               ) : (
-                <AlertCircle className="w-5 h-5" />
+                <AlertCircle className="h-5 w-5" />
               )}
               <p className="font-medium">{toast.message}</p>
             </div>
@@ -550,39 +609,50 @@ export const TeamManagementPage = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+          <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
             Team Members
           </h1>
-          <p className={cn('mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+          <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
             Manage your club's team and leadership ({team.length} members)
           </p>
         </div>
-        <Button variant="primary" icon={<Plus className="w-4 h-4" />} onClick={() => setIsCreating(true)}>
+        <Button
+          variant="primary"
+          icon={<Plus className="h-4 w-4" />}
+          onClick={() => setIsCreating(true)}
+        >
           Add Member
         </Button>
       </div>
 
       {/* Department Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
         {deptStats.map((dept) => (
           <button
             key={dept.value}
-            onClick={() => setSelectedDepartment(selectedDepartment === dept.value ? 'all' : dept.value)}
+            onClick={() =>
+              setSelectedDepartment(selectedDepartment === dept.value ? "all" : dept.value)
+            }
             className={cn(
-              'p-3 rounded-xl border text-center transition-all',
+              "rounded-xl border p-3 text-center transition-all",
               selectedDepartment === dept.value
-                ? 'border-blue-500 bg-blue-500/10'
+                ? "border-blue-500 bg-blue-500/10"
                 : isDark
-                  ? 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
-                  : 'bg-white border-gray-200 hover:border-gray-300'
+                  ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                  : "border-gray-200 bg-white hover:border-gray-300",
             )}
           >
-            <p className={cn('text-2xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
+            <p className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
               {dept.count}
             </p>
-            <p className={cn('text-xs capitalize truncate', isDark ? 'text-gray-400' : 'text-gray-500')}>
+            <p
+              className={cn(
+                "truncate text-xs capitalize",
+                isDark ? "text-gray-400" : "text-gray-500",
+              )}
+            >
               {dept.label}
             </p>
           </button>
@@ -592,16 +662,16 @@ export const TeamManagementPage = () => {
       {/* Filters */}
       <div
         className={cn(
-          'p-4 rounded-2xl border',
-          isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200'
+          "rounded-2xl border p-4",
+          isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
         )}
       >
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search
               className={cn(
-                'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5',
-                isDark ? 'text-gray-500' : 'text-gray-400'
+                "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                isDark ? "text-gray-500" : "text-gray-400",
               )}
             />
             <input
@@ -610,11 +680,11 @@ export const TeamManagementPage = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                'w-full pl-10 pr-4 py-2.5 rounded-xl border transition-colors',
+                "w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors",
                 isDark
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-500'
-                  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+                  ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                  : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
+                "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
               )}
             />
           </div>
@@ -622,9 +692,11 @@ export const TeamManagementPage = () => {
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
             className={cn(
-              'px-4 py-2.5 rounded-xl border transition-colors',
-              isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+              "rounded-xl border px-4 py-2.5 transition-colors",
+              isDark
+                ? "border-slate-700 bg-slate-800 text-white"
+                : "border-gray-200 bg-gray-50 text-gray-900",
+              "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
             )}
           >
             {departments.map((dept) => (
@@ -639,12 +711,12 @@ export const TeamManagementPage = () => {
       {/* Loading State */}
       {loading ? (
         <div className="flex items-center justify-center p-12">
-          <div className="w-8 h-8 border-4 rounded-full border-blue-500/30 border-t-blue-500 animate-spin" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500/30 border-t-blue-500" />
         </div>
       ) : (
         <>
           {/* Team Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredTeam.map((member, index) => (
               <motion.div
                 key={member._id}
@@ -652,11 +724,11 @@ export const TeamManagementPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={cn(
-                  'p-6 rounded-2xl border text-center transition-all relative',
-                  !member.isActive && 'opacity-60',
+                  "relative rounded-2xl border p-6 text-center transition-all",
+                  !member.isActive && "opacity-60",
                   isDark
-                    ? 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
-                    : 'bg-white border-gray-200 hover:shadow-lg'
+                    ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                    : "border-gray-200 bg-white hover:shadow-lg",
                 )}
               >
                 {/* Active/Inactive Toggle */}
@@ -664,18 +736,22 @@ export const TeamManagementPage = () => {
                   <button
                     onClick={() => handleToggleActive(member)}
                     className={cn(
-                      'p-1.5 rounded-lg transition-colors',
+                      "rounded-lg p-1.5 transition-colors",
                       member.isActive
                         ? isDark
-                          ? 'text-green-400 hover:bg-green-500/10'
-                          : 'text-green-600 hover:bg-green-50'
+                          ? "text-green-400 hover:bg-green-500/10"
+                          : "text-green-600 hover:bg-green-50"
                         : isDark
-                          ? 'text-gray-500 hover:bg-slate-800'
-                          : 'text-gray-400 hover:bg-gray-100'
+                          ? "text-gray-500 hover:bg-slate-800"
+                          : "text-gray-400 hover:bg-gray-100",
                     )}
-                    title={member.isActive ? 'Active - Click to deactivate' : 'Inactive - Click to activate'}
+                    title={
+                      member.isActive
+                        ? "Active - Click to deactivate"
+                        : "Inactive - Click to activate"
+                    }
                   >
-                    {member.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    {member.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
                 </div>
 
@@ -683,8 +759,8 @@ export const TeamManagementPage = () => {
                 <div className="absolute top-3 left-3">
                   <span
                     className={cn(
-                      'text-xs font-mono px-2 py-0.5 rounded-full',
-                      isDark ? 'bg-slate-800 text-gray-400' : 'bg-gray-100 text-gray-500'
+                      "rounded-full px-2 py-0.5 font-mono text-xs",
+                      isDark ? "bg-slate-800 text-gray-400" : "bg-gray-100 text-gray-500",
                     )}
                   >
                     #{member.order}
@@ -695,53 +771,67 @@ export const TeamManagementPage = () => {
                   <img
                     src={member.avatar}
                     alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover ring-4 ring-blue-500/20"
+                    className="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-4 ring-blue-500/20"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ring-4 ring-blue-500/20 bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-2xl font-bold">
+                  <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-2xl font-bold text-white ring-4 ring-blue-500/20">
                     {member.name
-                      .split(' ')
+                      .split(" ")
                       .map((n) => n[0])
-                      .join('')
+                      .join("")
                       .slice(0, 2)}
                   </div>
                 )}
 
-                <h3 className={cn('text-lg font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
+                <h3
+                  className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}
+                >
                   {member.name}
                 </h3>
-                <p className={cn('text-sm', isDark ? 'text-blue-400' : 'text-blue-600')}>{member.role}</p>
+                <p className={cn("text-sm", isDark ? "text-blue-400" : "text-blue-600")}>
+                  {member.role}
+                </p>
 
-                <div className="flex items-center justify-center gap-2 mt-2">
+                <div className="mt-2 flex items-center justify-center gap-2">
                   <span
                     className={cn(
-                      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize',
-                      departmentColors[member.department] || 'bg-gray-500/10 text-gray-500'
+                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
+                      departmentColors[member.department] || "bg-gray-500/10 text-gray-500",
                     )}
                   >
                     {member.department}
                   </span>
-                  <span className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-400')}>
+                  <span className={cn("text-xs", isDark ? "text-gray-500" : "text-gray-400")}>
                     Batch {member.batch}
                   </span>
                 </div>
 
                 {member.bio && (
-                  <p className={cn('text-sm mt-3 line-clamp-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <p
+                    className={cn(
+                      "mt-3 line-clamp-2 text-sm",
+                      isDark ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
                     {member.bio}
                   </p>
                 )}
 
                 {/* Social Links */}
-                <div className="flex items-center justify-center gap-3 mt-4">
+                <div className="mt-4 flex items-center justify-center gap-3">
                   {member.linkedin && (
                     <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn('p-2 rounded-lg', isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}
+                      className={cn(
+                        "rounded-lg p-2",
+                        isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
+                      )}
                     >
-                      <Linkedin className={cn('w-4 h-4', isDark ? 'text-gray-400' : 'text-gray-600')} />
+                      <Linkedin
+                        className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-gray-600")}
+                      />
                     </a>
                   )}
                   {member.github && (
@@ -749,9 +839,14 @@ export const TeamManagementPage = () => {
                       href={member.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn('p-2 rounded-lg', isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}
+                      className={cn(
+                        "rounded-lg p-2",
+                        isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
+                      )}
                     >
-                      <Github className={cn('w-4 h-4', isDark ? 'text-gray-400' : 'text-gray-600')} />
+                      <Github
+                        className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-gray-600")}
+                      />
                     </a>
                   )}
                   {member.twitter && (
@@ -759,25 +854,33 @@ export const TeamManagementPage = () => {
                       href={member.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn('p-2 rounded-lg', isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}
+                      className={cn(
+                        "rounded-lg p-2",
+                        isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
+                      )}
                     >
-                      <Twitter className={cn('w-4 h-4', isDark ? 'text-gray-400' : 'text-gray-600')} />
+                      <Twitter
+                        className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-gray-600")}
+                      />
                     </a>
                   )}
                   {member.email && (
                     <a
                       href={`mailto:${member.email}`}
-                      className={cn('p-2 rounded-lg', isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}
+                      className={cn(
+                        "rounded-lg p-2",
+                        isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
+                      )}
                     >
-                      <Mail className={cn('w-4 h-4', isDark ? 'text-gray-400' : 'text-gray-600')} />
+                      <Mail className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-gray-600")} />
                     </a>
                   )}
                 </div>
 
                 {/* Actions */}
                 <div
-                  className="flex items-center gap-2 mt-4 pt-4 border-t border-dashed"
-                  style={{ borderColor: isDark ? '#334155' : '#e5e7eb' }}
+                  className="mt-4 flex items-center gap-2 border-t border-dashed pt-4"
+                  style={{ borderColor: isDark ? "#334155" : "#e5e7eb" }}
                 >
                   <Button
                     variant="outline"
@@ -785,16 +888,16 @@ export const TeamManagementPage = () => {
                     onClick={() => setEditingMember(member)}
                     className="flex-1"
                   >
-                    <Edit className="w-4 h-4 mr-1" /> Edit
+                    <Edit className="mr-1 h-4 w-4" /> Edit
                   </Button>
                   <button
                     onClick={() => handleDelete(member._id, member.name)}
                     className={cn(
-                      'p-2 rounded-lg transition-colors text-red-500',
-                      isDark ? 'hover:bg-red-500/10' : 'hover:bg-red-50'
+                      "rounded-lg p-2 text-red-500 transition-colors",
+                      isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
                     )}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </motion.div>
@@ -804,21 +907,23 @@ export const TeamManagementPage = () => {
           {filteredTeam.length === 0 && (
             <div
               className={cn(
-                'p-12 text-center rounded-2xl border',
-                isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-gray-200'
+                "rounded-2xl border p-12 text-center",
+                isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
               )}
             >
-              <Users className={cn('w-12 h-12 mx-auto mb-4', isDark ? 'text-gray-600' : 'text-gray-400')} />
-              <p className={cn('text-lg font-medium', isDark ? 'text-gray-400' : 'text-gray-500')}>
-                {searchQuery || selectedDepartment !== 'all'
-                  ? 'No team members match your filters'
-                  : 'No team members yet'}
+              <Users
+                className={cn("mx-auto mb-4 h-12 w-12", isDark ? "text-gray-600" : "text-gray-400")}
+              />
+              <p className={cn("text-lg font-medium", isDark ? "text-gray-400" : "text-gray-500")}>
+                {searchQuery || selectedDepartment !== "all"
+                  ? "No team members match your filters"
+                  : "No team members yet"}
               </p>
-              {!searchQuery && selectedDepartment === 'all' && (
+              {!searchQuery && selectedDepartment === "all" && (
                 <Button
                   variant="primary"
                   className="mt-4"
-                  icon={<Plus className="w-4 h-4" />}
+                  icon={<Plus className="h-4 w-4" />}
                   onClick={() => setIsCreating(true)}
                 >
                   Add Your First Member
