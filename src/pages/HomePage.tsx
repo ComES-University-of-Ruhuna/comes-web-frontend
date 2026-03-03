@@ -137,7 +137,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className={cn(
-                "mb-10 max-w-2xl text-lg leading-relaxed text-justify md:text-xl",
+                "mb-10 max-w-2xl text-justify text-lg leading-relaxed md:text-xl",
                 isDark ? "text-gray-400" : "text-gray-600",
                 "mx-auto lg:mx-0",
               )}
@@ -169,7 +169,9 @@ const HeroSection = () => {
                   href="/about"
                   variant="outline"
                   size="lg"
-                  className={cn(isDark && "border-white text-white hover:bg-white hover:text-comesBlue")}
+                  className={cn(
+                    isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+                  )}
                 >
                   Learn More
                 </Button>
@@ -287,7 +289,7 @@ const AboutPreviewSection = () => {
           </h2>
           <p
             className={cn(
-              "mb-6 text-lg font-medium leading-relaxed",
+              "mb-6 text-lg leading-relaxed font-medium",
               isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
@@ -298,7 +300,7 @@ const AboutPreviewSection = () => {
           </p>
           <p
             className={cn(
-              "mb-8 text-lg font-medium leading-relaxed",
+              "mb-8 text-lg leading-relaxed font-medium",
               isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
@@ -309,7 +311,9 @@ const AboutPreviewSection = () => {
               href="/about"
               variant="outline"
               icon={<ArrowRight className="h-4 w-4" />}
-              className={cn(isDark && "border-white text-white hover:bg-white hover:text-comesBlue")}
+              className={cn(
+                isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+              )}
             >
               Discover Our Story
             </Button>
@@ -484,11 +488,7 @@ const ProjectsPreviewSection = () => {
                       {project.category}
                     </Badge>
                   </div>
-                  <h3
-                    className="mb-2 text-xl font-bold text-white"
-                  >
-                    {project.title}
-                  </h3>
+                  <h3 className="mb-2 text-xl font-bold text-white">{project.title}</h3>
                   <p className={cn("mb-4", isDark ? "text-gray-300" : "text-blue-100")}>
                     {project.shortDescription}
                   </p>

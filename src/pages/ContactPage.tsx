@@ -59,7 +59,10 @@ const ContactInfoCard = ({
         <Card
           hoverable
           padding="lg"
-          className={cn("flex h-full min-h-[200px] flex-col items-center justify-center text-center", isDark && "border-slate-700/50 bg-slate-800/50")}
+          className={cn(
+            "flex h-full min-h-[200px] flex-col items-center justify-center text-center",
+            isDark && "border-slate-700/50 bg-slate-800/50",
+          )}
         >
           <motion.div
             className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"

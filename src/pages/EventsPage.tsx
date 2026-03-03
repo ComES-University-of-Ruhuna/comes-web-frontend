@@ -81,7 +81,9 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
               <span className="text-sm">{event.location}</span>
             </div>
 
-            <p className={cn("mb-4 flex-1 line-clamp-3", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p
+              className={cn("mb-4 line-clamp-3 flex-1", isDark ? "text-gray-400" : "text-gray-600")}
+            >
               {event.description}
             </p>
 

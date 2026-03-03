@@ -72,78 +72,78 @@ const AnimatedRoutes = () => {
   return (
     <>
       <ScrollToTop />
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public Routes */}
 
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          {/* <Route path="/" element={<NotFoundPage />} /> */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
-          <Route path="/subgroups/ai-data-science" element={<AIDataSciencePage />} />
-          <Route path="/subgroups/embedded-electronics" element={<EmbeddedElectronicsPage />} />
-          <Route path="/subgroups/network-security" element={<NetworkSecurityPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/team" element={<TeamPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-        </Route>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            {/* <Route path="/" element={<NotFoundPage />} /> */}
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/subgroups/software-engineering" element={<SoftwareEngineeringPage />} />
+            <Route path="/subgroups/ai-data-science" element={<AIDataSciencePage />} />
+            <Route path="/subgroups/embedded-electronics" element={<EmbeddedElectronicsPage />} />
+            <Route path="/subgroups/network-security" element={<NetworkSecurityPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/team" element={<TeamPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+          </Route>
 
-        {/* Student Registration Route (public) */}
-        <Route path="/register" element={<StudentRegisterPage />} />
+          {/* Student Registration Route (public) */}
+          <Route path="/register" element={<StudentRegisterPage />} />
 
-        {/* Student Login Route (public) */}
-        <Route path="/login" element={<StudentLoginPage />} />
+          {/* Student Login Route (public) */}
+          <Route path="/login" element={<StudentLoginPage />} />
 
-        {/* Student Portfolio Route (public) */}
-        <Route path="/portfolio/:username" element={<StudentPortfolioPage />} />
+          {/* Student Portfolio Route (public) */}
+          <Route path="/portfolio/:username" element={<StudentPortfolioPage />} />
 
-        {/* Student Dashboard Routes */}
-        <Route path="/student/dashboard" element={<StudentDashboardPage />} />
-        <Route path="/student/profile" element={<StudentProfilePage />} />
-        <Route path="/student/events" element={<StudentEventsPage />} />
-        <Route path="/student/settings" element={<StudentSettingsPage />} />
-        <Route path="/student/teams" element={<StudentTeamsPage />} />
-        <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
-        <Route path="/student/quizzes/:id" element={<StudentQuizTakePage />} />
-        <Route path="/student/certificates" element={<StudentDashboardPage />} />
-        <Route path="/student/resources" element={<StudentDashboardPage />} />
+          {/* Student Dashboard Routes */}
+          <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+          <Route path="/student/profile" element={<StudentProfilePage />} />
+          <Route path="/student/events" element={<StudentEventsPage />} />
+          <Route path="/student/settings" element={<StudentSettingsPage />} />
+          <Route path="/student/teams" element={<StudentTeamsPage />} />
+          <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
+          <Route path="/student/quizzes/:id" element={<StudentQuizTakePage />} />
+          <Route path="/student/certificates" element={<StudentDashboardPage />} />
+          <Route path="/student/resources" element={<StudentDashboardPage />} />
 
-        {/* Admin Login Route (public) */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+          {/* Admin Login Route (public) */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
 
-        {/* Protected Admin Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="members" element={<MembersManagementPage />} />
-          <Route path="blog" element={<BlogManagementPage />} />
-          <Route path="events" element={<EventsManagementPage />} />
-          <Route path="projects" element={<ProjectsManagementPage />} />
-          <Route path="team" element={<TeamManagementPage />} />
-          <Route path="contacts" element={<AdminContactsPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="newsletter" element={<NewsletterPage />} />
-          <Route path="quizzes" element={<QuizManagementPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
+          {/* Protected Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="members" element={<MembersManagementPage />} />
+            <Route path="blog" element={<BlogManagementPage />} />
+            <Route path="events" element={<EventsManagementPage />} />
+            <Route path="projects" element={<ProjectsManagementPage />} />
+            <Route path="team" element={<TeamManagementPage />} />
+            <Route path="contacts" element={<AdminContactsPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="newsletter" element={<NewsletterPage />} />
+            <Route path="quizzes" element={<QuizManagementPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
 
-        {/* 404 Route */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </AnimatePresence>
+          {/* 404 Route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AnimatePresence>
     </>
   );
 };

@@ -363,7 +363,11 @@ const AllProjectsSection = () => {
   return (
     <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
-        <SectionHeader title="All Projects" subtitle="Browse through all our community projects." light={isDark} />
+        <SectionHeader
+          title="All Projects"
+          subtitle="Browse through all our community projects."
+          light={isDark}
+        />
       </FadeInView>
 
       {/* Category Filter */}
