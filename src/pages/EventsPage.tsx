@@ -243,7 +243,7 @@ const EventsHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -255,7 +255,7 @@ const EventsHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
             Join us for exciting events that foster learning, innovation, and community building.
             From hackathons to workshops, there's something for everyone.
           </p>

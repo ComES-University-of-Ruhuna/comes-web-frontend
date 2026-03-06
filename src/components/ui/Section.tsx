@@ -22,10 +22,10 @@ const backgrounds = {
 };
 
 const paddings = {
-  sm: "py-12",
-  md: "py-16",
-  lg: "py-20",
-  xl: "py-24",
+  sm: "py-8 md:py-12",
+  md: "py-10 md:py-16",
+  lg: "py-12 md:py-20",
+  xl: "py-16 md:py-24",
 };
 
 export const Section: FC<SectionProps> = ({
@@ -67,10 +67,10 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className={cn("mb-12", centered && "text-center", className)} {...props}>
+    <div className={cn("mb-8 sm:mb-12", centered && "text-center", className)} {...props}>
       <h2
         className={cn(
-          "mb-4 text-3xl font-bold md:text-4xl lg:text-5xl",
+          "mb-4 text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl",
           light ? "text-white" : isDark ? "text-white" : "text-gray-900",
         )}
       >
@@ -79,7 +79,7 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
       {subtitle && (
         <p
           className={cn(
-            "mx-auto max-w-3xl text-lg leading-relaxed md:text-xl",
+            "mx-auto max-w-3xl text-base leading-relaxed sm:text-lg md:text-xl",
             light ? "text-gray-200" : isDark ? "text-gray-300" : "text-gray-600",
           )}
         >

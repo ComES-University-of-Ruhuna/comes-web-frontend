@@ -207,7 +207,7 @@ export const ProfilePage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "mb-6 rounded-2xl border p-8",
+                "mb-6 rounded-2xl border p-5 sm:p-8",
                 isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white shadow-sm",
               )}
             >

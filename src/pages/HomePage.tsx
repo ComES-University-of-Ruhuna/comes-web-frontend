@@ -40,7 +40,7 @@ const HeroSection = () => {
   return (
     <section
       className={cn(
-        "relative flex min-h-[90vh] items-center justify-center overflow-hidden",
+        "relative flex min-h-screen items-center justify-center overflow-hidden md:min-h-[90vh]",
         isDark
           ? "bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950"
           : "bg-gradient-to-br from-blue-50 via-white to-indigo-50",
@@ -76,7 +76,7 @@ const HeroSection = () => {
         )}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:py-16 md:py-20">
         <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
           {/* Left Side - Content */}
           <div className="flex-1 text-center lg:text-left">
@@ -104,7 +104,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-6 text-5xl font-extrabold md:text-7xl lg:text-8xl"
+              className="mb-4 text-4xl font-extrabold sm:text-5xl md:text-7xl lg:text-8xl sm:mb-6"
             >
               <span
                 className={cn(
@@ -124,7 +124,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className={cn(
-                "mb-8 text-xl font-medium md:text-3xl",
+                "mb-6 text-base font-medium sm:text-xl sm:mb-8 md:text-3xl",
                 isDark ? "text-gray-300" : "text-comesBlue opacity-90",
               )}
             >
@@ -137,7 +137,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className={cn(
-                "mb-10 max-w-2xl text-justify text-lg leading-relaxed md:text-xl",
+                "mb-8 max-w-2xl text-left text-sm leading-relaxed sm:text-base sm:text-justify sm:mb-10 md:text-lg",
                 isDark ? "text-gray-400" : "text-gray-600",
                 "mx-auto lg:mx-0",
               )}
@@ -195,7 +195,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6"
+          className="mt-10 grid grid-cols-2 gap-3 sm:mt-16 sm:gap-4 md:grid-cols-4 md:gap-6"
         >
           {STATISTICS.map((stat, index) => (
             <motion.div
@@ -205,7 +205,7 @@ const HeroSection = () => {
               transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
               whileHover={{ scale: 1.05, y: -5 }}
               className={cn(
-                "rounded-2xl border p-6 backdrop-blur-sm transition-all",
+                "rounded-2xl border p-4 backdrop-blur-sm transition-all sm:p-6",
                 isDark
                   ? "border-slate-700/50 bg-slate-800/50 shadow-lg shadow-black/20"
                   : "border-white/50 bg-white/80 shadow-lg",
@@ -213,7 +213,7 @@ const HeroSection = () => {
             >
               <div
                 className={cn(
-                  "mb-1 text-3xl font-bold md:text-4xl",
+                  "mb-1 text-2xl font-bold sm:text-3xl md:text-4xl",
                   isDark ? "text-white" : "text-comesBlue",
                 )}
               >
@@ -326,7 +326,7 @@ const AboutPreviewSection = () => {
               <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className={cn(
-                  "rounded-2xl border p-6 text-center transition-all",
+                  "rounded-2xl border p-4 text-center transition-all sm:p-6",
                   isDark
                     ? "border-slate-700/50 bg-slate-800/50"
                     : "border-gray-100 bg-white shadow-lg",

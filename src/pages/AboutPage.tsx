@@ -72,7 +72,7 @@ const AboutHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className={cn(
-            "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+            "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
             isDark ? "text-white" : "text-comesBlue",
           )}
         >
@@ -82,7 +82,7 @@ const AboutHero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}
+          className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}
         >
           Empowering the next generation of computer engineers through innovation, collaboration,
           and excellence since {SITE_CONFIG.foundedYear}.
@@ -143,7 +143,7 @@ const UniversityFacultySection = () => {
         <FadeInView direction="right">
           <div
             className={cn(
-              "h-full rounded-2xl border p-8",
+              "h-full rounded-2xl border p-5 sm:p-6 lg:p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
                 : "border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50",
@@ -182,7 +182,7 @@ const UniversityFacultySection = () => {
         <FadeInView direction="left">
           <div
             className={cn(
-              "h-full rounded-2xl border p-8",
+              "h-full rounded-2xl border p-5 sm:p-6 lg:p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
                 : "border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50",
@@ -311,7 +311,7 @@ const MissionVisionSection = () => {
               <div className="rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 p-2">
                 <Target className="h-5 w-5 text-white" />
               </div>
-              <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
+              <h2 className={cn("text-xl font-bold sm:text-3xl", isDark ? "text-white" : "text-comesBlue")}>
                 Our Mission
               </h2>
             </div>
@@ -330,7 +330,7 @@ const MissionVisionSection = () => {
               <div className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-2">
                 <Eye className="h-5 w-5 text-white" />
               </div>
-              <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
+              <h2 className={cn("text-xl font-bold sm:text-3xl", isDark ? "text-white" : "text-comesBlue")}>
                 Our Vision
               </h2>
             </div>
@@ -348,13 +348,13 @@ const MissionVisionSection = () => {
         <FadeInView direction="left">
           <div
             className={cn(
-              "rounded-2xl border p-8",
+              "rounded-2xl border p-5 sm:p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
                 : "border-gray-100 bg-gradient-to-br from-white to-gray-50 shadow-xl",
             )}
           >
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
               {values.map((item, index) => (
                 <motion.div
                   key={item.title}
@@ -499,7 +499,7 @@ const StatisticsSection = () => {
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
-                className="mb-2 text-4xl font-bold text-white md:text-5xl"
+                className="mb-2 text-3xl font-bold text-white sm:text-4xl md:text-5xl"
               >
                 {stat.value}
                 {stat.suffix}

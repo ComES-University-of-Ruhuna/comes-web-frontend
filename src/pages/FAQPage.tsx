@@ -59,7 +59,7 @@ const FAQItem = ({
         <button
           onClick={onToggle}
           className={cn(
-            "flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors",
+            "flex w-full items-center justify-between gap-2 px-4 py-4 text-left transition-colors sm:gap-4 sm:px-6 sm:py-5",
             isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50",
           )}
         >
@@ -74,7 +74,7 @@ const FAQItem = ({
             >
               <HelpCircle className={cn("h-4 w-4", isDark ? "text-blue-400" : "text-blue-500")} />
             </div>
-            <span className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-800")}>
+            <span className={cn("text-sm font-semibold sm:text-base lg:text-lg", isDark ? "text-white" : "text-gray-800")}>
               {question}
             </span>
           </div>
@@ -166,7 +166,7 @@ const FAQHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -178,7 +178,7 @@ const FAQHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
             Find answers to common questions about ComES, membership, events, and more. Can't find
             what you're looking for? Contact us!
           </p>

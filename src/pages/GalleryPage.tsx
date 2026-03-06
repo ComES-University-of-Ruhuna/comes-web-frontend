@@ -184,7 +184,7 @@ const GalleryHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -196,7 +196,7 @@ const GalleryHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
             Capturing moments of learning, celebration, and achievement. Browse through our
             collection of memories from events, workshops, and more.
           </p>
@@ -258,7 +258,7 @@ const MainGallerySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4"
         >
           {filteredImages.map((image, index) => (
             <GalleryCard
@@ -321,7 +321,7 @@ const StatsSection = () => {
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.2, type: "spring" }}
-                className="mb-2 text-4xl font-bold text-white md:text-5xl"
+                className="mb-2 text-3xl font-bold text-white sm:text-4xl md:text-5xl"
               >
                 {stat.value}
               </motion.div>

@@ -165,7 +165,7 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
           padding="none"
           className={cn("overflow-hidden lg:flex", isDark && "border-slate-700/50 bg-slate-800/50")}
         >
-          <div className="relative flex flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 p-8 text-white lg:w-2/5">
+          <div className="relative flex flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 p-5 text-white sm:p-8 lg:w-2/5">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -205,7 +205,7 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
               )}
             </div>
           </div>
-          <div className={cn("p-8 lg:w-3/5", isDark && "bg-slate-800/50")}>
+          <div className={cn("p-5 sm:p-8 lg:w-3/5", isDark && "bg-slate-800/50")}>
             <div className="mb-4 flex items-center gap-3">
               <Badge variant={project.status === "Completed" ? "success" : "info"} size="sm">
                 {project.status}
@@ -304,7 +304,7 @@ const ProjectsHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -316,7 +316,7 @@ const ProjectsHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
             Explore innovative projects built by our talented members. From web applications to AI
             solutions, we're building the future.
           </p>

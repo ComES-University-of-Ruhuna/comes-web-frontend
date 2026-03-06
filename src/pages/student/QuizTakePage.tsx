@@ -107,7 +107,7 @@ const ResultsView = ({
       {/* Score Card */}
       <div
         className={cn(
-          "mb-8 rounded-3xl border p-8 text-center",
+          "mb-8 rounded-3xl border p-5 sm:p-8 text-center",
           isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white shadow-xl",
         )}
       >
@@ -487,7 +487,7 @@ export const QuizTakePage = () => {
 
                 <div
                   className={cn(
-                    "rounded-3xl border p-8",
+                    "rounded-3xl border p-5 sm:p-8",
                     isDark
                       ? "border-slate-800 bg-slate-900/50"
                       : "border-gray-200 bg-white shadow-xl",

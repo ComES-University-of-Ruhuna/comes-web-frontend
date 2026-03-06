@@ -60,7 +60,7 @@ const ContactInfoCard = ({
           hoverable
           padding="lg"
           className={cn(
-            "flex h-full min-h-[200px] flex-col items-center justify-center text-center",
+            "flex h-full min-h-[160px] flex-col items-center justify-center text-center sm:min-h-[200px]",
             isDark && "border-slate-700/50 bg-slate-800/50",
           )}
         >
@@ -323,7 +323,7 @@ const ContactHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -335,7 +335,7 @@ const ContactHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
             Have questions, ideas, or just want to say hello? We'd love to hear from you. Reach out
             and let's connect!
           </p>

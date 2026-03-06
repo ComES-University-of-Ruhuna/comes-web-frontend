@@ -169,7 +169,7 @@ const TeamEditor = ({
 
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
           {/* Name & Role */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 className={cn(
@@ -271,7 +271,7 @@ const TeamEditor = ({
           </div>
 
           {/* Email & Avatar */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 className={cn(
@@ -332,7 +332,7 @@ const TeamEditor = ({
           </div>
 
           {/* Term */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 className={cn(

@@ -73,7 +73,7 @@ const StatCard = ({
               )}
             />
           ) : (
-            <p className={cn("mt-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            <p className={cn("mt-2 text-2xl font-bold sm:text-3xl", isDark ? "text-white" : "text-gray-900")}>
               {value}
             </p>
           )}
