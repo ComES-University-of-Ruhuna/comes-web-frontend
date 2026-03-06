@@ -82,7 +82,10 @@ const AboutHero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}
+          className={cn(
+            "text-base leading-relaxed sm:text-xl",
+            isDark ? "text-gray-400" : "text-gray-600",
+          )}
         >
           Empowering the next generation of computer engineers through innovation, collaboration,
           and excellence since {SITE_CONFIG.foundedYear}.
@@ -311,7 +314,12 @@ const MissionVisionSection = () => {
               <div className="rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 p-2">
                 <Target className="h-5 w-5 text-white" />
               </div>
-              <h2 className={cn("text-xl font-bold sm:text-3xl", isDark ? "text-white" : "text-comesBlue")}>
+              <h2
+                className={cn(
+                  "text-xl font-bold sm:text-3xl",
+                  isDark ? "text-white" : "text-comesBlue",
+                )}
+              >
                 Our Mission
               </h2>
             </div>
@@ -330,7 +338,12 @@ const MissionVisionSection = () => {
               <div className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-2">
                 <Eye className="h-5 w-5 text-white" />
               </div>
-              <h2 className={cn("text-xl font-bold sm:text-3xl", isDark ? "text-white" : "text-comesBlue")}>
+              <h2
+                className={cn(
+                  "text-xl font-bold sm:text-3xl",
+                  isDark ? "text-white" : "text-comesBlue",
+                )}
+              >
                 Our Vision
               </h2>
             </div>

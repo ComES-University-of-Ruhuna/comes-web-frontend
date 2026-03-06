@@ -255,7 +255,12 @@ const EventsHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Join us for exciting events that foster learning, innovation, and community building.
             From hackathons to workshops, there's something for everyone.
           </p>

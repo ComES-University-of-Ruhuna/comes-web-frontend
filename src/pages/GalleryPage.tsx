@@ -196,7 +196,12 @@ const GalleryHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Capturing moments of learning, celebration, and achievement. Browse through our
             collection of memories from events, workshops, and more.
           </p>

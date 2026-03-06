@@ -104,7 +104,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-4 text-4xl font-extrabold sm:text-5xl md:text-7xl lg:text-8xl sm:mb-6"
+              className="mb-4 text-4xl font-extrabold sm:mb-6 sm:text-5xl md:text-7xl lg:text-8xl"
             >
               <span
                 className={cn(
@@ -124,7 +124,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className={cn(
-                "mb-6 text-base font-medium sm:text-xl sm:mb-8 md:text-3xl",
+                "mb-6 text-base font-medium sm:mb-8 sm:text-xl md:text-3xl",
                 isDark ? "text-gray-300" : "text-comesBlue opacity-90",
               )}
             >
@@ -137,7 +137,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className={cn(
-                "mb-8 max-w-2xl text-left text-sm leading-relaxed sm:text-base sm:text-justify sm:mb-10 md:text-lg",
+                "mb-8 max-w-2xl text-left text-sm leading-relaxed sm:mb-10 sm:text-justify sm:text-base md:text-lg",
                 isDark ? "text-gray-400" : "text-gray-600",
                 "mx-auto lg:mx-0",
               )}

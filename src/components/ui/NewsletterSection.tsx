@@ -68,7 +68,9 @@ export const NewsletterSection = ({
           </motion.div>
 
           <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl md:text-4xl">{title}</h2>
-          <p className={cn("mb-8 text-base sm:text-xl", isDark ? "text-gray-400" : "text-blue-100")}>
+          <p
+            className={cn("mb-8 text-base sm:text-xl", isDark ? "text-gray-400" : "text-blue-100")}
+          >
             {description}
           </p>
 

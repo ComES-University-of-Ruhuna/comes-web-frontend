@@ -74,7 +74,12 @@ const FAQItem = ({
             >
               <HelpCircle className={cn("h-4 w-4", isDark ? "text-blue-400" : "text-blue-500")} />
             </div>
-            <span className={cn("text-sm font-semibold sm:text-base lg:text-lg", isDark ? "text-white" : "text-gray-800")}>
+            <span
+              className={cn(
+                "text-sm font-semibold sm:text-base lg:text-lg",
+                isDark ? "text-white" : "text-gray-800",
+              )}
+            >
               {question}
             </span>
           </div>
@@ -178,7 +183,12 @@ const FAQHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Find answers to common questions about ComES, membership, events, and more. Can't find
             what you're looking for? Contact us!
           </p>

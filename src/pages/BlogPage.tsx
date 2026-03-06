@@ -139,7 +139,10 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
             />
           </div>
           <div
-            className={cn("flex flex-col justify-center p-5 sm:p-8 lg:w-1/2", isDark && "bg-slate-800/50")}
+            className={cn(
+              "flex flex-col justify-center p-5 sm:p-8 lg:w-1/2",
+              isDark && "bg-slate-800/50",
+            )}
           >
             <div className="mb-4 flex items-center gap-3">
               <Badge variant="warning" size="sm">
@@ -242,7 +245,12 @@ const BlogHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-base leading-relaxed sm:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Stay updated with the latest news, tutorials, and insights from our community. Learn,
             share, and grow together.
           </p>

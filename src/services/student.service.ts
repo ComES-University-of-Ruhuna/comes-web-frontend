@@ -2,8 +2,8 @@
 // ComES Website - Student Service
 // ============================================
 
-import api, { type ApiResponse, setStudentAccessToken as setApiStudentToken } from './api';
-import { STORAGE_KEYS } from '@/config';
+import api, { type ApiResponse, setStudentAccessToken as setApiStudentToken } from "./api";
+import { STORAGE_KEYS } from "@/config";
 
 export interface Student {
   _id: string;
