@@ -19,7 +19,11 @@ import {
 import { useThemeStore, toast } from "@/store";
 import { cn } from "@/utils";
 import { Button, Input } from "@/components/ui";
-import { validateRegistrationNo, extractBatchFromRegNo } from "@/services/student.service";
+import {
+  validateRegistrationNo,
+  extractBatchFromRegNo,
+  studentService,
+} from "@/services/student.service";
 
 interface FormData {
   name: string;
@@ -143,26 +147,14 @@ export const StudentRegisterPage = () => {
     setErrors({});
 
     try {
-      // Call register API without storing tokens (we'll require manual login)
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}/students/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            email: formData.email.toLowerCase().trim(),
-            registrationNo: formData.registrationNo,
-            contactNo: formData.contactNo || undefined,
-            password: formData.password,
-            passwordConfirm: formData.passwordConfirm,
-          }),
-        },
-      );
-
-      const data = await response.json();
+      const data = await studentService.register({
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        registrationNo: formData.registrationNo,
+        contactNo: formData.contactNo || undefined,
+        password: formData.password,
+        passwordConfirm: formData.passwordConfirm,
+      });
 
       if (data.success) {
         setIsSuccess(true);
@@ -216,7 +208,7 @@ export const StudentRegisterPage = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className={cn(
-            "w-full max-w-md rounded-2xl p-8 text-center",
+            "w-full max-w-md rounded-2xl p-5 text-center sm:p-8",
             isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-xl",
           )}
         >
@@ -269,7 +261,7 @@ export const StudentRegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative w-full max-w-lg rounded-2xl p-8",
+          "relative w-full max-w-lg rounded-2xl p-5 sm:p-8",
           isDark
             ? "border border-slate-800 bg-slate-900/90 backdrop-blur-xl"
             : "bg-white/90 shadow-xl backdrop-blur-xl",

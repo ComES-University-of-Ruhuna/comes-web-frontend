@@ -81,7 +81,9 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
               <span className="text-sm">{event.location}</span>
             </div>
 
-            <p className={cn("mb-4 flex-1", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p
+              className={cn("mb-4 line-clamp-3 flex-1", isDark ? "text-gray-400" : "text-gray-600")}
+            >
               {event.description}
             </p>
 
@@ -210,7 +212,7 @@ const EventsHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
@@ -241,7 +243,7 @@ const EventsHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -253,7 +255,12 @@ const EventsHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Join us for exciting events that foster learning, innovation, and community building.
             From hackathons to workshops, there's something for everyone.
           </p>
@@ -277,6 +284,7 @@ const UpcomingEventsSection = () => {
         <SectionHeader
           title="Upcoming Events"
           subtitle="Don't miss out on these exciting opportunities to learn and connect."
+          light={isDark}
         />
       </FadeInView>
 
@@ -317,11 +325,12 @@ const PastEventsSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="Past Events"
           subtitle="A look back at our previous events and achievements."
+          light={false}
         />
       </FadeInView>
 
@@ -428,6 +437,7 @@ export const EventsPage = () => {
       <NewsletterSection
         title="Stay Updated"
         description="Subscribe to our newsletter and be the first to know about new events and opportunities."
+        compact
       />
       <CTASection />
     </PageTransition>

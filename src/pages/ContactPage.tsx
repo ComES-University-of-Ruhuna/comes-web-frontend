@@ -59,7 +59,10 @@ const ContactInfoCard = ({
         <Card
           hoverable
           padding="lg"
-          className={cn("h-full text-center", isDark && "border-slate-700/50 bg-slate-800/50")}
+          className={cn(
+            "flex h-full min-h-[160px] flex-col items-center justify-center text-center sm:min-h-[200px]",
+            isDark && "border-slate-700/50 bg-slate-800/50",
+          )}
         >
           <motion.div
             className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
@@ -71,7 +74,7 @@ const ContactInfoCard = ({
             {title}
           </h3>
           {details.map((detail, idx) => (
-            <p key={idx} className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p key={idx} className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-600")}>
               {detail}
             </p>
           ))}
@@ -290,7 +293,7 @@ const ContactHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
@@ -320,7 +323,7 @@ const ContactHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -332,7 +335,12 @@ const ContactHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Have questions, ideas, or just want to say hello? We'd love to hear from you. Reach out
             and let's connect!
           </p>

@@ -455,7 +455,7 @@ export const Navbar = () => {
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
               className={cn(
-                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] lg:hidden",
+                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-[min(320px,100vw)] overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] lg:hidden",
                 isDark ? "border-l border-slate-800 bg-slate-900" : "bg-white",
               )}
             >

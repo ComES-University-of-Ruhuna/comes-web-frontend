@@ -77,7 +77,7 @@ export const LoginPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl",
+          "relative z-10 w-full max-w-md rounded-2xl p-5 shadow-2xl sm:p-8",
           isDark
             ? "border border-slate-800 bg-slate-900/80 backdrop-blur-xl"
             : "border border-gray-200 bg-white/80 backdrop-blur-xl",

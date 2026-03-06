@@ -58,7 +58,7 @@ const EmbeddedElectronicsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -81,6 +81,7 @@ const EmbeddedElectronicsPage = () => {
         <SectionHeader
           title="Focus Areas"
           subtitle="Explore our expertise in embedded systems and electronics"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {focusAreas.map((area, index) => (
@@ -119,6 +120,7 @@ const EmbeddedElectronicsPage = () => {
         <SectionHeader
           title="Our Activities"
           subtitle="Hands-on learning in embedded systems and electronics"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <FadeInView>

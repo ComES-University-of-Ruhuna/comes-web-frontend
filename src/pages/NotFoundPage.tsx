@@ -98,7 +98,7 @@ export const NotFoundPage = () => {
               </motion.span>
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.span
-                  className="bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 bg-clip-text text-6xl font-bold text-transparent md:text-8xl"
+                  className="bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 bg-clip-text text-5xl font-bold text-transparent sm:text-6xl md:text-8xl"
                   animate={{
                     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                   }}

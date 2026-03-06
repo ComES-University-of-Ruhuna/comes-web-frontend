@@ -189,7 +189,7 @@ const TeamHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -201,7 +201,12 @@ const TeamHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Dedicated professionals and students working together to build a vibrant tech community.
             Meet the people behind ComES.
           </p>

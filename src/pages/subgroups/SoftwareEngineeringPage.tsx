@@ -58,7 +58,7 @@ const SoftwareEngineeringPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -81,6 +81,7 @@ const SoftwareEngineeringPage = () => {
         <SectionHeader
           title="Focus Areas"
           subtitle="Explore our key areas of expertise in software development"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {focusAreas.map((area, index) => (
@@ -117,6 +118,7 @@ const SoftwareEngineeringPage = () => {
         <SectionHeader
           title="Our Activities"
           subtitle="What we do to foster software engineering excellence"
+          light={false}
         />
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <FadeInView>

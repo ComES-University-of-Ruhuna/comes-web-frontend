@@ -75,30 +75,66 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      // Determine if this is a student endpoint
+      const url = originalRequest.url || "";
+      const isStudentEndpoint =
+        url.includes("/students/me") ||
+        url.includes("/students/my-") ||
+        url.includes("/students/events/") ||
+        url.includes("/students/change-password") ||
+        url.includes("/students/search");
+
       try {
-        const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
-        if (refreshToken) {
-          const response = await axios.post(
-            `${API_CONFIG.baseUrl}/auth/refresh-token`,
-            {
-              refreshToken,
-            },
-            { withCredentials: true },
-          );
+        if (isStudentEndpoint) {
+          const studentRefresh = localStorage.getItem(STORAGE_KEYS.studentRefreshToken);
+          if (studentRefresh) {
+            const response = await axios.post(
+              `${API_CONFIG.baseUrl}/students/refresh-token`,
+              {
+                refreshToken: studentRefresh,
+              },
+              { withCredentials: true },
+            );
 
-          const { token } = response.data.data;
-          setAccessToken(token);
+            const { accessToken: newToken } = response.data.data;
+            setStudentAccessToken(newToken);
 
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            }
+            return api(originalRequest);
           }
-          return api(originalRequest);
+        } else {
+          const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
+          if (refreshToken) {
+            const response = await axios.post(
+              `${API_CONFIG.baseUrl}/auth/refresh-token`,
+              {
+                refreshToken,
+              },
+              { withCredentials: true },
+            );
+
+            const { token } = response.data.data;
+            setAccessToken(token);
+
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return api(originalRequest);
+          }
         }
       } catch {
-        // Refresh failed - clear tokens and redirect to login
-        setAccessToken(null);
-        localStorage.removeItem(STORAGE_KEYS.refreshToken);
-        window.dispatchEvent(new CustomEvent("auth:logout"));
+        // Refresh failed - clear tokens and dispatch logout
+        if (isStudentEndpoint) {
+          setStudentAccessToken(null);
+          localStorage.removeItem(STORAGE_KEYS.studentRefreshToken);
+          window.dispatchEvent(new CustomEvent("student:logout"));
+        } else {
+          setAccessToken(null);
+          localStorage.removeItem(STORAGE_KEYS.refreshToken);
+          window.dispatchEvent(new CustomEvent("auth:logout"));
+        }
       }
     }
 

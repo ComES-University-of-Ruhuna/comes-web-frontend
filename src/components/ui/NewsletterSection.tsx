@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { Bell, Send, CheckCircle, AlertCircle, Mail } from "lucide-react";
 import { Section, Button, HoverScale, FadeInView } from "@/components/ui";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
@@ -13,11 +13,14 @@ import { newsletterService } from "@/services";
 interface NewsletterSectionProps {
   title?: string;
   description?: string;
+  /** When true, reduces vertical padding */
+  compact?: boolean;
 }
 
 export const NewsletterSection = ({
   title = "Stay Updated",
   description = "Subscribe to our newsletter and be the first to know about new events and opportunities.",
+  compact = false,
 }: NewsletterSectionProps) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
@@ -49,7 +52,11 @@ export const NewsletterSection = ({
   };
 
   return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
+    <Section
+      background="dark"
+      padding={compact ? "sm" : "lg"}
+      className={isDark ? "bg-slate-900" : ""}
+    >
       <FadeInView>
         <div className="relative mx-auto max-w-2xl text-center">
           <motion.div
@@ -60,8 +67,10 @@ export const NewsletterSection = ({
             <Bell className="h-8 w-8 text-white" />
           </motion.div>
 
-          <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">{title}</h2>
-          <p className={cn("mb-8 text-xl", isDark ? "text-gray-400" : "text-blue-100")}>
+          <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl md:text-4xl">{title}</h2>
+          <p
+            className={cn("mb-8 text-base sm:text-xl", isDark ? "text-gray-400" : "text-blue-100")}
+          >
             {description}
           </p>
 
@@ -83,20 +92,28 @@ export const NewsletterSection = ({
                 className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row"
                 onSubmit={handleSubmit}
               >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className={cn(
-                    "flex-1 rounded-full border-0 px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:outline-none",
-                    isDark
-                      ? "bg-slate-800 text-white placeholder-gray-500"
-                      : "bg-white text-gray-900",
-                  )}
-                  required
-                  disabled={isSubmitting}
-                />
+                <div className="relative flex-1">
+                  <Mail
+                    className={cn(
+                      "absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2",
+                      isDark ? "text-gray-500" : "text-gray-400",
+                    )}
+                  />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className={cn(
+                      "w-full rounded-full border-0 py-3 pr-4 pl-12 focus:ring-2 focus:ring-cyan-400 focus:outline-none",
+                      isDark
+                        ? "bg-slate-800 text-white placeholder-gray-500"
+                        : "bg-white text-gray-900",
+                    )}
+                    required
+                    disabled={isSubmitting}
+                  />
+                </div>
                 <HoverScale>
                   <Button
                     type="submit"

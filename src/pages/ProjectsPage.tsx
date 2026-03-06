@@ -70,7 +70,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
             <h3 className={cn("mb-3 text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
               {project.title}
             </h3>
-            <p className={cn("mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p className={cn("mb-4 line-clamp-3", isDark ? "text-gray-400" : "text-gray-600")}>
               {project.shortDescription}
             </p>
 
@@ -165,7 +165,7 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
           padding="none"
           className={cn("overflow-hidden lg:flex", isDark && "border-slate-700/50 bg-slate-800/50")}
         >
-          <div className="relative flex flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 p-8 text-white lg:w-2/5">
+          <div className="relative flex flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 p-5 text-white sm:p-8 lg:w-2/5">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -205,12 +205,12 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
               )}
             </div>
           </div>
-          <div className={cn("p-8 lg:w-3/5", isDark && "bg-slate-800/50")}>
+          <div className={cn("p-5 sm:p-8 lg:w-3/5", isDark && "bg-slate-800/50")}>
             <div className="mb-4 flex items-center gap-3">
               <Badge variant={project.status === "Completed" ? "success" : "info"} size="sm">
                 {project.status}
               </Badge>
-              <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
+              <span className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-500")}>
                 {project.category}
               </span>
             </div>
@@ -274,7 +274,7 @@ const ProjectsHero = () => {
 
   return (
     <Section
-      background="gradient"
+      background={isDark ? "dark" : "gradient"}
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
@@ -304,7 +304,7 @@ const ProjectsHero = () => {
         <FadeInView delay={0.1}>
           <h1
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
+              "mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl",
               isDark ? "text-white" : "text-comesBlue",
             )}
           >
@@ -316,7 +316,12 @@ const ProjectsHero = () => {
         </FadeInView>
 
         <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p
+            className={cn(
+              "text-base leading-relaxed sm:text-xl",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
             Explore innovative projects built by our talented members. From web applications to AI
             solutions, we're building the future.
           </p>
@@ -338,6 +343,7 @@ const FeaturedProjectsSection = () => {
         <SectionHeader
           title="Featured Projects"
           subtitle="Highlighted projects showcasing our community's best work."
+          light={isDark}
         />
       </FadeInView>
 
@@ -360,9 +366,13 @@ const AllProjectsSection = () => {
     activeCategory === "All" ? projects : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
-        <SectionHeader title="All Projects" subtitle="Browse through all our community projects." />
+        <SectionHeader
+          title="All Projects"
+          subtitle="Browse through all our community projects."
+          light={isDark}
+        />
       </FadeInView>
 
       {/* Category Filter */}

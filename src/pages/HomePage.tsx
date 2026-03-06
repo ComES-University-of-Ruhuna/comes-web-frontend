@@ -40,7 +40,7 @@ const HeroSection = () => {
   return (
     <section
       className={cn(
-        "relative flex min-h-[90vh] items-center justify-center overflow-hidden",
+        "relative flex min-h-screen items-center justify-center overflow-hidden md:min-h-[90vh]",
         isDark
           ? "bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950"
           : "bg-gradient-to-br from-blue-50 via-white to-indigo-50",
@@ -76,7 +76,7 @@ const HeroSection = () => {
         )}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:py-16 md:py-20">
         <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
           {/* Left Side - Content */}
           <div className="flex-1 text-center lg:text-left">
@@ -104,7 +104,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-6 text-5xl font-extrabold md:text-7xl lg:text-8xl"
+              className="mb-4 text-4xl font-extrabold sm:mb-6 sm:text-5xl md:text-7xl lg:text-8xl"
             >
               <span
                 className={cn(
@@ -124,7 +124,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className={cn(
-                "mb-8 text-xl font-medium md:text-3xl",
+                "mb-6 text-base font-medium sm:mb-8 sm:text-xl md:text-3xl",
                 isDark ? "text-gray-300" : "text-comesBlue opacity-90",
               )}
             >
@@ -137,7 +137,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className={cn(
-                "mb-10 max-w-2xl text-lg leading-relaxed md:text-xl",
+                "mb-8 max-w-2xl text-left text-sm leading-relaxed sm:mb-10 sm:text-justify sm:text-base md:text-lg",
                 isDark ? "text-gray-400" : "text-gray-600",
                 "mx-auto lg:mx-0",
               )}
@@ -165,7 +165,14 @@ const HeroSection = () => {
                 </Button>
               </HoverScale>
               <HoverScale>
-                <Button href="/about" variant="outline" size="lg">
+                <Button
+                  href="/about"
+                  variant="outline"
+                  size="lg"
+                  className={cn(
+                    isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+                  )}
+                >
                   Learn More
                 </Button>
               </HoverScale>
@@ -188,7 +195,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6"
+          className="mt-10 grid grid-cols-2 gap-3 sm:mt-16 sm:gap-4 md:grid-cols-4 md:gap-6"
         >
           {STATISTICS.map((stat, index) => (
             <motion.div
@@ -198,7 +205,7 @@ const HeroSection = () => {
               transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
               whileHover={{ scale: 1.05, y: -5 }}
               className={cn(
-                "rounded-2xl border p-6 backdrop-blur-sm transition-all",
+                "rounded-2xl border p-4 backdrop-blur-sm transition-all sm:p-6",
                 isDark
                   ? "border-slate-700/50 bg-slate-800/50 shadow-lg shadow-black/20"
                   : "border-white/50 bg-white/80 shadow-lg",
@@ -206,7 +213,7 @@ const HeroSection = () => {
             >
               <div
                 className={cn(
-                  "mb-1 text-3xl font-bold md:text-4xl",
+                  "mb-1 text-2xl font-bold sm:text-3xl md:text-4xl",
                   isDark ? "text-white" : "text-comesBlue",
                 )}
               >
@@ -282,8 +289,8 @@ const AboutPreviewSection = () => {
           </h2>
           <p
             className={cn(
-              "mb-6 text-lg leading-relaxed",
-              isDark ? "text-gray-400" : "text-gray-600",
+              "mb-6 text-lg leading-relaxed font-medium",
+              isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
             ComES is dedicated to creating an environment where students can thrive, innovate, and
@@ -293,14 +300,21 @@ const AboutPreviewSection = () => {
           </p>
           <p
             className={cn(
-              "mb-8 text-lg leading-relaxed",
-              isDark ? "text-gray-400" : "text-gray-600",
+              "mb-8 text-lg leading-relaxed font-medium",
+              isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
             Join our community of passionate learners and future tech leaders.
           </p>
           <HoverScale>
-            <Button href="/about" variant="outline" icon={<ArrowRight className="h-4 w-4" />}>
+            <Button
+              href="/about"
+              variant="outline"
+              icon={<ArrowRight className="h-4 w-4" />}
+              className={cn(
+                isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+              )}
+            >
               Discover Our Story
             </Button>
           </HoverScale>
@@ -312,7 +326,7 @@ const AboutPreviewSection = () => {
               <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className={cn(
-                  "rounded-2xl border p-6 text-center transition-all",
+                  "rounded-2xl border p-4 text-center transition-all sm:p-6",
                   isDark
                     ? "border-slate-700/50 bg-slate-800/50"
                     : "border-gray-100 bg-white shadow-lg",
@@ -346,11 +360,12 @@ const EventsPreviewSection = () => {
   const featuredEvents = getFeaturedEvents(3);
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "white"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="Upcoming Events"
           subtitle="Join us for exciting events that foster learning, innovation, and community building."
+          light={isDark}
         />
       </FadeInView>
 
@@ -361,7 +376,7 @@ const EventsPreviewSection = () => {
               <Card
                 hoverable
                 padding="none"
-                className={cn(isDark && "border-slate-700 bg-slate-800")}
+                className={cn("flex h-full flex-col", isDark && "border-slate-700 bg-slate-800")}
               >
                 <div
                   className={`bg-gradient-to-r ${event.color} relative overflow-hidden p-6 text-white`}
@@ -387,7 +402,7 @@ const EventsPreviewSection = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="flex flex-1 flex-col p-6">
                   <p
                     className={cn("mb-4 line-clamp-2", isDark ? "text-gray-400" : "text-gray-600")}
                   >
@@ -411,7 +426,7 @@ const EventsPreviewSection = () => {
                       />
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full" href="/events">
                     Register Now
                   </Button>
                 </div>
@@ -439,7 +454,7 @@ const ProjectsPreviewSection = () => {
   const featuredProjects = getFeaturedProjects(4);
 
   return (
-    <Section background={isDark ? "dark" : "white"}>
+    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
       <FadeInView>
         <SectionHeader
           title="Our Projects"
@@ -473,15 +488,8 @@ const ProjectsPreviewSection = () => {
                       {project.category}
                     </Badge>
                   </div>
-                  <h3
-                    className={cn(
-                      "mb-2 text-xl font-bold",
-                      isDark ? "text-white" : "text-comesBlue",
-                    )}
-                  >
-                    {project.title}
-                  </h3>
-                  <p className={cn("mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+                  <h3 className="mb-2 text-xl font-bold text-white">{project.title}</h3>
+                  <p className={cn("mb-4", isDark ? "text-gray-300" : "text-blue-100")}>
                     {project.shortDescription}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -490,7 +498,7 @@ const ProjectsPreviewSection = () => {
                         key={tech}
                         className={cn(
                           "rounded-lg px-2 py-1 text-xs",
-                          isDark ? "bg-slate-700 text-gray-300" : "bg-gray-100 text-gray-600",
+                          isDark ? "bg-slate-700 text-gray-300" : "bg-white/20 text-blue-100",
                         )}
                       >
                         {tech}
@@ -535,7 +543,7 @@ const TestimonialsSection = () => {
             <motion.div
               whileHover={{ y: -10, scale: 1.02 }}
               className={cn(
-                "rounded-2xl border p-6 backdrop-blur-sm transition-all",
+                "flex h-full flex-col rounded-2xl border p-6 backdrop-blur-sm transition-all",
                 isDark ? "border-slate-700/50 bg-slate-800/50" : "border-white/10 bg-white/10",
               )}
             >
@@ -561,7 +569,7 @@ const TestimonialsSection = () => {
                   <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <p className={cn("italic", isDark ? "text-gray-300" : "text-blue-100")}>
+              <p className={cn("flex-1 italic", isDark ? "text-gray-300" : "text-blue-100")}>
                 "{testimonial.quote}"
               </p>
             </motion.div>
@@ -585,18 +593,6 @@ const CTASection = () => {
     >
       <FadeInView direction="up">
         <div className="relative text-center">
-          {/* Decorative elements */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-0 left-1/4 h-20 w-20 rounded-full border border-dashed border-blue-300/30"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute right-1/4 bottom-0 h-16 w-16 rounded-full border border-dashed border-amber-300/30"
-          />
-
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
@@ -625,7 +621,7 @@ const CTASection = () => {
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <HoverScale>
-              <Button href="/contact" size="lg" icon={<Rocket className="h-5 w-5" />}>
+              <Button href="/register" size="lg" icon={<Rocket className="h-5 w-5" />}>
                 Get Started
               </Button>
             </HoverScale>
