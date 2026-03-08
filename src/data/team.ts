@@ -13,7 +13,7 @@ export const executiveCommittee: TeamMember[] = [
   {
     id: "exec-1",
     name: "Kavishka Kalhara",
-    role: "President - Kavishka Kalhara",
+    role: "President",
     position: "president",
     image: getAvatarUrl("Kavishka Kalhara"),
     email: "president@comesuor.lk",
@@ -23,7 +23,7 @@ export const executiveCommittee: TeamMember[] = [
   {
     id: "exec-2",
     name: "Pasindu Isiwara",
-    role: "President Elect - Pasindu Isiwara",
+    role: "President Elect",
     position: "president-elect",
     image: getAvatarUrl("Pasindu Isiwara"),
     email: "",
@@ -32,7 +32,7 @@ export const executiveCommittee: TeamMember[] = [
   {
     id: "exec-3",
     name: "Sandaru Heshan",
-    role: "Vice President - Sandaru Heshan",
+    role: "Vice President",
     position: "vice-president",
     image: getAvatarUrl("Sandaru Heshan"),
     email: "vp@comesuor.lk",
@@ -41,7 +41,7 @@ export const executiveCommittee: TeamMember[] = [
   {
     id: "exec-4",
     name: "Sanuvi Gamage",
-    role: "Secretary - Sanuvi Gamage",
+    role: "Secretary",
     position: "secretary",
     image: getAvatarUrl("Sanuvi Gamage"),
     email: "secretary@comesuor.lk",
@@ -50,7 +50,7 @@ export const executiveCommittee: TeamMember[] = [
   {
     id: "exec-5",
     name: "Dilmi Prasadi",
-    role: "Assistant Secretary - Dilmi Prasadi",
+    role: "Assistant Secretary",
     position: "assistant-secretary",
     image: getAvatarUrl("Dilmi Prasadi"),
     //email: 'asstsecretary@comesuor.lk',
@@ -63,7 +63,7 @@ export const seniorAdvisors: TeamMember[] = [
   {
     id: "advisor-1",
     name: "Dr. Chatura Senevirathne",
-    role: "Ex-Officio Member - Dr. Chatura Senevirathne",
+    role: "Ex-Officio Member",
     position: "ex-officio",
     image: getAvatarUrl("Chatura Senevirathne", "1E40AF"),
     //email: 'chatura@comesuor.lk',
@@ -72,10 +72,19 @@ export const seniorAdvisors: TeamMember[] = [
   {
     id: "advisor-2",
     name: "Dr. Kushan Sudheera",
-    role: "Senior Treasurer - Dr. Kushan Sudheera",
+    role: "Senior Treasurer",
     position: "senior-treasurer",
     image: getAvatarUrl("Kushan Sudheera", "1E40AF"),
     //email: 'kushan@comesuor.lk',
+    contactNo: "",
+  },
+  {
+    id: "board-4",
+    name: "Ms. Sithara Madhubhashini",
+    role: "Board Member - Staff",
+    position: "board-member",
+    image: getAvatarUrl("Sithara Madhubhashini"),
+    //email: 'board4@comesuor.lk',
     contactNo: "",
   },
 ];
@@ -85,7 +94,7 @@ export const coordinators: TeamMember[] = [
   {
     id: "coord-1",
     name: "Janith Chamikara",
-    role: "Head of Marketing and Finance - Janith Chamikara",
+    role: "Head of Marketing and Finance",
     position: "coordinator",
     image: getAvatarUrl("Janith Chamikara"),
     email: "marketing@comesuor.lk",
@@ -94,7 +103,7 @@ export const coordinators: TeamMember[] = [
   {
     id: "coord-2",
     name: "Sachinthana",
-    role: "Head of Public Relations - Sachinthana Kumaranayake",
+    role: "Head of Public Relations",
     position: "coordinator",
     image: getAvatarUrl("Sachinthana"),
     //email: 'pr@comesuor.lk',
@@ -103,7 +112,7 @@ export const coordinators: TeamMember[] = [
   {
     id: "coord-3",
     name: "Malitha Jeewaka",
-    role: "Head of Web and Creative Design - Malitha Jeewaka",
+    role: "Head of Web and Creative Design",
     position: "coordinator",
     image: getAvatarUrl("Malitha Jeewaka"),
     //email: 'web@comesuor.lk',
@@ -116,7 +125,7 @@ export const subgroupChairpersons: TeamMember[] = [
   {
     id: "chair-1",
     name: "Chamara Vishwajith",
-    role: "Subgroup Chairperson - Software Engineering - Chamara Vishwajith",
+    role: "Subgroup Chairperson - Software Engineering",
     position: "chairperson",
     image: getAvatarUrl("Chamara Vishwajith"),
     //email: 'se@comesuor.lk',
@@ -125,7 +134,7 @@ export const subgroupChairpersons: TeamMember[] = [
   {
     id: "chair-2",
     name: "Hirushan Dissanayake",
-    role: "Subgroup Chairperson - Electronic and Embedded Systems - Hirushan Dissanayake",
+    role: "Subgroup Chairperson - Electronic and Embedded Systems",
     position: "chairperson",
     image: getAvatarUrl("Hirushan Dissanayake"),
     //email: 'embedded@comesuor.lk',
@@ -134,7 +143,7 @@ export const subgroupChairpersons: TeamMember[] = [
   {
     id: "chair-3",
     name: "Viranga Weerabandara",
-    role: "Subgroup Chairperson - AI and Data Science - Viranga Weerabandara",
+    role: "Subgroup Chairperson - AI and Data Science",
     position: "chairperson",
     image: getAvatarUrl("Viranga Weerabandara"),
     //email: 'ai@comesuor.lk',
@@ -143,7 +152,7 @@ export const subgroupChairpersons: TeamMember[] = [
   {
     id: "chair-4",
     name: "Tharindu Nadun",
-    role: "Subgroup Chairperson - Network and Security - Tharindu Nadun",
+    role: "Subgroup Chairperson - Network and Security",
     position: "chairperson",
     image: getAvatarUrl("Tharindu Nadun"),
     //email: 'security@comesuor.lk',
@@ -156,7 +165,7 @@ export const boardMembers: TeamMember[] = [
   {
     id: "board-1",
     name: "Senura Koshala",
-    role: "Board Member 1 - Senura Koshala",
+    role: "Board Member",
     position: "board-member",
     image: getAvatarUrl("Senura Koshala"),
     //email: 'board1@comesuor.lk',
@@ -165,7 +174,7 @@ export const boardMembers: TeamMember[] = [
   {
     id: "board-2",
     name: "Praveen Dilshan",
-    role: "Board Member 2 - Praveen Dilshan",
+    role: "Board Member",
     position: "board-member",
     image: getAvatarUrl("Praveen Dilshan"),
     //email: 'board2@comesuor.lk',
@@ -174,25 +183,16 @@ export const boardMembers: TeamMember[] = [
   {
     id: "board-3",
     name: "Iman Sharinda",
-    role: "Board Member 3 - Iman Sharinda",
+    role: "Board Member",
     position: "board-member",
     image: getAvatarUrl("Iman Sharinda"),
     //email: 'board3@comesuor.lk',
     contactNo: "",
   },
   {
-    id: "board-4",
-    name: "Ms. Sithara Madhubhashini",
-    role: "Board Member 4 - Ms. Sithara Madhubhashini",
-    position: "board-member",
-    image: getAvatarUrl("Sithara Madhubhashini"),
-    //email: 'board4@comesuor.lk',
-    contactNo: "",
-  },
-  {
     id: "board-5",
     name: "Tishan Shamika",
-    role: "Board Member 5 - Tishan Shamika",
+    role: "Board Member - Alumni",
     position: "board-member",
     image: getAvatarUrl("Tishan Shamika"),
     //email: 'board5@comesuor.lk',
