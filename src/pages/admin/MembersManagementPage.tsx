@@ -20,9 +20,8 @@ import {
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button } from "@/components/ui";
-import axios, { AxiosError } from "axios";
-import api, { getAccessToken } from "@/services/api";
-import { API_CONFIG } from "@/config";
+import { AxiosError } from "axios";
+import api from "@/services/api";
 
 interface Student {
   _id: string;
@@ -439,19 +438,12 @@ export const MembersManagementPage = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const token = getAccessToken();
-      const response = await axios.get(`${API_CONFIG.baseUrl}/students`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        withCredentials: API_CONFIG.withCredentials,
-        timeout: API_CONFIG.timeout,
-      });
+      const response = await api.get("/students");
       setStudents(response.data.data.students || []);
     } catch (error) {
       const axiosError = error as AxiosError;
-      // 401 means the session expired — the interceptor will handle redirect to login
+      // 401 means the session expired — the api interceptor will refresh the token and retry.
+      // If refresh also fails, it dispatches auth:logout and redirects to login.
       if (axiosError?.response?.status !== 401) {
         showToast("error", "Failed to fetch students");
       }
