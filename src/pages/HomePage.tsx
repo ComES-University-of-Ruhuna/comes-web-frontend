@@ -3,6 +3,7 @@
 // ============================================
 
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import {
   ArrowRight,
   ChevronDown,
@@ -15,6 +16,10 @@ import {
   Sparkles,
   TrendingUp,
   Star,
+  Cpu,
+  Shield,
+  Brain,
+  GitBranch,
 } from "lucide-react";
 import {
   Button,
@@ -27,7 +32,6 @@ import {
   HoverScale,
   ModernRobot,
 } from "@/components/ui";
-import { STATISTICS } from "@/constants";
 import { getFeaturedEvents, getFeaturedProjects, testimonials } from "@/data";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
@@ -190,39 +194,87 @@ const HeroSection = () => {
           </motion.div>
         </div>
 
-        {/* Statistics */}
+        {/* Domains */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
           className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6"
         >
-          {STATISTICS.map((stat, index) => (
+          {[
+            {
+              icon: <Cpu className="h-6 w-6" />,
+              label: "Electronics & Embedded Systems",
+              gradient: "from-emerald-500 to-teal-500",
+              glow: "shadow-emerald-500/30",
+              href: "/subgroups/embedded-electronics",
+            },
+            {
+              icon: <GitBranch className="h-6 w-6" />,
+              label: "Software Engineering",
+              gradient: "from-blue-500 to-cyan-500",
+              glow: "shadow-blue-500/30",
+              href: "/subgroups/software-engineering",
+            },
+            {
+              icon: <Shield className="h-6 w-6" />,
+              label: "Network & Cyber Security",
+              gradient: "from-purple-500 to-indigo-500",
+              glow: "shadow-purple-500/30",
+              href: "/subgroups/network-security",
+            },
+            {
+              icon: <Brain className="h-6 w-6" />,
+              label: "AI & Data Science",
+              gradient: "from-amber-500 to-orange-500",
+              glow: "shadow-amber-500/30",
+              href: "/subgroups/ai-data-science",
+            },
+          ].map((domain, index) => (
             <motion.div
-              key={stat.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              key={domain.label}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className={cn(
-                "rounded-2xl border p-6 backdrop-blur-sm transition-all",
-                isDark
-                  ? "border-slate-700/50 bg-slate-800/50 shadow-lg shadow-black/20"
-                  : "border-white/50 bg-white/80 shadow-lg",
-              )}
+              whileHover={{ y: -8, scale: 1.03 }}
             >
-              <div
+              <Link
+                to={domain.href}
                 className={cn(
-                  "mb-1 text-3xl font-bold md:text-4xl",
-                  isDark ? "text-white" : "text-comesBlue",
+                  "group relative flex cursor-pointer flex-col items-center gap-4 overflow-hidden rounded-2xl border p-6 text-center backdrop-blur-sm transition-all",
+                  isDark
+                    ? "border-slate-700/50 bg-slate-800/50 shadow-lg shadow-black/20 hover:border-slate-600/70"
+                    : "border-white/70 bg-white/80 shadow-lg hover:border-white",
                 )}
               >
-                {stat.value}
-                {stat.suffix}
-              </div>
-              <div className={cn("font-medium", isDark ? "text-gray-400" : "text-gray-600")}>
-                {stat.label}
-              </div>
+              {/* Animated background glow on hover */}
+              <div
+                className={cn(
+                  "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-10",
+                  domain.gradient,
+                )}
+              />
+              {/* Floating icon */}
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 3 + index * 0.4, repeat: Infinity, ease: "easeInOut" }}
+                className={cn(
+                  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg",
+                  domain.gradient,
+                  domain.glow,
+                )}
+              >
+                {domain.icon}
+              </motion.div>
+              <span
+                className={cn(
+                  "relative z-10 text-sm font-semibold leading-tight",
+                  isDark ? "text-gray-200" : "text-comesBlue",
+                )}
+              >
+                {domain.label}
+              </span>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
@@ -289,7 +341,7 @@ const AboutPreviewSection = () => {
           </h2>
           <p
             className={cn(
-              "mb-6 text-lg leading-relaxed font-medium",
+              "mb-6 text-lg leading-relaxed font-medium text-justify",
               isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
@@ -360,7 +412,7 @@ const EventsPreviewSection = () => {
   const featuredEvents = getFeaturedEvents(3);
 
   return (
-    <Section background={isDark ? "white" : "white"} className={isDark ? "bg-slate-950" : ""}>
+    <Section background={isDark ? "dark" : "white"} className={isDark ? "bg-slate-950 " : "text-comesBlue"}>
       <FadeInView>
         <SectionHeader
           title="Upcoming Events"

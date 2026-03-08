@@ -20,6 +20,7 @@ import {
   ContactPage,
   FAQPage,
   NotFoundPage,
+  UnderMaintenancePage,
   StudentRegisterPage,
   StudentLoginPage,
   StudentPortfolioPage,
@@ -91,6 +92,7 @@ const AnimatedRoutes = () => {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/maintenance" element={<UnderMaintenancePage />} />
           </Route>
 
           {/* Student Registration Route (public) */}
