@@ -12,9 +12,6 @@ import {
   Users,
   UserPlus,
   Sparkles,
-  Crown,
-  GraduationCap,
-  Shield,
 } from "lucide-react";
 import {
   Section,
