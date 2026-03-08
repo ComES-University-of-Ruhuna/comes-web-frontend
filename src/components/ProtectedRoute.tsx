@@ -16,7 +16,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   // TEMPORARY: Bypass authentication for development
   // TODO: Remove this bypass before production!
-  const BYPASS_AUTH = true;
+  const BYPASS_AUTH = false;
 
   if (BYPASS_AUTH) {
     return <>{children}</>;
