@@ -189,7 +189,7 @@ export const ProfilePage = () => {
       <Navbar />
       <main className="flex-1 pt-16 md:pt-20">
         <div className={cn("min-h-screen py-8", isDark ? "bg-slate-950" : "bg-gray-50")}>
-          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Back Button */}
             <Link
               to="/student/dashboard"
@@ -334,127 +334,236 @@ export const ProfilePage = () => {
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User
+                {/* Row 1: Name + Contact */}
+                <div className="grid gap-5 lg:grid-cols-2">
+                  {/* Name */}
+                  <div>
+                    <label
                       className={cn(
-                        "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                        isDark ? "text-gray-500" : "text-gray-400",
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
                       )}
-                    />
-                    <Input
-                      type="text"
-                      name="name"
-                      value={formData.name}
+                    >
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User
+                        className={cn(
+                          "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                          isDark ? "text-gray-500" : "text-gray-400",
+                        )}
+                      />
+                      <Input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contact Number */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Contact Number
+                    </label>
+                    <div className="relative">
+                      <Phone
+                        className={cn(
+                          "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                          isDark ? "text-gray-500" : "text-gray-400",
+                        )}
+                      />
+                      <Input
+                        type="tel"
+                        name="contactNo"
+                        value={formData.contactNo}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        placeholder="+94 XX XXX XXXX"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 2: Email + Registration Number */}
+                <div className="grid gap-5 lg:grid-cols-2">
+                  {/* Email (Read-only) */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Email Address
+                      <span
+                        className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
+                      >
+                        (cannot be changed)
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <Mail
+                        className={cn(
+                          "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                          isDark ? "text-gray-500" : "text-gray-400",
+                        )}
+                      />
+                      <Input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        disabled
+                        className="pl-10 opacity-60"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Registration Number (Read-only) */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Registration Number
+                      <span
+                        className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
+                      >
+                        (cannot be changed)
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <GraduationCap
+                        className={cn(
+                          "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                          isDark ? "text-gray-500" : "text-gray-400",
+                        )}
+                      />
+                      <Input
+                        type="text"
+                        value={student?.registrationNo || ""}
+                        disabled
+                        className="pl-10 opacity-60"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 3: Semester + Skills */}
+                <div className="grid gap-5 lg:grid-cols-2">
+                  {/* Semester */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Current Semester
+                    </label>
+                    <select
+                      name="semester"
+                      value={formData.semester}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                {/* Email (Read-only) */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Email Address
-                    <span
-                      className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
-                    >
-                      (cannot be changed)
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <Mail
                       className={cn(
-                        "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                        isDark ? "text-gray-500" : "text-gray-400",
+                        "w-full rounded-xl border px-4 py-3 transition-all",
+                        isDark
+                          ? "border-slate-700 bg-slate-800 text-white"
+                          : "border-gray-200 bg-white text-gray-900",
+                        !isEditing && "opacity-60",
                       )}
-                    />
-                    <Input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      disabled
-                      className="pl-10 opacity-60"
-                    />
-                  </div>
-                </div>
-
-                {/* Registration Number (Read-only) */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Registration Number
-                    <span
-                      className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
                     >
-                      (cannot be changed)
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <GraduationCap
+                      <option value="">Select semester</option>
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                        <option key={sem} value={sem}>
+                          Semester {sem}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Skills */}
+                  <div>
+                    <label
                       className={cn(
-                        "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                        isDark ? "text-gray-500" : "text-gray-400",
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
                       )}
-                    />
+                    >
+                      Skills
+                      <span
+                        className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
+                      >
+                        (comma separated)
+                      </span>
+                    </label>
                     <Input
                       type="text"
-                      value={student?.registrationNo || ""}
-                      disabled
-                      className="pl-10 opacity-60"
-                    />
-                  </div>
-                </div>
-
-                {/* Contact Number */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Contact Number
-                  </label>
-                  <div className="relative">
-                    <Phone
-                      className={cn(
-                        "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                        isDark ? "text-gray-500" : "text-gray-400",
-                      )}
-                    />
-                    <Input
-                      type="tel"
-                      name="contactNo"
-                      value={formData.contactNo}
+                      name="skills"
+                      value={formData.skills}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      placeholder="+94 XX XXX XXXX"
-                      className="pl-10"
+                      placeholder="React, Node.js, Python, etc."
                     />
                   </div>
                 </div>
 
-                {/* Semester */}
+                {/* Row 4: GitHub + LinkedIn */}
+                <div className="grid gap-5 lg:grid-cols-2">
+                  {/* GitHub */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      GitHub Profile
+                    </label>
+                    <Input
+                      type="url"
+                      name="github"
+                      value={formData.github}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      placeholder="https://github.com/yourusername"
+                    />
+                  </div>
+
+                  {/* LinkedIn */}
+                  <div>
+                    <label
+                      className={cn(
+                        "mb-2 block text-sm font-medium",
+                        isDark ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      LinkedIn Profile
+                    </label>
+                    <Input
+                      type="url"
+                      name="linkedin"
+                      value={formData.linkedin}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      placeholder="https://linkedin.com/in/yourusername"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 5: Website (full width) */}
                 <div>
                   <label
                     className={cn(
@@ -462,31 +571,19 @@ export const ProfilePage = () => {
                       isDark ? "text-gray-300" : "text-gray-700",
                     )}
                   >
-                    Current Semester
+                    Personal Website
                   </label>
-                  <select
-                    name="semester"
-                    value={formData.semester}
+                  <Input
+                    type="url"
+                    name="website"
+                    value={formData.website}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className={cn(
-                      "w-full rounded-xl border px-4 py-3 transition-all",
-                      isDark
-                        ? "border-slate-700 bg-slate-800 text-white"
-                        : "border-gray-200 bg-white text-gray-900",
-                      !isEditing && "opacity-60",
-                    )}
-                  >
-                    <option value="">Select semester</option>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-                      <option key={sem} value={sem}>
-                        Semester {sem}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="https://yourwebsite.com"
+                  />
                 </div>
 
-                {/* Bio */}
+                {/* Row 6: Bio (full width) */}
                 <div>
                   <label
                     className={cn(
@@ -520,91 +617,6 @@ export const ProfilePage = () => {
                   <p className={cn("mt-1 text-xs", isDark ? "text-gray-500" : "text-gray-400")}>
                     {formData.bio.length}/500 characters
                   </p>
-                </div>
-
-                {/* Skills */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Skills
-                    <span
-                      className={cn("ml-2 text-xs", isDark ? "text-gray-500" : "text-gray-400")}
-                    >
-                      (comma separated)
-                    </span>
-                  </label>
-                  <Input
-                    type="text"
-                    name="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    placeholder="React, Node.js, Python, etc."
-                  />
-                </div>
-
-                {/* GitHub */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    GitHub Profile
-                  </label>
-                  <Input
-                    type="url"
-                    name="github"
-                    value={formData.github}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    placeholder="https://github.com/yourusername"
-                  />
-                </div>
-
-                {/* LinkedIn */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    LinkedIn Profile
-                  </label>
-                  <Input
-                    type="url"
-                    name="linkedin"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    placeholder="https://linkedin.com/in/yourusername"
-                  />
-                </div>
-
-                {/* Website */}
-                <div>
-                  <label
-                    className={cn(
-                      "mb-2 block text-sm font-medium",
-                      isDark ? "text-gray-300" : "text-gray-700",
-                    )}
-                  >
-                    Personal Website
-                  </label>
-                  <Input
-                    type="url"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    placeholder="https://yourwebsite.com"
-                  />
                 </div>
 
                 {/* Action Buttons */}
