@@ -439,8 +439,11 @@ export const MembersManagementPage = () => {
       setLoading(true);
       const response = await api.get("/students");
       setStudents(response.data.data.students || []);
-    } catch (error) {
-      showToast("error", "Failed to fetch students");
+    } catch (error: any) {
+      // 401 means the session expired — the interceptor will handle redirect to login
+      if (error?.response?.status !== 401) {
+        showToast("error", "Failed to fetch students");
+      }
       console.error("Error fetching students:", error);
     } finally {
       setLoading(false);
