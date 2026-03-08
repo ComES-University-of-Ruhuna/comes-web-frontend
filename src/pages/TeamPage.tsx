@@ -245,7 +245,7 @@ const AdvisorsSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "dark" : "gray"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
           <GraduationCap className="h-8 w-8 text-blue-500" />
@@ -353,11 +353,12 @@ const AllMembersSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "dark" : "gray"}>
       <FadeInView>
         <SectionHeader
           title="All Team Members"
           subtitle="Browse through all our amazing team members."
+          light={false}
         />
       </FadeInView>
 
