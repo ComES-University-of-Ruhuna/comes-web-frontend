@@ -65,7 +65,7 @@ export const FOOTER_LINKS = {
     { label: "Gallery", path: "/gallery" },
     { label: "Blog", path: "/blog" },
     { label: "FAQ", path: "/faq" },
-    { label: "Join Us", path: "/join" },
+    { label: "Join Us", path: "/register" },
   ],
   external: [
     { label: "University of Ruhuna", url: "https://www.ruh.ac.lk" },

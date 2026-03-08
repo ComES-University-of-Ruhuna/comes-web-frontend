@@ -2,8 +2,8 @@
 // ComES Website - Student Service
 // ============================================
 
-import api, { type ApiResponse } from "./api";
-import { STORAGE_KEYS } from "@/config";
+import api, { type ApiResponse, setStudentAccessToken as setApiStudentToken } from './api';
+import { STORAGE_KEYS } from '@/config';
 
 export interface Student {
   _id: string;
@@ -44,6 +44,8 @@ let studentAccessToken: string | null = localStorage.getItem(STORAGE_KEYS.studen
 
 export const setStudentAccessToken = (token: string | null) => {
   studentAccessToken = token;
+  // Also update the api.ts interceptor's token variable
+  setApiStudentToken(token);
   if (token) {
     localStorage.setItem(STORAGE_KEYS.studentAccessToken, token);
   } else {

@@ -12,9 +12,6 @@ import {
   Users,
   UserPlus,
   Sparkles,
-  Crown,
-  GraduationCap,
-  Shield,
 } from "lucide-react";
 import {
   Section,
@@ -220,7 +217,7 @@ const ExecutiveSection = () => {
     <Section background={isDark ? "dark" : "white"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          <Crown className="h-8 w-8 text-amber-500" />
+          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Executive Committee
           </h2>
@@ -230,9 +227,11 @@ const ExecutiveSection = () => {
         </p>
       </FadeInView>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="flex flex-wrap justify-center gap-6">
         {executiveCommittee.map((member, index) => (
-          <TeamMemberCard key={member.id} member={member} index={index} />
+          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+            <TeamMemberCard member={member} index={index} />
+          </div>
         ))}
       </div>
     </Section>
@@ -245,10 +244,10 @@ const AdvisorsSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "dark" : "gray"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          <GraduationCap className="h-8 w-8 text-blue-500" />
+          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Senior Advisors
           </h2>
@@ -258,9 +257,11 @@ const AdvisorsSection = () => {
         </p>
       </FadeInView>
 
-      <div className="mx-auto grid max-w-3xl gap-6 md:grid-cols-2">
+      <div className="flex flex-wrap justify-center gap-6">
         {seniorAdvisors.map((member, index) => (
-          <TeamMemberCard key={member.id} member={member} index={index} />
+          <div key={member.id} className="w-full md:w-[calc(50%-12px)]">
+            <TeamMemberCard member={member} index={index} />
+          </div>
         ))}
       </div>
     </Section>
@@ -276,7 +277,7 @@ const CoordinatorsSection = () => {
     <Section background={isDark ? "dark" : "white"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          <Shield className="h-8 w-8 text-cyan-500" />
+          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Coordinators
           </h2>
@@ -286,9 +287,11 @@ const CoordinatorsSection = () => {
         </p>
       </FadeInView>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-wrap justify-center gap-6">
         {coordinators.map((member, index) => (
-          <TeamMemberCard key={member.id} member={member} index={index} />
+          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+            <TeamMemberCard member={member} index={index} />
+          </div>
         ))}
       </div>
     </Section>
@@ -320,7 +323,7 @@ const JoinTeamSection = () => {
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <HoverScale>
               <Button
-                href="/contact"
+                href="https://volunteers.comesuor.lk"
                 variant="secondary"
                 size="lg"
                 icon={<Sparkles className="h-5 w-5" />}
@@ -353,11 +356,12 @@ const AllMembersSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "dark" : "gray"}>
       <FadeInView>
         <SectionHeader
           title="All Team Members"
           subtitle="Browse through all our amazing team members."
+          light={false}
         />
       </FadeInView>
 
@@ -390,10 +394,12 @@ const AllMembersSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          className="flex flex-wrap justify-center gap-6"
         >
           {filteredMembers.map((member, index) => (
-            <TeamMemberCard key={member.id} member={member} index={index} />
+            <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]">
+              <TeamMemberCard member={member} index={index} />
+            </div>
           ))}
         </motion.div>
       </AnimatePresence>

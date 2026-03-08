@@ -254,7 +254,7 @@ const UniversityFacultySection = () => {
                   {degree.icon}
                 </motion.div>
                 <h4
-                  className={cn("mb-2 text-lg font-bold", isDark ? "text-comesBlue" : "text-white")}
+                  className={cn("mb-2 text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}
                 >
                   {degree.title}
                 </h4>
@@ -433,11 +433,12 @@ const WhatWeDoSection = () => {
   ];
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="What We Do"
           subtitle="Discover the various activities and initiatives that make ComES a vibrant community."
+          light={isDark}
         />
       </FadeInView>
 
@@ -503,7 +504,7 @@ const StatisticsSection = () => {
                 {stat.value}
                 {stat.suffix}
               </motion.div>
-              <div className={cn("font-medium", isDark ? "text-gray-400" : "text-blue-200")}>
+              <div className={cn("font-medium", isDark ? "text-gray-300" : "text-blue-200")}>
                 {stat.label}
               </div>
             </motion.div>
@@ -525,6 +526,7 @@ const AchievementsSection = () => {
         <SectionHeader
           title="Our Achievements"
           subtitle="Celebrating the milestones and successes of our community."
+          light={isDark}
         />
       </FadeInView>
 
@@ -619,11 +621,12 @@ const HistorySection = () => {
   ];
 
   return (
-    <Section background={isDark ? "white" : "gray"}>
+    <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
       <FadeInView>
         <SectionHeader
           title="Our Journey"
           subtitle="A decade of growth, learning, and achievement."
+          light={isDark}
         />
       </FadeInView>
 
@@ -636,7 +639,7 @@ const HistorySection = () => {
           )}
         />
 
-        <div className="space-y-8">
+        <div className="space-y-4">
           {timeline.map((item, index) => (
             <FadeInView
               key={item.year}
