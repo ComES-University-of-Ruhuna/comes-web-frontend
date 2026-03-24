@@ -15,7 +15,7 @@ const ease = [0.25, 0.46, 0.45, 0.94];
 const MemberCard = ({ member, large = false }: { member: TeamMember; large?: boolean }) => (
   <motion.div
     whileHover={{ scale: 1.02, y: -4 }}
-    className="group bg-bg-card overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.15)]"
+    className="group bg-bg-card overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h hover:shadow-[0_0_30px_rgba(14,165,233,0.15)]"
   >
     {large && (
       <div className="relative h-56 overflow-hidden">
@@ -32,7 +32,7 @@ const MemberCard = ({ member, large = false }: { member: TeamMember; large?: boo
     )}
     <div className={`p-5 ${!large ? "flex items-center gap-4" : ""}`}>
       {!large && (
-        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-[rgba(14,165,233,0.2)]">
+        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-border-h">
           <img
             src={
               member.image ||
@@ -78,7 +78,7 @@ export const TeamPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -104,7 +104,7 @@ export const TeamPage = () => {
       </section>
 
       {/* Category Tabs + Members */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FadeInView>
             <div className="mb-10 flex flex-wrap justify-center gap-3">
@@ -117,7 +117,7 @@ export const TeamPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeCategory === cat.id
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {cat.label}

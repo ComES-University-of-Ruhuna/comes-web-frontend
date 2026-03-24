@@ -45,7 +45,7 @@ interface FormErrors {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-[rgba(14,165,233,0.15)] bg-bg-primary py-3 pr-4 pl-10 font-body text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-accent-blue";
+  "w-full rounded-xl border border-border-d bg-bg-primary py-3 pr-4 pl-10 font-body text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-accent-blue";
 const labelClass = "mb-2 block font-body text-sm font-medium text-text-secondary";
 const iconClass = "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-text-muted";
 
@@ -172,14 +172,14 @@ export const StudentRegisterPage = () => {
   // Success state
   if (isSuccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4">
+      <div className="theme-force-dark flex min-h-screen items-center justify-center bg-bg-primary p-4">
         <div className="pointer-events-none absolute inset-0">
           <div className="circuit-grid absolute inset-0 opacity-20" />
         </div>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative w-full max-w-md rounded-2xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/80 p-8 text-center backdrop-blur-xl"
+          className="relative w-full max-w-md rounded-2xl border border-border-d bg-bg-card/80 p-8 text-center backdrop-blur-xl"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -202,7 +202,7 @@ export const StudentRegisterPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4 py-12">
+    <div className="theme-force-dark flex min-h-screen items-center justify-center bg-bg-primary p-4 py-12">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="circuit-grid absolute inset-0 opacity-20" />
         <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
@@ -221,7 +221,7 @@ export const StudentRegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease }}
-        className="relative w-full max-w-lg rounded-2xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/80 p-8 backdrop-blur-xl lg:max-w-2xl"
+        className="relative w-full max-w-lg rounded-2xl border border-border-d bg-bg-card/80 p-8 backdrop-blur-xl lg:max-w-2xl"
       >
         {/* Header */}
         <div className="mb-8 text-center">

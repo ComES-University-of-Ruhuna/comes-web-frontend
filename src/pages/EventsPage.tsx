@@ -27,7 +27,7 @@ export const EventsPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -57,7 +57,7 @@ export const EventsPage = () => {
 
             {/* Search Bar */}
             <div className="mx-auto max-w-md">
-              <div className="bg-bg-card flex items-center gap-3 rounded-full border border-[rgba(14,165,233,0.2)] px-5 py-3">
+              <div className="bg-bg-card flex items-center gap-3 rounded-full border border-border-h px-5 py-3">
                 <Search className="text-text-muted h-4 w-4" />
                 <input
                   type="text"
@@ -73,7 +73,7 @@ export const EventsPage = () => {
       </section>
 
       {/* Filter Tabs + Grid */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Tabs */}
           <FadeInView>
@@ -87,7 +87,7 @@ export const EventsPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeTab === tab
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 hover:text-text-primary border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 hover:text-text-primary border border-border-d"
                   }`}
                 >
                   {tab}
@@ -111,7 +111,7 @@ export const EventsPage = () => {
                   <FadeInView key={event.id} direction="up" delay={i * 0.05}>
                     <motion.div
                       whileHover={{ scale: 1.02, y: -4 }}
-                      className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                      className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h hover:shadow-glow-sm"
                     >
                       <div className="relative h-48 overflow-hidden">
                         <img

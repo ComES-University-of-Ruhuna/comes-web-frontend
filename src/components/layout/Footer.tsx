@@ -61,7 +61,7 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-[#0A1628]">
+    <footer className="relative overflow-hidden bg-bg-secondary">
       {/* Circuit board pattern */}
       <CircuitPattern />
 
@@ -101,7 +101,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="text-text-secondary hover:border-accent-blue/40 hover:text-accent-blue flex h-9 w-9 items-center justify-center rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 transition-all hover:shadow-[0_0_15px_rgba(14,165,233,0.15)]"
+                  className="text-text-secondary hover:border-accent-blue/40 hover:text-accent-blue flex h-9 w-9 items-center justify-center rounded-lg border border-border-d bg-white/5 transition-all hover:shadow-[0_0_15px_rgba(14,165,233,0.15)]"
                   aria-label={social.platform}
                 >
                   {getSocialIcon(social.platform)}
@@ -161,7 +161,7 @@ export const Footer = () => {
                   href={`mailto:${SITE_CONFIG.email}`}
                   className="group font-body text-text-secondary hover:text-accent-blue flex items-start gap-3 text-sm transition-colors"
                 >
-                  <div className="rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 p-2">
+                  <div className="rounded-lg border border-border-d bg-white/5 p-2">
                     <Mail size={14} />
                   </div>
                   <span className="pt-1.5">{SITE_CONFIG.email}</span>
@@ -172,14 +172,14 @@ export const Footer = () => {
                   href={`tel:${SITE_CONFIG.phone.replace(/\s/g, "")}`}
                   className="group font-body text-text-secondary hover:text-accent-blue flex items-start gap-3 text-sm transition-colors"
                 >
-                  <div className="rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 p-2">
+                  <div className="rounded-lg border border-border-d bg-white/5 p-2">
                     <Phone size={14} />
                   </div>
                   <span className="pt-1.5">{SITE_CONFIG.phone}</span>
                 </a>
               </li>
               <li className="text-text-secondary flex items-start gap-3">
-                <div className="rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 p-2">
+                <div className="rounded-lg border border-border-d bg-white/5 p-2">
                   <MapPin size={14} />
                 </div>
                 <div className="font-body pt-1.5 text-sm">
@@ -194,7 +194,7 @@ export const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="relative border-t border-[rgba(14,165,233,0.1)]">
+      <div className="relative border-t border-border-d">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="font-body text-text-muted flex items-center gap-1 text-center text-sm md:text-left">

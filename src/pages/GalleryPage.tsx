@@ -19,7 +19,7 @@ export const GalleryPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -45,7 +45,7 @@ export const GalleryPage = () => {
       </section>
 
       {/* Filter + Grid */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FadeInView>
             <div className="mb-10 flex flex-wrap justify-center gap-3">
@@ -58,7 +58,7 @@ export const GalleryPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeCategory === cat.id
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {cat.label}
@@ -81,7 +81,7 @@ export const GalleryPage = () => {
                 <FadeInView key={image.id} direction="up" delay={i * 0.05}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="group relative mb-4 cursor-pointer overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)]"
+                    className="group relative mb-4 cursor-pointer overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h"
                     onClick={() => setSelectedImage(image.src)}
                   >
                     <img

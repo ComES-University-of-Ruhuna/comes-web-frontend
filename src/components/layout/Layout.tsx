@@ -10,7 +10,7 @@ import { Footer } from "./Footer";
 
 export const Layout: FC = () => {
   return (
-    <div className="font-body flex min-h-screen flex-col bg-[#050A14] text-[#F0F6FF]">
+    <div className="font-body flex min-h-screen flex-col bg-bg-primary text-[#F0F6FF]">
       <Navbar />
       <motion.main
         className="flex-1 pt-16 md:pt-20"

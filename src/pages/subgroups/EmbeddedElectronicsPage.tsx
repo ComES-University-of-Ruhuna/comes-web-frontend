@@ -48,7 +48,7 @@ const activities = [
 
 const EmbeddedElectronicsPage = () => (
   <PageTransition>
-    <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-32">
       <div className="circuit-grid absolute inset-0 opacity-30" />
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -87,7 +87,7 @@ const EmbeddedElectronicsPage = () => (
       </div>
     </section>
 
-    <section className="bg-[#0A1628] py-20 lg:py-32">
+    <section className="bg-bg-secondary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -104,7 +104,7 @@ const EmbeddedElectronicsPage = () => (
             <FadeInView key={area.title} direction="up" delay={i * 0.1}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="bg-bg-card flex items-start gap-5 rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                className="bg-bg-card flex items-start gap-5 rounded-2xl border border-border-d p-6 transition-all hover:border-border-h hover:shadow-glow-sm"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15">
                   <area.icon className="h-6 w-6 text-emerald-400" />
@@ -122,7 +122,7 @@ const EmbeddedElectronicsPage = () => (
       </div>
     </section>
 
-    <section className="bg-[#050A14] py-20 lg:py-32">
+    <section className="bg-bg-primary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -139,7 +139,7 @@ const EmbeddedElectronicsPage = () => (
             <FadeInView key={act.title} direction="up" delay={i * 0.1}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 text-center transition-all hover:border-[rgba(14,165,233,0.3)]"
+                className="bg-bg-card rounded-2xl border border-border-d p-6 text-center transition-all hover:border-border-h"
               >
                 <act.icon className="mx-auto mb-4 h-10 w-10 text-emerald-400" />
                 <h3 className="font-display text-text-primary mb-2 text-lg font-semibold">
@@ -153,7 +153,7 @@ const EmbeddedElectronicsPage = () => (
       </div>
     </section>
 
-    <section className="bg-[#0A1628] py-16 lg:py-24">
+    <section className="bg-bg-secondary py-16 lg:py-24">
       <div className="mx-auto max-w-xl px-4 text-center sm:px-6">
         <FadeInView>
           <h2 className="font-display text-text-primary mb-4 text-2xl font-bold">

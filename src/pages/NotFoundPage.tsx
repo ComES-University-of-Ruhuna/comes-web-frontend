@@ -11,7 +11,7 @@ const ease = [0.25, 0.46, 0.45, 0.94];
 
 export const NotFoundPage = () => (
   <PageTransition>
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050A14]">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg-primary">
       <div className="circuit-grid absolute inset-0 opacity-30" />
 
       {/* Animated orbs */}

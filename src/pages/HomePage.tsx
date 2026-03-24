@@ -60,9 +60,12 @@ const Counter = ({ value, suffix = "" }: { value: number; suffix?: string }) => 
 
 // ─── Section 1: Hero ───
 const HeroSection = () => (
-  <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050A14]">
+  <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg-primary">
     {/* Animated circuit grid background */}
-    <div className="circuit-grid absolute inset-0 opacity-40" />
+    <div className="circuit-grid absolute inset-0 opacity-[0.04] dark:opacity-[0.07]" />
+
+    {/* Radial glow for both modes */}
+    <div className="absolute inset-0 pointer-events-none dark:opacity-100 opacity-40" style={{ background: 'radial-gradient(ellipse 70% 60% at 65% 50%, var(--border-hover), transparent)' }} />
 
     {/* Animated gradient orbs */}
     <motion.div
@@ -86,7 +89,7 @@ const HeroSection = () => (
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
           >
-            <span className="text-accent-blue mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(14,165,233,0.3)] bg-[rgba(14,165,233,0.1)] px-4 py-1.5 font-mono text-xs font-medium tracking-widest uppercase">
+            <span className="text-accent-blue mb-6 inline-flex items-center gap-2 rounded-full border border-border-h bg-[rgba(14,165,233,0.1)] px-4 py-1.5 font-mono text-xs font-medium tracking-widest uppercase">
               Est. 2026 · UoR Faculty of Engineering
             </span>
           </motion.div>
@@ -217,7 +220,7 @@ const StatsSection = () => {
   ];
 
   return (
-    <section className="relative border-y border-[rgba(14,165,233,0.1)] bg-[#0A1628]">
+    <section className="relative border-y border-border-d bg-bg-secondary">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
           {stats.map((stat, i) => (
@@ -237,7 +240,7 @@ const StatsSection = () => {
 
 // ─── Section 3: About Teaser ───
 const AboutTeaser = () => (
-  <section className="bg-[#050A14] py-20 lg:py-32">
+  <section className="bg-bg-primary py-20 lg:py-32">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <FadeInView direction="right">
@@ -328,7 +331,7 @@ const SubgroupsSection = () => {
   ];
 
   return (
-    <section className="bg-[#0A1628] py-20 lg:py-32">
+    <section className="bg-bg-secondary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -347,7 +350,7 @@ const SubgroupsSection = () => {
               <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ ease }}>
                 <Link
                   to={sg.href}
-                  className="group bg-bg-card flex items-start gap-5 rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.4)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                  className="group bg-bg-card shadow-sm dark:shadow-none flex items-start gap-5 rounded-2xl border border-border-d p-6 transition-all hover:border-border-h hover:shadow-glow-sm"
                 >
                   <div
                     className={cn(
@@ -379,7 +382,7 @@ const FeaturedEvents = () => {
   const events = getFeaturedEvents(3);
 
   return (
-    <section className="bg-[#050A14] py-20 lg:py-32">
+    <section className="bg-bg-primary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -397,7 +400,7 @@ const FeaturedEvents = () => {
             <FadeInView key={event.id} direction="up" delay={i * 0.1}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                className="group bg-bg-card shadow-sm dark:shadow-none flex h-full flex-col overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h hover:shadow-glow-sm"
               >
                 {/* Image placeholder */}
                 <div className="relative h-48 overflow-hidden">
@@ -459,7 +462,7 @@ const FeaturedProjects = () => {
   const projects = getFeaturedProjects(3);
 
   return (
-    <section className="bg-[#0A1628] py-20 lg:py-32">
+    <section className="bg-bg-secondary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -477,7 +480,7 @@ const FeaturedProjects = () => {
             <FadeInView key={project.id} direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="group bg-bg-card flex h-full flex-col rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                className="group bg-bg-card shadow-sm dark:shadow-none flex h-full flex-col rounded-2xl border border-border-d p-6 transition-all hover:border-border-h hover:shadow-glow-sm"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <span className="bg-accent-blue/15 text-accent-blue rounded-full px-3 py-1 font-mono text-xs">
@@ -495,7 +498,7 @@ const FeaturedProjects = () => {
                   {project.technologies.slice(0, 4).map((tech) => (
                     <span
                       key={tech}
-                      className="text-text-secondary rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 px-2 py-0.5 font-mono text-xs"
+                      className="text-text-secondary rounded-lg border border-border-d bg-white/5 px-2 py-0.5 font-mono text-xs"
                     >
                       {tech}
                     </span>
@@ -537,7 +540,7 @@ const TeamSpotlight = () => {
   ];
 
   return (
-    <section className="bg-[#050A14] py-20 lg:py-32">
+    <section className="bg-bg-primary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -557,7 +560,7 @@ const TeamSpotlight = () => {
                 whileHover={{ scale: 1.05, y: -4 }}
                 className="flex flex-col items-center"
               >
-                <div className="hover:border-accent-blue mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(14,165,233,0.3)] transition-all hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]">
+                <div className="hover:border-accent-blue mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-border-h transition-all hover:shadow-glow">
                   <img src={member.img} alt={member.name} className="h-full w-full object-cover" />
                 </div>
                 <span className="font-body text-text-secondary text-sm font-medium">
@@ -605,7 +608,7 @@ const BlogSection = () => {
   ];
 
   return (
-    <section className="bg-[#0A1628] py-20 lg:py-32">
+    <section className="bg-bg-secondary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -623,7 +626,7 @@ const BlogSection = () => {
             <FadeInView key={post.title} direction="up" delay={i * 0.1}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="group bg-bg-card flex h-full flex-col rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                className="group bg-bg-card shadow-sm dark:shadow-none flex h-full flex-col rounded-2xl border border-border-d p-6 transition-all hover:border-border-h hover:shadow-glow-sm"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <span className="bg-accent-blue/15 text-accent-blue rounded-full px-3 py-1 font-mono text-xs">
@@ -697,10 +700,10 @@ const CTABanner = () => (
 
 // ─── Section 10: Newsletter ───
 const NewsletterSection = () => (
-  <section className="bg-[#050A14] py-20 lg:py-28">
+  <section className="bg-bg-primary py-20 lg:py-28">
     <div className="mx-auto max-w-xl px-4 text-center sm:px-6">
       <FadeInView>
-        <div className="bg-accent-blue/10 mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[rgba(14,165,233,0.2)]">
+        <div className="bg-accent-blue/10 mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border-h">
           <Mail className="text-accent-blue h-6 w-6" />
         </div>
         <h2 className="font-display text-text-primary mb-3 text-2xl font-bold">Stay in the Loop</h2>
@@ -711,7 +714,7 @@ const NewsletterSection = () => (
           <input
             type="email"
             placeholder="Enter your email"
-            className="bg-bg-card font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue flex-1 rounded-full border border-[rgba(14,165,233,0.2)] px-6 py-3 text-sm transition-colors outline-none"
+            className="bg-bg-card font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue flex-1 rounded-full border border-border-h px-6 py-3 text-sm transition-colors outline-none"
           />
           <motion.button
             whileHover={{ scale: 1.03 }}

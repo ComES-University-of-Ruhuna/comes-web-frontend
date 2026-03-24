@@ -10,7 +10,7 @@ import { SITE_CONFIG } from "@/constants";
 const ease = [0.25, 0.46, 0.45, 0.94];
 
 export const UnderMaintenancePage = () => (
-  <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4">
+  <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="circuit-grid absolute inset-0 opacity-20" />
       <motion.div

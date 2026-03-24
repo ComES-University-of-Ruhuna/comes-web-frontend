@@ -32,7 +32,7 @@ export const ContactPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -58,14 +58,14 @@ export const ContactPage = () => {
       </section>
 
       {/* Contact Form + Info */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-5">
             {/* Form — 3 cols */}
             <FadeInView direction="right" className="lg:col-span-3">
               <form
                 onSubmit={handleSubmit}
-                className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-8"
+                className="bg-bg-card rounded-2xl border border-border-d p-8"
               >
                 <h2 className="font-display text-text-primary mb-6 text-xl font-bold">
                   Send a Message
@@ -79,7 +79,7 @@ export const ContactPage = () => {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-border-d px-4 py-3 text-sm transition-colors outline-none"
                       placeholder="Your name"
                     />
                   </div>
@@ -91,7 +91,7 @@ export const ContactPage = () => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-border-d px-4 py-3 text-sm transition-colors outline-none"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -104,7 +104,7 @@ export const ContactPage = () => {
                     type="text"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-border-d px-4 py-3 text-sm transition-colors outline-none"
                     placeholder="How can we help?"
                   />
                 </div>
@@ -116,7 +116,7 @@ export const ContactPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={5}
-                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full resize-none rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full resize-none rounded-xl border border-border-d px-4 py-3 text-sm transition-colors outline-none"
                     placeholder="Your message..."
                   />
                 </div>
@@ -135,7 +135,7 @@ export const ContactPage = () => {
             {/* Info Cards — 2 cols */}
             <div className="space-y-6 lg:col-span-2">
               <FadeInView direction="left" delay={0.1}>
-                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                <div className="bg-bg-card rounded-2xl border border-border-d p-6">
                   <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
                     <Mail className="text-accent-blue h-5 w-5" />
                   </div>
@@ -152,7 +152,7 @@ export const ContactPage = () => {
               </FadeInView>
 
               <FadeInView direction="left" delay={0.2}>
-                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                <div className="bg-bg-card rounded-2xl border border-border-d p-6">
                   <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
                     <Phone className="text-accent-blue h-5 w-5" />
                   </div>
@@ -169,7 +169,7 @@ export const ContactPage = () => {
               </FadeInView>
 
               <FadeInView direction="left" delay={0.3}>
-                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                <div className="bg-bg-card rounded-2xl border border-border-d p-6">
                   <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
                     <MapPin className="text-accent-blue h-5 w-5" />
                   </div>
@@ -188,7 +188,7 @@ export const ContactPage = () => {
 
               {/* Social Links */}
               <FadeInView direction="left" delay={0.4}>
-                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                <div className="bg-bg-card rounded-2xl border border-border-d p-6">
                   <h3 className="font-display text-text-primary mb-4 text-base font-semibold">
                     Follow Us
                   </h3>
@@ -200,7 +200,7 @@ export const ContactPage = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.1, y: -2 }}
-                        className="text-text-muted hover:border-accent-blue/40 hover:text-accent-blue flex h-10 w-10 items-center justify-center rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 transition-all"
+                        className="text-text-muted hover:border-accent-blue/40 hover:text-accent-blue flex h-10 w-10 items-center justify-center rounded-lg border border-border-d bg-white/5 transition-all"
                       >
                         {getSocialIcon(social.platform)}
                       </motion.a>

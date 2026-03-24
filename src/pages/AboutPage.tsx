@@ -21,7 +21,7 @@ const ease = [0.25, 0.46, 0.45, 0.94];
 
 // Hero Section
 const HeroSection = () => (
-  <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-32">
+  <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-32">
     <div className="circuit-grid absolute inset-0 opacity-30" />
     <motion.div
       animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -59,7 +59,7 @@ const HeroSection = () => (
 
 // Mission & Vision
 const MissionVision = () => (
-  <section className="bg-[#0A1628] py-20 lg:py-32">
+  <section className="bg-bg-secondary py-20 lg:py-32">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2">
         <FadeInView direction="right">
@@ -121,7 +121,7 @@ const HistoryTimeline = () => {
   ];
 
   return (
-    <section className="bg-[#050A14] py-20 lg:py-32">
+    <section className="bg-bg-primary py-20 lg:py-32">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-16 text-center">
@@ -146,7 +146,7 @@ const HistoryTimeline = () => {
                 <div className={`flex-1 ${i % 2 === 0 ? "text-right" : "text-left"}`}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="bg-bg-card inline-block rounded-2xl border border-[rgba(14,165,233,0.15)] p-6"
+                    className="bg-bg-card inline-block rounded-2xl border border-border-d p-6"
                   >
                     <span className="text-accent-blue mb-2 block font-mono text-sm">
                       {milestone.year}
@@ -205,7 +205,7 @@ const ValuesSection = () => {
   ];
 
   return (
-    <section className="bg-[#0A1628] py-20 lg:py-32">
+    <section className="bg-bg-secondary py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeInView>
           <div className="mb-12 text-center">
@@ -223,7 +223,7 @@ const ValuesSection = () => {
             <FadeInView key={v.title} direction="up" delay={i * 0.08}>
               <motion.div
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 text-center transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                className="bg-bg-card rounded-2xl border border-border-d p-6 text-center transition-all hover:border-border-h hover:shadow-glow-sm"
               >
                 <div className="bg-accent-blue/10 text-accent-blue mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl">
                   {v.icon}
@@ -243,11 +243,11 @@ const ValuesSection = () => {
 
 // Faculty Affiliation
 const FacultySection = () => (
-  <section className="bg-[#050A14] py-20 lg:py-28">
+  <section className="bg-bg-primary py-20 lg:py-28">
     <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
       <FadeInView>
         <motion.div whileHover={{ scale: 1.01 }} className="glass rounded-2xl p-10">
-          <div className="bg-accent-blue/10 mb-4 inline-block rounded-xl border border-[rgba(14,165,233,0.2)] p-3">
+          <div className="bg-accent-blue/10 mb-4 inline-block rounded-xl border border-border-h p-3">
             <img
               src="https://placehold.co/80x80/0D1E35/0EA5E9?text=UoR"
               alt="University of Ruhuna"

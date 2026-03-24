@@ -25,7 +25,7 @@ export const StudentLoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4">
+    <div className="theme-force-dark flex min-h-screen items-center justify-center bg-bg-primary p-4">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="circuit-grid absolute inset-0 opacity-20" />
@@ -46,7 +46,7 @@ export const StudentLoginPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease }}
-        className="relative w-full max-w-md rounded-2xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/80 p-8 backdrop-blur-xl"
+        className="relative w-full max-w-md rounded-2xl border border-border-d bg-bg-card/80 p-8 backdrop-blur-xl"
       >
         {/* Header */}
         <div className="mb-8 text-center">
@@ -88,7 +88,7 @@ export const StudentLoginPage = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] py-3 pr-4 pl-10 text-sm transition-colors outline-none"
+                className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-border-d py-3 pr-4 pl-10 text-sm transition-colors outline-none"
                 placeholder="your.email@example.com"
                 required
               />
@@ -105,7 +105,7 @@ export const StudentLoginPage = () => {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] py-3 pr-12 pl-10 text-sm transition-colors outline-none"
+                className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-border-d py-3 pr-12 pl-10 text-sm transition-colors outline-none"
                 placeholder="Enter your password"
                 required
               />
@@ -123,7 +123,7 @@ export const StudentLoginPage = () => {
             <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
-                className="bg-bg-primary h-4 w-4 rounded border border-[rgba(14,165,233,0.3)]"
+                className="bg-bg-primary h-4 w-4 rounded border border-border-h"
               />
               <span className="font-body text-text-muted text-sm">Remember me</span>
             </label>
@@ -163,7 +163,7 @@ export const StudentLoginPage = () => {
           </p>
         </div>
 
-        <div className="mt-4 border-t border-[rgba(14,165,233,0.1)] pt-4 text-center">
+        <div className="mt-4 border-t border-border-d pt-4 text-center">
           <p className="font-body text-text-muted text-sm">
             Are you an admin?{" "}
             <Link

@@ -5,12 +5,12 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, ExternalLink } from "lucide-react";
+import { Menu, X, ChevronDown, ExternalLink, Sun, Moon } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
 import { useScrollPosition, useClickOutside } from "@/hooks";
 import { cn } from "@/utils";
 import { UserProfileDropdown, NotificationsDropdown } from "@/components/ui";
-import { useStudentStore, useAuthStore } from "@/store";
+import { useStudentStore, useAuthStore, useThemeStore } from "@/store";
 import type { NavLink } from "@/types";
 
 // Circuit node SVG icon for logo
@@ -84,7 +84,7 @@ const NavItem = ({ link, index, isActive }: NavItemProps) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-full left-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/95 shadow-xl shadow-black/30 backdrop-blur-xl"
+              className="absolute top-full left-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-border-d bg-bg-card/95 shadow-xl shadow-black/30 backdrop-blur-xl"
             >
               <div className="py-1.5">
                 {link.children?.map((child) => (
@@ -177,7 +177,7 @@ const MobileNavItem = ({ link, index, isActive, onClose }: MobileNavItemProps) =
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="ml-4 space-y-1 border-l border-[rgba(14,165,233,0.2)] pl-4">
+              <div className="ml-4 space-y-1 border-l border-border-h pl-4">
                 {link.children?.map((child) => (
                   <Link
                     key={child.path}
@@ -230,6 +230,7 @@ export const Navbar = () => {
   // Check if user is authenticated
   const { isAuthenticated: isStudentAuth } = useStudentStore();
   const { isAuthenticated: isAdminAuth } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const isAuthenticated = isStudentAuth || isAdminAuth;
 
   // Close mobile menu on route change
@@ -259,7 +260,7 @@ export const Navbar = () => {
       className={cn(
         "fixed top-0 right-0 left-0 z-50 transition-all duration-300",
         isScrolled
-          ? "border-b border-[rgba(14,165,233,0.1)] bg-[#050A14]/80 shadow-lg shadow-black/20 backdrop-blur-xl"
+          ? "border-b border-border-d bg-bg-primary/80 shadow-lg shadow-black/20 backdrop-blur-xl"
           : "bg-transparent",
       )}
     >
@@ -292,6 +293,15 @@ export const Navbar = () => {
             {/* Notifications - only show if authenticated */}
             {isAuthenticated && <NotificationsDropdown isScrolled={isScrolled} />}
 
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-border-d text-text-muted hover:border-border-h hover:text-text-secondary transition-all"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+
             {/* User Profile Dropdown or CTA Buttons */}
             {isAuthenticated ? (
               <UserProfileDropdown isScrolled={isScrolled} />
@@ -300,7 +310,7 @@ export const Navbar = () => {
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     to="/login"
-                    className="border-accent-blue/50 font-body text-accent-blue hover:border-accent-blue hover:bg-accent-blue/10 flex items-center gap-1.5 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_20px_rgba(14,165,233,0.15)]"
+                    className="border-accent-blue/50 font-body text-accent-blue hover:border-accent-blue hover:bg-accent-blue/10 flex items-center gap-1.5 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-glow-sm"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                     Student Portal
@@ -326,6 +336,13 @@ export const Navbar = () => {
                 <UserProfileDropdown isScrolled={isScrolled} />
               </>
             )}
+            <button
+              onClick={toggleTheme}
+              className="text-text-secondary hover:text-text-primary rounded-xl p-2 transition-colors hover:bg-white/5"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -380,7 +397,7 @@ export const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-full overflow-y-auto border-l border-[rgba(14,165,233,0.1)] bg-[#050A14]/98 backdrop-blur-xl sm:w-80 md:top-20 md:h-[calc(100vh-5rem)] lg:hidden"
+              className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-full overflow-y-auto border-l border-border-d bg-bg-primary/98 backdrop-blur-xl sm:w-80 md:top-20 md:h-[calc(100vh-5rem)] lg:hidden"
             >
               <div className="space-y-1 p-6">
                 {NAV_LINKS.map((link, index) => (
@@ -397,7 +414,7 @@ export const Navbar = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="mt-6 space-y-3 border-t border-[rgba(14,165,233,0.1)] pt-6"
+                  className="mt-6 space-y-3 border-t border-border-d pt-6"
                 >
                   {isAuthenticated ? (
                     <UserProfileDropdown variant="mobile" />

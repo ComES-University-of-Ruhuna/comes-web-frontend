@@ -30,7 +30,7 @@ export const BlogPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -52,7 +52,7 @@ export const BlogPage = () => {
               Insights, tutorials, and articles from the ComES community.
             </p>
             <div className="mx-auto max-w-md">
-              <div className="bg-bg-card flex items-center gap-3 rounded-full border border-[rgba(14,165,233,0.2)] px-5 py-3">
+              <div className="bg-bg-card flex items-center gap-3 rounded-full border border-border-h px-5 py-3">
                 <Search className="text-text-muted h-4 w-4" />
                 <input
                   type="text"
@@ -70,7 +70,7 @@ export const BlogPage = () => {
         </div>
       </section>
 
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Category Tabs */}
           <FadeInView>
@@ -87,7 +87,7 @@ export const BlogPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeCategory === cat.id
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {cat.label}
@@ -101,7 +101,7 @@ export const BlogPage = () => {
             <FadeInView className="mb-12">
               <motion.div
                 whileHover={{ scale: 1.01, y: -2 }}
-                className="group bg-bg-card grid overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] md:grid-cols-2"
+                className="group bg-bg-card grid overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h md:grid-cols-2"
               >
                 <div className="h-64 overflow-hidden md:h-auto">
                   <img
@@ -154,7 +154,7 @@ export const BlogPage = () => {
                   <FadeInView key={post.id} direction="up" delay={i * 0.05}>
                     <motion.div
                       whileHover={{ scale: 1.02, y: -4 }}
-                      className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                      className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-border-d transition-all hover:border-border-h hover:shadow-glow-sm"
                     >
                       <div className="h-44 overflow-hidden">
                         <img
@@ -213,7 +213,7 @@ export const BlogPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="bg-bg-card text-text-secondary hover:border-accent-blue/40 flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(14,165,233,0.15)] transition-all disabled:opacity-30"
+                className="bg-bg-card text-text-secondary hover:border-accent-blue/40 flex h-10 w-10 items-center justify-center rounded-full border border-border-d transition-all disabled:opacity-30"
               >
                 <ChevronLeft className="h-4 w-4" />
               </motion.button>
@@ -225,7 +225,7 @@ export const BlogPage = () => {
                   className={`font-body flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${
                     currentPage === i + 1
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {i + 1}
@@ -236,7 +236,7 @@ export const BlogPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="bg-bg-card text-text-secondary hover:border-accent-blue/40 flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(14,165,233,0.15)] transition-all disabled:opacity-30"
+                className="bg-bg-card text-text-secondary hover:border-accent-blue/40 flex h-10 w-10 items-center justify-center rounded-full border border-border-d transition-all disabled:opacity-30"
               >
                 <ChevronRight className="h-4 w-4" />
               </motion.button>

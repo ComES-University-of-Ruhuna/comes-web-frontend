@@ -4,16 +4,9 @@
 /* ============================================
    ComES Design System — Tailwind v4 Theme
    ============================================ */
-@theme {
-  --color-bg-primary: #050A14;
-  --color-bg-secondary: #0A1628;
-  --color-bg-card: #0D1E35;
-  --color-accent-blue: #0EA5E9;
-  --color-accent-cyan: #06B6D4;
-  --color-text-primary: #F0F6FF;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted: #475569;
+@config '../tailwind.config.js';
 
+@theme {
   --font-family-display: 'Orbitron', sans-serif;
   --font-family-body: 'DM Sans', sans-serif;
   --font-family-mono: 'JetBrains Mono', monospace;
@@ -22,22 +15,65 @@
 /* ============================================
    CSS Custom Properties
    ============================================ */
+/* ── LIGHT MODE (default) ── */
 :root {
-  --bg-primary: #050A14;
-  --bg-secondary: #0A1628;
-  --bg-card: #0D1E35;
-  --bg-glass: rgba(13, 30, 53, 0.6);
-  --accent-blue: #0EA5E9;
-  --accent-cyan: #06B6D4;
-  --accent-glow: rgba(14, 165, 233, 0.25);
-  --text-primary: #F0F6FF;
-  --text-secondary: #94A3B8;
-  --text-muted: #475569;
-  --border-subtle: rgba(14, 165, 233, 0.15);
-  --border-accent: rgba(14, 165, 233, 0.4);
-  --gradient-hero: linear-gradient(135deg, #050A14 0%, #0A1628 50%, #051020 100%);
-  --gradient-accent: linear-gradient(90deg, #0EA5E9, #06B6D4);
-  --gradient-card: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(6,182,212,0.04));
+  --bg-primary:       #F0F4FF;
+  --bg-secondary:     #E4ECFF;
+  --bg-card:          #FFFFFF;
+  --bg-card-hover:    #F5F8FF;
+  --bg-glass:         rgba(255,255,255,0.7);
+
+  --text-primary:     #0A1628;
+  --text-secondary:   #2C4A6B;
+  --text-muted:       #5A7FA8;
+  --text-faint:       #8AAACE;
+
+  --accent-blue:      #1D6FE8;
+  --accent-blue-2:    #2B8FFF;
+  --accent-cyan:      #00AADD;
+
+  --border-default:   rgba(29, 111, 232, 0.18);
+  --border-hover:     rgba(29, 111, 232, 0.40);
+  --border-strong:    rgba(29, 111, 232, 0.60);
+
+  --glow-blue:        0 8px 32px rgba(29, 111, 232, 0.20);
+  --glow-sm:          0 4px 16px rgba(29, 111, 232, 0.15);
+
+  --gradient-brand:   linear-gradient(135deg, #1D6FE8, #00AADD);
+  --gradient-brand-h: linear-gradient(90deg, #1D6FE8, #2B8FFF, #00AADD);
+}
+
+/* ── DARK MODE ── */
+html.dark {
+  --bg-primary:       #020B18;
+  --bg-secondary:     #040F20;
+  --bg-card:          #061428;
+  --bg-card-hover:    #0A1E38;
+  --bg-glass:         rgba(6, 20, 40, 0.75);
+
+  --text-primary:     #EEF4FF;
+  --text-secondary:   #A8C4E8;
+  --text-muted:       #5A7FA8;
+  --text-faint:       #2C4A6B;
+
+  --accent-blue:      #2B8FFF;
+  --accent-blue-2:    #4DAAFF;
+  --accent-cyan:      #00D4FF;
+
+  --border-default:   rgba(45, 143, 255, 0.18);
+  --border-hover:     rgba(45, 143, 255, 0.40);
+  --border-strong:    rgba(45, 143, 255, 0.65);
+
+  --glow-blue:        0 8px 32px rgba(29, 111, 232, 0.35);
+  --glow-sm:          0 4px 16px rgba(29, 111, 232, 0.25);
+
+  --gradient-brand:   linear-gradient(135deg, #1D6FE8, #00D4FF);
+  --gradient-brand-h: linear-gradient(90deg, #1D6FE8, #2B8FFF, #00D4FF);
+}
+
+.theme-force-dark {
+  --bg-primary:   #020B18 !important;
+  --text-primary: #EEF4FF !important;
 }
 
 /* ============================================
@@ -51,6 +87,7 @@ body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -58,29 +95,17 @@ body {
 /* ============================================
    Custom Scrollbar
    ============================================ */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #0EA5E9, #06B6D4);
-  border-radius: 4px;
-  border: 2px solid var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #0284C7, #0891B2);
+  background: var(--border-hover);
+  border-radius: 3px;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgba(14, 165, 233, 0.4);
-  color: #F0F6FF;
+  background: rgba(29, 111, 232, 0.35);
+  color: var(--text-primary);
 }
 
 /* Focus styles */

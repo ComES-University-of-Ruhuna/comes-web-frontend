@@ -30,7 +30,7 @@ export const ProjectsPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -56,7 +56,7 @@ export const ProjectsPage = () => {
       </section>
 
       {/* Filter Tabs + Grid */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FadeInView>
             <div className="mb-10 flex flex-wrap justify-center gap-3">
@@ -69,7 +69,7 @@ export const ProjectsPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeFilter === tab
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {tab}
@@ -92,7 +92,7 @@ export const ProjectsPage = () => {
                   <FadeInView key={project.id} direction="up" delay={i * 0.05}>
                     <motion.div
                       whileHover={{ scale: 1.02, y: -4 }}
-                      className="group bg-bg-card flex h-full flex-col rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                      className="group bg-bg-card flex h-full flex-col rounded-2xl border border-border-d p-6 transition-all hover:border-border-h hover:shadow-glow-sm"
                     >
                       <div className="mb-4 flex items-center justify-between">
                         <span
@@ -120,7 +120,7 @@ export const ProjectsPage = () => {
                         {project.technologies.slice(0, 5).map((tech) => (
                           <span
                             key={tech}
-                            className="text-text-secondary rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 px-2 py-0.5 font-mono text-xs"
+                            className="text-text-secondary rounded-lg border border-border-d bg-white/5 px-2 py-0.5 font-mono text-xs"
                           >
                             {tech}
                           </span>

@@ -19,7 +19,7 @@ interface AccordionItemProps {
 }
 
 const AccordionItem = ({ question, answer, isOpen, onToggle }: AccordionItemProps) => (
-  <motion.div className="bg-bg-card overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.25)]">
+  <motion.div className="bg-bg-card overflow-hidden rounded-2xl border border-border-d transition-all hover:border-[rgba(14,165,233,0.25)]">
     <button
       onClick={onToggle}
       className="flex w-full items-center justify-between px-6 py-5 text-left"
@@ -41,7 +41,7 @@ const AccordionItem = ({ question, answer, isOpen, onToggle }: AccordionItemProp
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease }}
         >
-          <div className="border-t border-[rgba(14,165,233,0.1)] px-6 py-5">
+          <div className="border-t border-border-d px-6 py-5">
             <p className="font-body text-text-secondary leading-relaxed">{answer}</p>
           </div>
         </motion.div>
@@ -63,7 +63,7 @@ export const FAQPage = () => {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+      <section className="relative overflow-hidden bg-bg-primary py-20 lg:py-28">
         <div className="circuit-grid absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
@@ -89,7 +89,7 @@ export const FAQPage = () => {
       </section>
 
       {/* Tabs + Accordion */}
-      <section className="bg-[#0A1628] py-16 lg:py-24">
+      <section className="bg-bg-secondary py-16 lg:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <FadeInView>
             <div className="mb-10 flex flex-wrap justify-center gap-3">
@@ -105,7 +105,7 @@ export const FAQPage = () => {
                   className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
                     activeCategory === cat
                       ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
-                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-border-d"
                   }`}
                 >
                   {cat}
