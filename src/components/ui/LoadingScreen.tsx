@@ -15,6 +15,8 @@ import {
   Loader2,
 } from "lucide-react";
 
+import LogoWhite from "@/assets/logo/Logo White Coloured.png";
+
 interface SecurityCheck {
   id: string;
   label: string;
@@ -143,45 +145,17 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, minDur
           <div className="relative z-10 w-full max-w-lg px-6 text-center">
             {/* Logo */}
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-              className="mb-8"
+              className="mb-12"
             >
-              <div className="relative mx-auto h-24 w-24">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="absolute inset-0 rounded-2xl border-2 border-blue-500/30"
-                  style={{ transform: "rotate(45deg)" }}
-                />
-                <div className="absolute inset-2 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/30">
-                  <span className="text-3xl font-bold text-white">CE</span>
-                </div>
-              </div>
+              <img
+                src={LogoWhite}
+                alt="ComES Logo"
+                className="mx-auto h-96 w-auto object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.6)]"
+              />
             </motion.div>
-
-            {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-2 text-3xl font-bold text-white"
-            >
-              ComES
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-8 text-blue-300"
-            >
-              Computer Engineering Society
-            </motion.p>
 
             {/* Security Checks */}
             <motion.div

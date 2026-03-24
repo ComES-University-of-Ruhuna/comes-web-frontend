@@ -4,15 +4,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Linkedin,
-  Github,
-  Mail,
-  Phone,
-  Users,
-  UserPlus,
-  Sparkles,
-} from "lucide-react";
+import { Linkedin, Github, Mail, Phone, Users, UserPlus, Sparkles } from "lucide-react";
 import {
   Section,
   SectionHeader,
@@ -217,7 +209,6 @@ const ExecutiveSection = () => {
     <Section background={isDark ? "dark" : "white"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Executive Committee
           </h2>
@@ -247,7 +238,6 @@ const AdvisorsSection = () => {
     <Section background={isDark ? "dark" : "gray"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Senior Advisors
           </h2>
@@ -277,7 +267,6 @@ const CoordinatorsSection = () => {
     <Section background={isDark ? "dark" : "white"}>
       <FadeInView>
         <div className="mb-4 flex items-center justify-center gap-3">
-          
           <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
             Coordinators
           </h2>
@@ -397,7 +386,10 @@ const AllMembersSection = () => {
           className="flex flex-wrap justify-center gap-6"
         >
           {filteredMembers.map((member, index) => (
-            <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]">
+            <div
+              key={member.id}
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]"
+            >
               <TeamMemberCard member={member} index={index} />
             </div>
           ))}

@@ -19,7 +19,11 @@ import {
 import { useThemeStore, toast } from "@/store";
 import { cn } from "@/utils";
 import { Button, Input } from "@/components/ui";
-import { validateRegistrationNo, extractBatchFromRegNo, studentService } from "@/services/student.service";
+import {
+  validateRegistrationNo,
+  extractBatchFromRegNo,
+  studentService,
+} from "@/services/student.service";
 
 interface FormData {
   name: string;
@@ -257,7 +261,7 @@ export const StudentRegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative w-full max-w-lg lg:max-w-2xl rounded-2xl p-8",
+          "relative w-full max-w-lg rounded-2xl p-8 lg:max-w-2xl",
           isDark
             ? "border border-slate-800 bg-slate-900/90 backdrop-blur-xl"
             : "bg-white/90 shadow-xl backdrop-blur-xl",

@@ -27,7 +27,12 @@ export const UnderMaintenancePage = () => {
           className="absolute top-20 left-1/4 h-64 w-64 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
         />
         <motion.div
-          animate={{ scale: [1.5, 1, 1.5], x: [0, -50, 0], y: [0, 30, 0], opacity: [0.4, 0.2, 0.4] }}
+          animate={{
+            scale: [1.5, 1, 1.5],
+            x: [0, -50, 0],
+            y: [0, 30, 0],
+            opacity: [0.4, 0.2, 0.4],
+          }}
           transition={{ duration: 10, repeat: Infinity }}
           className="absolute right-1/4 bottom-20 h-72 w-72 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
         />
@@ -36,7 +41,10 @@ export const UnderMaintenancePage = () => {
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className={cn("absolute h-2 w-2 rounded-full", isDark ? "bg-amber-400/40" : "bg-amber-500/30")}
+            className={cn(
+              "absolute h-2 w-2 rounded-full",
+              isDark ? "bg-amber-400/40" : "bg-amber-500/30",
+            )}
             style={{ top: `${20 + i * 12}%`, left: `${10 + i * 15}%` }}
             animate={{ y: [-20, 20, -20], x: [-10, 10, -10], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.5 }}
@@ -49,7 +57,7 @@ export const UnderMaintenancePage = () => {
             <div className="relative mb-8">
               <motion.div
                 className={cn(
-                  "text-[120px] font-black select-none md:text-[160px] flex items-center justify-center",
+                  "flex items-center justify-center text-[120px] font-black select-none md:text-[160px]",
                   isDark ? "text-slate-800" : "text-gray-100",
                 )}
               >
@@ -85,7 +93,12 @@ export const UnderMaintenancePage = () => {
 
           {/* Subtitle */}
           <FadeInView delay={0.2}>
-            <p className={cn("mb-8 text-lg leading-relaxed md:text-xl", isDark ? "text-gray-400" : "text-gray-600")}>
+            <p
+              className={cn(
+                "mb-8 text-lg leading-relaxed md:text-xl",
+                isDark ? "text-gray-400" : "text-gray-600",
+              )}
+            >
               We're working hard to bring you something amazing. This page is currently under
               development and will be available soon.
             </p>
@@ -101,7 +114,10 @@ export const UnderMaintenancePage = () => {
                   : "border-amber-200 bg-amber-50 text-amber-700",
               )}
             >
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
                 <Clock className="h-5 w-5" />
               </motion.div>
               <span className="font-medium">Coming soon — stay tuned!</span>
@@ -112,11 +128,7 @@ export const UnderMaintenancePage = () => {
           <FadeInView delay={0.4}>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <HoverScale>
-                <Button
-                  href="/"
-                  size="lg"
-                  icon={<Home className="h-5 w-5" />}
-                >
+                <Button href="/" size="lg" icon={<Home className="h-5 w-5" />}>
                   Back to Home
                 </Button>
               </HoverScale>
@@ -126,7 +138,9 @@ export const UnderMaintenancePage = () => {
                   variant="outline"
                   size="lg"
                   icon={<Mail className="h-5 w-5" />}
-                  className={cn(isDark && "border-white text-white hover:bg-white hover:text-comesBlue")}
+                  className={cn(
+                    isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
+                  )}
                 >
                   Contact Us
                 </Button>
