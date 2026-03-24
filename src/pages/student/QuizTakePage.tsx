@@ -304,31 +304,35 @@ export const QuizTakePage = () => {
     fetchQuiz();
   }, [id]);
 
-  // Timer
-  useEffect(() => {
-    if (state !== "playing" || !quiz) return;
+  const submitQuiz = useCallback(
+    async (finalAnswers: QuestionAnswer[]) => {
+      if (!quiz || !id) return;
+      setState("submitting");
 
-    const question = quiz.questions[currentIndex];
-    if (!question) return;
+      try {
+        const res = await quizService.submitAttempt(id, {
+          responses: finalAnswers.map((a) => ({
+            questionId: a.questionId,
+            selectedAnswerIndex: a.selectedAnswerIndex,
+            responseTimeSeconds: a.responseTimeSeconds,
+          })),
+        });
 
-    setTimeLeft(question.timeLimitSeconds);
-    questionStartRef.current = Date.now();
-
-    const timeUpHandler = () => handleTimeUp();
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 0.1) {
-          clearInterval(timerRef.current);
-          timeUpHandler();
-          return 0;
+        if (res.success && res.data) {
+          setAttempt(res.data.attempt);
+          setState("results");
+        } else {
+          setError(res.message || "Failed to submit quiz");
+          setState("error");
         }
-        return Math.max(0, prev - 0.1);
-      });
-    }, 100);
-
-    return () => clearInterval(timerRef.current);
-  }, [state, currentIndex, quiz]);
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(error.response?.data?.message || error.message || "Failed to submit quiz");
+        setState("error");
+      }
+    },
+    [id, quiz],
+  );
 
   const handleTimeUp = useCallback(() => {
     if (!quiz) return;
@@ -355,7 +359,7 @@ export const QuizTakePage = () => {
       setSelectedAnswer(null);
       setCurrentIndex((prev) => prev + 1);
     }
-  }, [quiz, currentIndex]);
+  }, [quiz, currentIndex, submitQuiz]);
 
   const handleSelectAnswer = (index: number) => {
     if (state !== "playing") return;
@@ -386,31 +390,31 @@ export const QuizTakePage = () => {
     }
   };
 
-  const submitQuiz = async (finalAnswers: QuestionAnswer[]) => {
-    if (!quiz || !id) return;
-    setState("submitting");
+  // Timer
+  useEffect(() => {
+    if (state !== "playing" || !quiz) return;
 
-    try {
-      const res = await quizService.submitAttempt(id, {
-        responses: finalAnswers.map((a) => ({
-          questionId: a.questionId,
-          selectedAnswerIndex: a.selectedAnswerIndex,
-          responseTimeSeconds: a.responseTimeSeconds,
-        })),
+    const question = quiz.questions[currentIndex];
+    if (!question) return;
+
+    setTimeLeft(question.timeLimitSeconds);
+    questionStartRef.current = Date.now();
+
+    const timeUpHandler = () => handleTimeUp();
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 0.1) {
+          clearInterval(timerRef.current);
+          timeUpHandler();
+          return 0;
+        }
+        return Math.max(0, prev - 0.1);
       });
+    }, 100);
 
-      if (res.success && res.data) {
-        setAttempt(res.data.attempt);
-        setState("results");
-      } else {
-        setError(res.message || "Failed to submit quiz");
-        setState("error");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to submit quiz");
-      setState("error");
-    }
-  };
+    return () => clearInterval(timerRef.current);
+  }, [state, currentIndex, quiz, handleTimeUp]);
 
   const startQuiz = () => {
     setState("playing");

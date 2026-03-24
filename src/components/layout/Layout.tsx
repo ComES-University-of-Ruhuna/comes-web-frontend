@@ -7,17 +7,10 @@ import { Outlet } from "react-router";
 import { motion } from "framer-motion";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
-import { useThemeStore } from "@/store";
 
 export const Layout: FC = () => {
-  const { resolvedTheme } = useThemeStore();
-
   return (
-    <div
-      className={`font-comes flex min-h-screen flex-col transition-colors duration-300 ${
-        resolvedTheme === "dark" ? "bg-slate-950 text-gray-100" : "bg-white text-gray-900"
-      }`}
-    >
+    <div className="font-body flex min-h-screen flex-col bg-[#050A14] text-[#F0F6FF]">
       <Navbar />
       <motion.main
         className="flex-1 pt-16 md:pt-20"

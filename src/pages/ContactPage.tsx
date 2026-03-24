@@ -1,503 +1,217 @@
 // ============================================
-// ComES Website - Contact Page
+// ComES Website - Contact Page (Redesigned)
 // ============================================
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Linkedin,
-  Github,
-  Facebook,
-  Instagram,
-  Send,
-  CheckCircle,
-  MessageSquare,
-  ChevronDown,
-} from "lucide-react";
-import {
-  Section,
-  SectionHeader,
-  Card,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  PageTransition,
-  FadeInView,
-  HoverScale,
-} from "@/components/ui";
-import { SITE_CONFIG, CONTACT_SUBJECTS, SOCIAL_LINKS } from "@/constants";
-import { faqs } from "@/data";
-import { useThemeStore } from "@/store";
-import { cn } from "@/utils";
-import { contactService } from "@/services";
-import type { ContactFormData } from "@/types";
+import { motion } from "framer-motion";
+import { Link } from "react-router";
+import { Mail, Phone, MapPin, Send, Linkedin, Github, Instagram, Facebook } from "lucide-react";
+import { PageTransition, FadeInView } from "@/components/ui";
+import { SITE_CONFIG, SOCIAL_LINKS } from "@/constants";
 
-// Contact Info Card
-const ContactInfoCard = ({
-  icon,
-  title,
-  details,
-  link,
-  index = 0,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  details: string[];
-  link?: string;
-  index?: number;
-}) => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
+const ease = [0.25, 0.46, 0.45, 0.94];
 
-  const content = (
-    <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10, scale: 1.02 }}>
-        <Card
-          hoverable
-          padding="lg"
-          className={cn(
-            "flex h-full min-h-[200px] flex-col items-center justify-center text-center",
-            isDark && "border-slate-700/50 bg-slate-800/50",
-          )}
-        >
-          <motion.div
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-            whileHover={{ rotate: 10, scale: 1.1 }}
-          >
-            {icon}
-          </motion.div>
-          <h3 className={cn("mb-2 text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            {title}
-          </h3>
-          {details.map((detail, idx) => (
-            <p key={idx} className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-600")}>
-              {detail}
-            </p>
-          ))}
-        </Card>
-      </motion.div>
-    </FadeInView>
-  );
-
-  if (link) {
-    return (
-      <a href={link} target="_blank" rel="noopener noreferrer" className="block">
-        {content}
-      </a>
-    );
-  }
-
-  return content;
-};
-
-// Social Links
-const SocialLinksSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  const socialIcons: Record<string, React.ReactNode> = {
-    linkedin: <Linkedin className="h-6 w-6" />,
-    github: <Github className="h-6 w-6" />,
-    facebook: <Facebook className="h-6 w-6" />,
-    instagram: <Instagram className="h-6 w-6" />,
+const getSocialIcon = (platform: string) => {
+  const icons: Record<string, React.ReactNode> = {
+    facebook: <Facebook className="h-5 w-5" />,
+    linkedin: <Linkedin className="h-5 w-5" />,
+    instagram: <Instagram className="h-5 w-5" />,
+    github: <Github className="h-5 w-5" />,
   };
-
-  return (
-    <div className="flex justify-center gap-4">
-      {SOCIAL_LINKS.map((social, index) => (
-        <HoverScale key={social.id} scale={1.2}>
-          <motion.a
-            href={social.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-full transition-all",
-              isDark
-                ? "bg-slate-800 text-gray-400 hover:bg-gradient-to-br hover:from-blue-500 hover:to-cyan-500 hover:text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gradient-to-br hover:from-blue-500 hover:to-cyan-500 hover:text-white",
-            )}
-            aria-label={social.label}
-          >
-            {socialIcons[social.id] || <Mail className="h-6 w-6" />}
-          </motion.a>
-        </HoverScale>
-      ))}
-    </div>
-  );
+  return icons[platform] || null;
 };
 
-// Contact Form
-const ContactForm = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      await contactService.submit(formData);
-      setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (err) {
-      // If backend is not running, show user-friendly message
-      const message =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      setError(
-        message.includes("Network Error")
-          ? "Unable to connect to server. Please try again later."
-          : message,
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (isSubmitted) {
-    return (
-      <FadeInView>
-        <Card
-          padding="xl"
-          className={cn("text-center", isDark && "border-slate-700/50 bg-slate-800/50")}
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring" }}
-            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg shadow-green-500/30"
-          >
-            <CheckCircle className="h-10 w-10 text-white" />
-          </motion.div>
-          <h3 className={cn("mb-4 text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Message Sent Successfully!
-          </h3>
-          <p className={cn("mb-6", isDark ? "text-gray-400" : "text-gray-600")}>
-            Thank you for reaching out. We'll get back to you as soon as possible.
-          </p>
-          <HoverScale>
-            <Button onClick={() => setIsSubmitted(false)} variant="outline">
-              Send Another Message
-            </Button>
-          </HoverScale>
-        </Card>
-      </FadeInView>
-    );
-  }
-
-  return (
-    <FadeInView direction="left">
-      <Card padding="lg" className={cn(isDark && "border-slate-700/50 bg-slate-800/50")}>
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
-            <MessageSquare className="h-5 w-5 text-white" />
-          </div>
-          <h3 className={cn("text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Send us a Message
-          </h3>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input
-              label="Your Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="John Doe"
-              required
-            />
-            <Input
-              label="Email Address"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="john@example.com"
-              required
-            />
-          </div>
-
-          <Select
-            label="Subject"
-            name="subject"
-            value={formData.subject}
-            onChange={handleChange}
-            options={CONTACT_SUBJECTS}
-            required
-          />
-
-          <Textarea
-            label="Your Message"
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Tell us how we can help..."
-            rows={5}
-            required
-          />
-
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-500"
-            >
-              {error}
-            </motion.div>
-          )}
-
-          <HoverScale className="w-full">
-            <Button
-              type="submit"
-              className="w-full"
-              loading={isSubmitting}
-              icon={<Send className="h-4 w-4" />}
-            >
-              {isSubmitting ? "Sending..." : "Send Message"}
-            </Button>
-          </HoverScale>
-        </form>
-      </Card>
-    </FadeInView>
-  );
-};
-
-// Hero Section
-const ContactHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background={isDark ? "dark" : "gradient"}
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-          >
-            <Mail className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Get In{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Touch
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Have questions, ideas, or just want to say hello? We'd love to hear from you. Reach out
-            and let's connect!
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
-
-// Contact Info Section
-const ContactInfoSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <div className="mb-12 grid gap-6 md:grid-cols-3">
-        <ContactInfoCard
-          icon={<Mail className="h-6 w-6" />}
-          title="Email"
-          details={[SITE_CONFIG.contact.email]}
-          link={`mailto:${SITE_CONFIG.contact.email}`}
-          index={0}
-        />
-        <ContactInfoCard
-          icon={<Phone className="h-6 w-6" />}
-          title="Phone"
-          details={[SITE_CONFIG.contact.phone]}
-          link={`tel:${SITE_CONFIG.contact.phone.replace(/\s/g, "")}`}
-          index={1}
-        />
-        <ContactInfoCard
-          icon={<MapPin className="h-6 w-6" />}
-          title="Location"
-          details={[SITE_CONFIG.contact.address]}
-          index={2}
-        />
-      </div>
-
-      <FadeInView delay={0.3}>
-        <div className="text-center">
-          <h3
-            className={cn("mb-4 text-lg font-semibold", isDark ? "text-gray-300" : "text-gray-700")}
-          >
-            Follow us on social media
-          </h3>
-          <SocialLinksSection />
-        </div>
-      </FadeInView>
-    </Section>
-  );
-};
-
-// Form & Map Section
-const FormMapSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "white" : "gray"}>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <ContactForm />
-
-        <FadeInView direction="right">
-          <Card
-            padding="none"
-            className={cn(
-              "h-full overflow-hidden",
-              isDark && "border-slate-700/50 bg-slate-800/50",
-            )}
-          >
-            <div className="h-full min-h-[400px] bg-gray-200">
-              {/* Google Maps Embed */}
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.3801182574557!2d80.18938967447819!3d6.079373728166143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae1714b88f66a7b%3A0x8a7feea89839a01a!2sFaculty%20of%20Engineering%20-%20University%20of%20Ruhuna!5e0!3m2!1sen!2slk!4v1770146247608!5m2!1sen!2slk"
-                width="100%"
-                height="100%"
-                style={{ border: 0, minHeight: "400px" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="ComES Location"
-              />
-            </div>
-          </Card>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
-
-// FAQ Section
-const FAQSection = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
-        <SectionHeader
-          title="Frequently Asked Questions"
-          subtitle="Find answers to common questions about ComES."
-        />
-      </FadeInView>
-
-      <div className="mx-auto max-w-3xl space-y-4">
-        {faqs.slice(0, 6).map((faq, index) => (
-          <FadeInView key={faq.id} delay={index * 0.1}>
-            <motion.div
-              className={cn(
-                "overflow-hidden rounded-xl border",
-                isDark ? "border-slate-700 bg-slate-800/50" : "border-gray-200 bg-white",
-              )}
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className={cn(
-                  "flex w-full items-center justify-between px-6 py-4 text-left transition-colors",
-                  isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50",
-                )}
-              >
-                <span className={cn("font-semibold", isDark ? "text-white" : "text-gray-800")}>
-                  {faq.question}
-                </span>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 180 : 0 }}
-                  className="text-blue-500"
-                >
-                  <ChevronDown className="h-5 w-5" />
-                </motion.div>
-              </button>
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className={cn("border-t", isDark ? "border-slate-700" : "border-gray-200")}
-                  >
-                    <div className={cn("px-6 py-4", isDark ? "bg-slate-900/50" : "bg-gray-50")}>
-                      <p className={cn(isDark ? "text-gray-400" : "text-gray-600")}>{faq.answer}</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// Main Contact Page Component
 export const ContactPage = () => {
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+  };
+
   return (
     <PageTransition>
-      <ContactHero />
-      <ContactInfoSection />
-      <FormMapSection />
-      <FAQSection />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+        <div className="circuit-grid absolute inset-0 opacity-30" />
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+          >
+            <div className="font-body text-text-muted mb-6 flex items-center justify-center gap-2 text-sm">
+              <Link to="/" className="hover:text-accent-blue transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <span className="text-accent-blue">Contact</span>
+            </div>
+            <h1 className="font-display text-text-primary mb-6 text-4xl font-bold lg:text-6xl">
+              Contact Us
+            </h1>
+            <p className="font-body text-text-secondary mx-auto max-w-2xl text-lg">
+              Have a question or want to collaborate? We&apos;d love to hear from you.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Form + Info */}
+      <section className="bg-[#0A1628] py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-5">
+            {/* Form — 3 cols */}
+            <FadeInView direction="right" className="lg:col-span-3">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-8"
+              >
+                <h2 className="font-display text-text-primary mb-6 text-xl font-bold">
+                  Send a Message
+                </h2>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="font-body text-text-secondary mb-2 block text-sm font-medium">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-body text-text-secondary mb-2 block text-sm font-medium">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+                <div className="mt-5">
+                  <label className="font-body text-text-secondary mb-2 block text-sm font-medium">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                    placeholder="How can we help?"
+                  />
+                </div>
+                <div className="mt-5">
+                  <label className="font-body text-text-secondary mb-2 block text-sm font-medium">
+                    Message
+                  </label>
+                  <textarea
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    rows={5}
+                    className="bg-bg-primary font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue w-full resize-none rounded-xl border border-[rgba(14,165,233,0.15)] px-4 py-3 text-sm transition-colors outline-none"
+                    placeholder="Your message..."
+                  />
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="font-body mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-8 py-3 font-semibold text-white shadow-lg shadow-sky-500/20"
+                >
+                  <Send className="h-4 w-4" />
+                  Send Message
+                </motion.button>
+              </form>
+            </FadeInView>
+
+            {/* Info Cards — 2 cols */}
+            <div className="space-y-6 lg:col-span-2">
+              <FadeInView direction="left" delay={0.1}>
+                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                  <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
+                    <Mail className="text-accent-blue h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-text-primary mb-1 text-base font-semibold">
+                    Email
+                  </h3>
+                  <a
+                    href={`mailto:${SITE_CONFIG.email}`}
+                    className="font-body text-text-secondary hover:text-accent-blue text-sm"
+                  >
+                    {SITE_CONFIG.email}
+                  </a>
+                </div>
+              </FadeInView>
+
+              <FadeInView direction="left" delay={0.2}>
+                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                  <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
+                    <Phone className="text-accent-blue h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-text-primary mb-1 text-base font-semibold">
+                    Phone
+                  </h3>
+                  <a
+                    href={`tel:${SITE_CONFIG.phone.replace(/\s/g, "")}`}
+                    className="font-body text-text-secondary hover:text-accent-blue text-sm"
+                  >
+                    {SITE_CONFIG.phone}
+                  </a>
+                </div>
+              </FadeInView>
+
+              <FadeInView direction="left" delay={0.3}>
+                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                  <div className="bg-accent-blue/10 mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
+                    <MapPin className="text-accent-blue h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-text-primary mb-1 text-base font-semibold">
+                    Location
+                  </h3>
+                  <p className="font-body text-text-secondary text-sm">
+                    {SITE_CONFIG.address.line1}
+                    <br />
+                    {SITE_CONFIG.address.line2}
+                    <br />
+                    {SITE_CONFIG.address.city}
+                  </p>
+                </div>
+              </FadeInView>
+
+              {/* Social Links */}
+              <FadeInView direction="left" delay={0.4}>
+                <div className="bg-bg-card rounded-2xl border border-[rgba(14,165,233,0.15)] p-6">
+                  <h3 className="font-display text-text-primary mb-4 text-base font-semibold">
+                    Follow Us
+                  </h3>
+                  <div className="flex gap-3">
+                    {SOCIAL_LINKS.map((social) => (
+                      <motion.a
+                        key={social.platform}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        className="text-text-muted hover:border-accent-blue/40 hover:text-accent-blue flex h-10 w-10 items-center justify-center rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 transition-all"
+                      >
+                        {getSocialIcon(social.platform)}
+                      </motion.a>
+                    ))}
+                  </div>
+                </div>
+              </FadeInView>
+            </div>
+          </div>
+        </div>
+      </section>
     </PageTransition>
   );
 };

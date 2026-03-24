@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { useStudentStore } from "@/store/studentStore";
-import { useThemeStore } from "@/store";
+import { useThemeStore, toast } from "@/store";
 import { cn } from "@/utils";
 import { Button, Input, Badge } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
@@ -124,10 +124,9 @@ export const ProfilePage = () => {
       } else {
         setError(response.message || "Failed to update profile");
       }
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || "Failed to update profile";
-      setError(errorMessage);
-      console.error("Profile update error:", err);
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      toast.error(error.response?.data?.message || error.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -163,8 +162,11 @@ export const ProfilePage = () => {
       } else {
         setPasswordError(response.message || "Failed to change password");
       }
-    } catch (err: any) {
-      setPasswordError(err.response?.data?.message || err.message || "Failed to change password");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setPasswordError(
+        error.response?.data?.message || error.message || "Failed to change password",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -601,7 +603,9 @@ export const ProfilePage = () => {
                   <textarea
                     name="bio"
                     value={formData.bio}
-                    onChange={handleChange as any}
+                    onChange={
+                      handleChange as unknown as React.ChangeEventHandler<HTMLTextAreaElement>
+                    }
                     disabled={!isEditing}
                     rows={3}
                     maxLength={500}

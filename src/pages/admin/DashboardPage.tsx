@@ -2,7 +2,7 @@
 // ComES Website - Admin Dashboard Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -163,7 +163,10 @@ const RecentActivity = ({ type, title, time }: RecentActivityItem) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const typeConfig: Record<string, { icon: any; color: string }> = {
+  const typeConfig: Record<
+    string,
+    { icon: React.ComponentType<{ className?: string }>; color: string }
+  > = {
     event: { icon: Calendar, color: "bg-blue-500/10 text-blue-500" },
     blog: { icon: FileText, color: "bg-green-500/10 text-green-500" },
     contact: { icon: Mail, color: "bg-amber-500/10 text-amber-500" },
@@ -229,10 +232,6 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
   const formatTimeAgo = (dateStr: string): string => {
     if (!dateStr) return "Recently";
     const date = new Date(dateStr);
@@ -250,7 +249,7 @@ export const DashboardPage = () => {
     return date.toLocaleDateString();
   };
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const [eventsRes, projectsRes, blogRes, newsletterRes, membersRes, teamRes, contactsRes] =
@@ -264,9 +263,10 @@ export const DashboardPage = () => {
           api.get("/contact"),
         ]);
 
-      const getCount = (res: PromiseSettledResult<any>, ...paths: string[]) => {
+      const getCount = (res: PromiseSettledResult<unknown>, ...paths: string[]) => {
         if (res.status !== "fulfilled") return 0;
-        const data = res.value?.data?.data;
+        const value = res.value as { data?: { data?: Record<string, any> } };
+        const data = value.data?.data;
         if (!data) return 0;
         for (const path of paths) {
           if (data[path] !== undefined) {
@@ -291,9 +291,10 @@ export const DashboardPage = () => {
       const activities: RecentActivityItem[] = [];
 
       if (eventsRes.status === "fulfilled") {
-        const events = eventsRes.value?.data?.data?.events;
+        const value = eventsRes.value as { data?: { data?: { events?: any[] } } };
+        const events = value.data?.data?.events;
         if (Array.isArray(events)) {
-          events.slice(0, 2).forEach((e: any) => {
+          events.slice(0, 2).forEach((e: { title: string; createdAt?: string; date: string }) => {
             activities.push({
               type: "event",
               title: e.title || "New event",
@@ -304,23 +305,28 @@ export const DashboardPage = () => {
       }
 
       if (contactsRes.status === "fulfilled") {
-        const contacts =
-          contactsRes.value?.data?.data?.contacts || contactsRes.value?.data?.data?.messages;
+        const value = contactsRes.value as {
+          data?: { data?: { contacts?: any[]; messages?: any[] } };
+        };
+        const contacts = value.data?.data?.contacts || value.data?.data?.messages;
         if (Array.isArray(contacts)) {
-          contacts.slice(0, 2).forEach((c: any) => {
-            activities.push({
-              type: "contact",
-              title: `Message from ${c.name || "Anonymous"}${c.subject ? ": " + c.subject : ""}`,
-              time: formatTimeAgo(c.createdAt),
+          contacts
+            .slice(0, 2)
+            .forEach((c: { name?: string; subject?: string; createdAt: string }) => {
+              activities.push({
+                type: "contact",
+                title: `Message from ${c.name || "Anonymous"}${c.subject ? ": " + c.subject : ""}`,
+                time: formatTimeAgo(c.createdAt),
+              });
             });
-          });
         }
       }
 
       if (membersRes.status === "fulfilled") {
-        const students = membersRes.value?.data?.data?.students;
+        const value = membersRes.value as { data?: { data?: { students?: any[] } } };
+        const students = value.data?.data?.students;
         if (Array.isArray(students)) {
-          students.slice(0, 2).forEach((s: any) => {
+          students.slice(0, 2).forEach((s: { name: string; createdAt: string }) => {
             activities.push({
               type: "member",
               title: `New member: ${s.name}`,
@@ -331,9 +337,10 @@ export const DashboardPage = () => {
       }
 
       if (teamRes.status === "fulfilled") {
-        const members = teamRes.value?.data?.data?.members;
+        const value = teamRes.value as { data?: { data?: { members?: any[] } } };
+        const members = value.data?.data?.members;
         if (Array.isArray(members)) {
-          members.slice(0, 1).forEach((m: any) => {
+          members.slice(0, 1).forEach((m: { name: string; role: string; createdAt: string }) => {
             activities.push({
               type: "team",
               title: `Team: ${m.name} - ${m.role}`,
@@ -349,7 +356,11 @@ export const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const statCards = [
     {

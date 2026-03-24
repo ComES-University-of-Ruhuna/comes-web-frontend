@@ -1,5 +1,5 @@
 // ============================================
-// ComES Website - Student Registration Page
+// ComES Website - Student Registration Page (Redesigned)
 // ============================================
 
 import { useState } from "react";
@@ -15,11 +15,16 @@ import {
   Phone,
   ArrowRight,
   CheckCircle,
+  ArrowLeft,
 } from "lucide-react";
-import { useThemeStore, toast } from "@/store";
-import { cn } from "@/utils";
-import { Button, Input } from "@/components/ui";
-import { validateRegistrationNo, extractBatchFromRegNo, studentService } from "@/services/student.service";
+import { toast } from "@/store";
+import {
+  validateRegistrationNo,
+  extractBatchFromRegNo,
+  studentService,
+} from "@/services/student.service";
+
+const ease = [0.25, 0.46, 0.45, 0.94];
 
 interface FormData {
   name: string;
@@ -39,10 +44,13 @@ interface FormErrors {
   passwordConfirm?: string;
 }
 
+const inputClass =
+  "w-full rounded-xl border border-[rgba(14,165,233,0.15)] bg-bg-primary py-3 pr-4 pl-10 font-body text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors focus:border-accent-blue";
+const labelClass = "mb-2 block font-body text-sm font-medium text-text-secondary";
+const iconClass = "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-text-muted";
+
 export const StudentRegisterPage = () => {
   const navigate = useNavigate();
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -62,10 +70,8 @@ export const StudentRegisterPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Format registration number as user types
     if (name === "registrationNo") {
       let formatted = value.toUpperCase();
-      // Auto-format: add slashes at correct positions
       if (formatted.length === 2 && !formatted.includes("/")) {
         formatted = formatted + "/";
       } else if (formatted.length === 7 && formatted.charAt(6) !== "/") {
@@ -76,7 +82,6 @@ export const StudentRegisterPage = () => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -85,50 +90,31 @@ export const StudentRegisterPage = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    else if (formData.name.trim().length < 2) newErrors.name = "Name must be at least 2 characters";
 
-    // Email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailPattern.test(formData.email)) {
-      newErrors.email = "Invalid email address";
-    }
+    if (!formData.email) newErrors.email = "Email is required";
+    else if (!emailPattern.test(formData.email)) newErrors.email = "Invalid email address";
 
-    // Registration number validation
     const regNoValidation = validateRegistrationNo(formData.registrationNo);
-    if (!regNoValidation.valid) {
-      newErrors.registrationNo = regNoValidation.error;
-    }
+    if (!regNoValidation.valid) newErrors.registrationNo = regNoValidation.error;
 
-    // Contact number validation (optional but if provided, validate)
     if (formData.contactNo) {
       const phonePattern = /^(\+94|0)?[0-9]{9,10}$/;
-      if (!phonePattern.test(formData.contactNo.replace(/\s/g, ""))) {
+      if (!phonePattern.test(formData.contactNo.replace(/\s/g, "")))
         newErrors.contactNo = "Invalid phone number";
-      }
     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 8)
       newErrors.password = "Password must be at least 8 characters";
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password))
       newErrors.password = "Password must contain uppercase, lowercase, and number";
-    }
 
-    // Confirm password validation
-    if (!formData.passwordConfirm) {
-      newErrors.passwordConfirm = "Please confirm your password";
-    } else if (formData.password !== formData.passwordConfirm) {
+    if (!formData.passwordConfirm) newErrors.passwordConfirm = "Please confirm your password";
+    else if (formData.password !== formData.passwordConfirm)
       newErrors.passwordConfirm = "Passwords do not match";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -136,7 +122,6 @@ export const StudentRegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -155,7 +140,6 @@ export const StudentRegisterPage = () => {
       if (data.success) {
         setIsSuccess(true);
         toast.success("Registration successful! Redirecting to login...");
-        // Clear form
         setFormData({
           name: "",
           email: "",
@@ -164,104 +148,80 @@ export const StudentRegisterPage = () => {
           password: "",
           passwordConfirm: "",
         });
-        // Redirect to login page after showing success message
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         toast.error(data.message || "Registration failed");
       }
-    } catch (error: any) {
-      // Handle API error response
+    } catch (err: unknown) {
+      const error = err as {
+        response?: { data?: { message?: string; errors?: FormErrors } };
+        message?: string;
+      };
       const errorMessage =
         error.response?.data?.message || error.message || "Registration failed. Please try again.";
       const validationErrors = error.response?.data?.errors;
-
-      // Show main error message
       toast.error(errorMessage);
-
-      // If there are field-specific validation errors, set them
-      if (validationErrors) {
-        setErrors(validationErrors);
-      }
+      if (validationErrors) setErrors(validationErrors);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Extract batch for display
   const batch = extractBatchFromRegNo(formData.registrationNo);
 
+  // Success state
   if (isSuccess) {
     return (
-      <div
-        className={cn(
-          "flex min-h-screen items-center justify-center p-4",
-          isDark ? "bg-slate-950" : "bg-gray-50",
-        )}
-      >
+      <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="circuit-grid absolute inset-0 opacity-20" />
+        </div>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className={cn(
-            "w-full max-w-md rounded-2xl p-8 text-center",
-            isDark ? "border border-slate-800 bg-slate-900" : "bg-white shadow-xl",
-          )}
+          className="relative w-full max-w-md rounded-2xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/80 p-8 text-center backdrop-blur-xl"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20"
+            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20"
           >
-            <CheckCircle className="h-10 w-10 text-green-500" />
+            <CheckCircle className="h-10 w-10 text-emerald-400" />
           </motion.div>
-          <h2 className={cn("mb-2 text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+          <h2 className="font-display text-text-primary mb-2 text-2xl font-bold">
             Registration Successful!
           </h2>
-          <p className={cn("mb-6", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className="font-body text-text-secondary mb-6">
             Welcome to ComES! Please check your email to verify your account.
           </p>
-          <p className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-            Redirecting to homepage...
-          </p>
+          <p className="font-body text-text-muted text-sm">Redirecting to login...</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex min-h-screen items-center justify-center p-4 py-12",
-        isDark ? "bg-slate-950" : "bg-gray-50",
-      )}
-    >
-      {/* Background decoration */}
+    <div className="flex min-h-screen items-center justify-center bg-[#050A14] p-4 py-12">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className={cn(
-            "absolute top-0 right-0 h-96 w-96 rounded-full opacity-20 blur-3xl",
-            isDark ? "bg-blue-500" : "bg-blue-300",
-          )}
-        />
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 h-96 w-96 rounded-full opacity-20 blur-3xl",
-            isDark ? "bg-purple-500" : "bg-purple-300",
-          )}
-        />
+        <div className="circuit-grid absolute inset-0 opacity-20" />
+        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
       </div>
+
+      <Link
+        to="/"
+        className="font-body text-text-muted hover:text-text-primary absolute top-4 left-4 flex items-center gap-2 rounded-xl px-4 py-2 text-sm transition-colors hover:bg-white/5"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        <span>Home</span>
+      </Link>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn(
-          "relative w-full max-w-lg lg:max-w-2xl rounded-2xl p-8",
-          isDark
-            ? "border border-slate-800 bg-slate-900/90 backdrop-blur-xl"
-            : "bg-white/90 shadow-xl backdrop-blur-xl",
-        )}
+        transition={{ duration: 0.5, ease }}
+        className="relative w-full max-w-lg rounded-2xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/80 p-8 backdrop-blur-xl lg:max-w-2xl"
       >
         {/* Header */}
         <div className="mb-8 text-center">
@@ -269,278 +229,171 @@ export const StudentRegisterPage = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.1 }}
-            className={cn(
-              "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl",
-              isDark ? "bg-blue-500/20" : "bg-blue-100",
-            )}
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-lg shadow-sky-500/30"
           >
-            <GraduationCap className={cn("h-8 w-8", isDark ? "text-blue-400" : "text-blue-600")} />
+            <GraduationCap className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className={cn("mb-2 text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+          <h1 className="font-display text-text-primary mb-2 text-2xl font-bold">
             Student Registration
           </h1>
-          <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-            Create your ComES student account
-          </p>
+          <p className="font-body text-text-secondary text-sm">Create your ComES student account</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name + Registration Number */}
           <div className="grid gap-5 lg:grid-cols-2">
-            {/* Name */}
             <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Full Name *
-              </label>
+              <label className={labelClass}>Full Name *</label>
               <div className="relative">
-                <User
-                  className={cn(
-                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                  )}
-                />
-                <Input
+                <User className={iconClass} />
+                <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className={cn("pl-10", errors.name && "border-red-500")}
+                  className={`${inputClass} ${errors.name ? "border-red-500" : ""}`}
                 />
               </div>
-              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+              {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name}</p>}
             </div>
-
-            {/* Registration Number */}
             <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Registration Number *
-              </label>
+              <label className={labelClass}>Registration Number *</label>
               <div className="relative">
-                <GraduationCap
-                  className={cn(
-                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                  )}
-                />
-                <Input
+                <GraduationCap className={iconClass} />
+                <input
                   type="text"
                   name="registrationNo"
                   value={formData.registrationNo}
                   onChange={handleChange}
                   placeholder="EG/20XX/XXXX"
                   maxLength={12}
-                  className={cn("pl-10 uppercase", errors.registrationNo && "border-red-500")}
+                  className={`${inputClass} uppercase ${errors.registrationNo ? "border-red-500" : ""}`}
                 />
               </div>
               {errors.registrationNo ? (
-                <p className="mt-1 text-sm text-red-500">{errors.registrationNo}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.registrationNo}</p>
               ) : (
-                batch && (
-                  <p className={cn("mt-1 text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-                    Batch: {batch}
-                  </p>
-                )
+                batch && <p className="text-text-muted mt-1 text-sm">Batch: {batch}</p>
               )}
             </div>
           </div>
 
-          {/* Email + Contact Number */}
           <div className="grid gap-5 lg:grid-cols-2">
-            {/* Email */}
             <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Email Address *
-              </label>
+              <label className={labelClass}>Email Address *</label>
               <div className="relative">
-                <Mail
-                  className={cn(
-                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                  )}
-                />
-                <Input
+                <Mail className={iconClass} />
+                <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="your.email@example.com"
-                  className={cn("pl-10", errors.email && "border-red-500")}
+                  className={`${inputClass} ${errors.email ? "border-red-500" : ""}`}
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
             </div>
-
-            {/* Contact Number */}
             <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Contact Number <span className="text-gray-500">(Optional)</span>
+              <label className={labelClass}>
+                Contact Number <span className="text-text-muted">(Optional)</span>
               </label>
               <div className="relative">
-                <Phone
-                  className={cn(
-                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                    isDark ? "text-gray-500" : "text-gray-400",
-                  )}
-                />
-                <Input
+                <Phone className={iconClass} />
+                <input
                   type="tel"
                   name="contactNo"
                   value={formData.contactNo}
                   onChange={handleChange}
                   placeholder="+94 XX XXX XXXX"
-                  className={cn("pl-10", errors.contactNo && "border-red-500")}
+                  className={`${inputClass} ${errors.contactNo ? "border-red-500" : ""}`}
                 />
               </div>
-              {errors.contactNo && <p className="mt-1 text-sm text-red-500">{errors.contactNo}</p>}
+              {errors.contactNo && <p className="mt-1 text-sm text-red-400">{errors.contactNo}</p>}
             </div>
           </div>
 
-          {/* Password */}
           <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Password *
-            </label>
+            <label className={labelClass}>Password *</label>
             <div className="relative">
-              <Lock
-                className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
-                )}
-              />
-              <Input
+              <Lock className={iconClass} />
+              <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a strong password"
-                className={cn("pr-10 pl-10", errors.password && "border-red-500")}
+                className={`${inputClass} pr-10 ${errors.password ? "border-red-500" : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={cn(
-                  "absolute top-1/2 right-3 -translate-y-1/2",
-                  isDark
-                    ? "text-gray-500 hover:text-gray-300"
-                    : "text-gray-400 hover:text-gray-600",
-                )}
+                className="text-text-muted hover:text-text-secondary absolute top-1/2 right-3 -translate-y-1/2"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+            {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
           </div>
 
-          {/* Confirm Password */}
           <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Confirm Password *
-            </label>
+            <label className={labelClass}>Confirm Password *</label>
             <div className="relative">
-              <Lock
-                className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
-                )}
-              />
-              <Input
+              <Lock className={iconClass} />
+              <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="passwordConfirm"
                 value={formData.passwordConfirm}
                 onChange={handleChange}
                 placeholder="Confirm your password"
-                className={cn("pr-10 pl-10", errors.passwordConfirm && "border-red-500")}
+                className={`${inputClass} pr-10 ${errors.passwordConfirm ? "border-red-500" : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className={cn(
-                  "absolute top-1/2 right-3 -translate-y-1/2",
-                  isDark
-                    ? "text-gray-500 hover:text-gray-300"
-                    : "text-gray-400 hover:text-gray-600",
-                )}
+                className="text-text-muted hover:text-text-secondary absolute top-1/2 right-3 -translate-y-1/2"
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
             {errors.passwordConfirm && (
-              <p className="mt-1 text-sm text-red-500">{errors.passwordConfirm}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.passwordConfirm}</p>
             )}
           </div>
 
-          {/* Submit Button */}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={isLoading}
+            className="font-body w-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 py-3 font-semibold text-white shadow-lg shadow-sky-500/20 transition-all disabled:opacity-50"
+          >
             {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                <span>Creating Account...</span>
-              </div>
+                Creating Account...
+              </span>
             ) : (
-              <div className="flex items-center justify-center gap-2">
-                <span>Create Account</span>
-                <ArrowRight className="h-5 w-5" />
-              </div>
+              <span className="flex items-center justify-center gap-2">
+                Create Account <ArrowRight className="h-5 w-5" />
+              </span>
             )}
-          </Button>
+          </motion.button>
         </form>
 
-        {/* Footer Links */}
         <div className="mt-6 text-center">
-          <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+          <p className="font-body text-text-muted text-sm">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className={cn(
-                "font-medium hover:underline",
-                isDark ? "text-blue-400" : "text-blue-600",
-              )}
-            >
+            <Link to="/login" className="text-accent-blue font-medium hover:underline">
               Sign in
             </Link>
           </p>
         </div>
-
-        {/* Back to Home */}
         <div className="mt-4 text-center">
           <Link
             to="/"
-            className={cn(
-              "text-sm hover:underline",
-              isDark ? "text-gray-500 hover:text-gray-300" : "text-gray-500 hover:text-gray-700",
-            )}
+            className="font-body text-text-muted hover:text-text-secondary text-sm hover:underline"
           >
             ← Back to Home
           </Link>

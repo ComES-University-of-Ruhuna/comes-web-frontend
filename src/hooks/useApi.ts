@@ -44,6 +44,7 @@ export function useEvents(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const filterString = JSON.stringify(filters);
   const fetch = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -62,7 +63,7 @@ export function useEvents(
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [filterString, filters]);
 
   useEffect(() => {
     fetch();
@@ -147,6 +148,7 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const filterString = JSON.stringify(filters);
   const fetch = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -165,7 +167,7 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [filterString, filters]);
 
   useEffect(() => {
     fetch();
@@ -242,6 +244,7 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const filterString = JSON.stringify(filters);
   const fetch = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -260,7 +263,7 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [filterString, filters]);
 
   useEffect(() => {
     fetch();
@@ -303,6 +306,7 @@ export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const filterString = JSON.stringify(filters);
   const fetch = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -316,7 +320,7 @@ export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [filterString, filters]);
 
   useEffect(() => {
     fetch();

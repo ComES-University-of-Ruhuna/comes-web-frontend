@@ -20,7 +20,7 @@ export const executiveCommittee: TeamMember[] = [
     contactNo: "+9470 111 7791",
     linkedin: "https://www.linkedin.com/in/kavishkakalhara",
   },
-  
+
   {
     id: "exec-2",
     name: "Sandaru Heshan",

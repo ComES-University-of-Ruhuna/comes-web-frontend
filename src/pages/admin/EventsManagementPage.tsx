@@ -2,7 +2,7 @@
 // ComES Website - Admin Events Management Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api";
 import { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,12 +15,12 @@ interface Event {
   _id: string;
   title: string;
   slug: string;
-  type: 'workshop' | 'hackathon' | 'seminar' | 'competition' | 'social' | 'other';
+  type: "workshop" | "hackathon" | "seminar" | "competition" | "social" | "other";
   date: string; // ISO datetime string
   location: string;
   maxParticipants?: number;
   registeredCount: number;
-  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+  status: "upcoming" | "ongoing" | "completed" | "cancelled";
   description: string;
   shortDescription?: string;
   isFeatured: boolean;
@@ -145,7 +145,9 @@ const EventEditor = ({
               </label>
               <select
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as Event["type"] })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value as Event["type"] })
+                }
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 transition-colors",
                   isDark
@@ -282,7 +284,9 @@ const EventEditor = ({
               <input
                 type="number"
                 value={formData.maxParticipants}
-                onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })
+                }
                 min={1}
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 transition-colors",
@@ -347,16 +351,12 @@ export const EventsManagementPage = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
   const showToast = (type: "success" | "error", message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3000);
   };
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/events?limit=100&sort=-date");
@@ -370,7 +370,11 @@ export const EventsManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -442,9 +446,7 @@ export const EventsManagementPage = () => {
             <div
               className={cn(
                 "flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg",
-                toast.type === "success"
-                  ? "bg-green-500 text-white"
-                  : "bg-red-500 text-white",
+                toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white",
               )}
             >
               <span className="text-sm font-medium">{toast.message}</span>
@@ -542,93 +544,101 @@ export const EventsManagementPage = () => {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500/30 border-t-blue-500" />
         </div>
       ) : (
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredEvents.map((event, index) => (
-          <motion.div
-            key={event._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={cn(
-              "rounded-2xl border p-6 transition-all",
-              isDark
-                ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-                : "border-gray-200 bg-white hover:shadow-lg",
-            )}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <Badge
-                variant={
-                  getStatusColor(event.status) as "primary" | "success" | "secondary" | "error"
-                }
-              >
-                {event.status}
-              </Badge>
-              <Badge variant="secondary">{event.type}</Badge>
-            </div>
-
-            <h3
-              className={cn("mb-3 text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event, index) => (
+            <motion.div
+              key={event._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={cn(
+                "rounded-2xl border p-6 transition-all",
+                isDark
+                  ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                  : "border-gray-200 bg-white hover:shadow-lg",
+              )}
             >
-              {event.title}
-            </h3>
+              <div className="mb-4 flex items-start justify-between">
+                <Badge
+                  variant={
+                    getStatusColor(event.status) as "primary" | "success" | "secondary" | "error"
+                  }
+                >
+                  {event.status}
+                </Badge>
+                <Badge variant="secondary">{event.type}</Badge>
+              </div>
 
-            <div className="mb-4 space-y-2">
-              <div
+              <h3
                 className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
+                  "mb-3 text-lg font-semibold",
+                  isDark ? "text-white" : "text-gray-900",
                 )}
               >
-                <Calendar className="h-4 w-4" />
-                <span>{new Date(event.date).toLocaleDateString()}</span>
-                <Clock className="ml-2 h-4 w-4" />
-                <span>{new Date(event.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-              </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <MapPin className="h-4 w-4" />
-                <span>{event.location}</span>
-              </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Users className="h-4 w-4" />
-                <span>
-                  {event.registeredCount}/{event.maxParticipants ?? "∞"} registered
-                </span>
-              </div>
-            </div>
+                {event.title}
+              </h3>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setEditingEvent(event)}
-                className="flex-1"
-              >
-                <Edit className="mr-1 h-4 w-4" /> Edit
-              </Button>
-              <button
-                onClick={() => handleDelete(event._id)}
-                className={cn(
-                  "rounded-lg p-2 text-red-500 transition-colors",
-                  isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
-                )}
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div className="mb-4 space-y-2">
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>{new Date(event.date).toLocaleDateString()}</span>
+                  <Clock className="ml-2 h-4 w-4" />
+                  <span>
+                    {new Date(event.date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <MapPin className="h-4 w-4" />
+                  <span>{event.location}</span>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <Users className="h-4 w-4" />
+                  <span>
+                    {event.registeredCount}/{event.maxParticipants ?? "∞"} registered
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingEvent(event)}
+                  className="flex-1"
+                >
+                  <Edit className="mr-1 h-4 w-4" /> Edit
+                </Button>
+                <button
+                  onClick={() => handleDelete(event._id)}
+                  className={cn(
+                    "rounded-lg p-2 text-red-500 transition-colors",
+                    isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
+                  )}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       )}
 
       {!loading && filteredEvents.length === 0 && (

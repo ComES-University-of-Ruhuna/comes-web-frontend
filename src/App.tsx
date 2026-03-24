@@ -169,7 +169,7 @@ function App() {
     if (localStorage.getItem("accessToken")) {
       checkAuth();
     }
-  }, []);
+  }, [checkAuth]);
 
   const handleLoadingComplete = () => {
     sessionStorage.setItem("comes-visited", "true");

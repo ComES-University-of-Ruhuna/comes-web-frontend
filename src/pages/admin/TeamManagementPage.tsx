@@ -2,7 +2,7 @@
 // ComES Website - Admin Team Management
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -76,7 +76,7 @@ const TeamEditor = ({
 }: {
   member?: TeamMember | null;
   onClose: () => void;
-  onSave: (data: any) => Promise<void>;
+  onSave: (data: Partial<TeamMember>) => Promise<void>;
   saving: boolean;
 }) => {
   const { resolvedTheme } = useThemeStore();
@@ -494,16 +494,12 @@ export const TeamManagementPage = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  useEffect(() => {
-    fetchTeam();
-  }, []);
-
   const showToast = (type: "success" | "error", message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3000);
   };
 
-  const fetchTeam = async () => {
+  const fetchTeam = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/team");
@@ -514,7 +510,11 @@ export const TeamManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTeam();
+  }, [fetchTeam]);
 
   const filteredTeam = team.filter((member) => {
     const matchesSearch =
@@ -526,7 +526,7 @@ export const TeamManagementPage = () => {
     return matchesSearch && matchesDepartment;
   });
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: Partial<TeamMember>) => {
     try {
       setSaving(true);
       if (editingMember) {
@@ -540,7 +540,8 @@ export const TeamManagementPage = () => {
       }
       setEditingMember(null);
       setIsCreating(false);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       const message = error.response?.data?.message || "Failed to save team member";
       showToast("error", message);
       console.error("Error saving team member:", error);

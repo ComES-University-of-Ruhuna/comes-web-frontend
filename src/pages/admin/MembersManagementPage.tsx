@@ -2,7 +2,7 @@
 // ComES Website - Admin Members Management Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -35,7 +35,7 @@ interface Student {
   linkedin?: string;
   website?: string;
   isEmailVerified: boolean;
-  registeredEvents?: any[];
+  registeredEvents?: { _id: string; title: string; date: string }[];
   createdAt: string;
 }
 
@@ -427,23 +427,18 @@ export const MembersManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+  const showToast = (type: "success" | "error", message: string) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3000);
+  };
 
-  useEffect(() => {
-    filterStudentsData();
-  }, [searchQuery, students, filterVerified]);
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/students");
       setStudents(response.data.data.students || []);
     } catch (error) {
       const axiosError = error as AxiosError;
-      // 401 means the session expired — the api interceptor will refresh the token and retry.
-      // If refresh also fails, it dispatches auth:logout and redirects to login.
       if (axiosError?.response?.status !== 401) {
         showToast("error", "Failed to fetch students");
       }
@@ -451,9 +446,9 @@ export const MembersManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filterStudentsData = () => {
+  const filterStudentsData = useCallback(() => {
     let filtered = students;
 
     // Filter by verification status
@@ -476,7 +471,15 @@ export const MembersManagementPage = () => {
     }
 
     setFilteredStudents(filtered);
-  };
+  }, [students, filterVerified, searchQuery]);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
+
+  useEffect(() => {
+    filterStudentsData();
+  }, [filterStudentsData]);
 
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (!confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
@@ -521,11 +524,6 @@ export const MembersManagementPage = () => {
       showToast("error", "Failed to send broadcast notification");
       console.error("Error sending broadcast notification:", error);
     }
-  };
-
-  const showToast = (type: "success" | "error", message: string) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 3000);
   };
 
   const exportToCSV = () => {
@@ -721,7 +719,9 @@ export const MembersManagementPage = () => {
           <div className="flex gap-2">
             <select
               value={filterVerified}
-              onChange={(e) => setFilterVerified(e.target.value as any)}
+              onChange={(e) =>
+                setFilterVerified(e.target.value as "all" | "verified" | "unverified")
+              }
               className={cn(
                 "rounded-lg border px-4 py-2 transition-colors",
                 isDark

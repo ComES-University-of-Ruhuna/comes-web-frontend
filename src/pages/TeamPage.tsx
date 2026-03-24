@@ -1,422 +1,152 @@
 // ============================================
-// ComES Website - Team Page
+// ComES Website - Team Page (Redesigned)
 // ============================================
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Linkedin,
-  Github,
-  Mail,
-  Phone,
-  Users,
-  UserPlus,
-  Sparkles,
-} from "lucide-react";
-import {
-  Section,
-  SectionHeader,
-  Card,
-  Button,
-  PageTransition,
-  FadeInView,
-  HoverScale,
-} from "@/components/ui";
-import {
-  executiveCommittee,
-  seniorAdvisors,
-  coordinators,
-  teamCategories,
-  getTeamByCategory,
-} from "@/data";
-import { useThemeStore } from "@/store";
-import { cn } from "@/utils";
+import { Link } from "react-router";
+import { Linkedin, Mail } from "lucide-react";
+import { PageTransition, FadeInView } from "@/components/ui";
+import { teamCategories, getTeamByCategory } from "@/data";
 import type { TeamMember } from "@/types";
 
-// Team Member Card Component
-const TeamMemberCard = ({ member, index = 0 }: { member: TeamMember; index?: number }) => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
+const ease = [0.25, 0.46, 0.45, 0.94];
 
-  return (
-    <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10 }}>
-        <Card
-          hoverable
-          padding="none"
-          className={cn("group overflow-hidden", isDark && "border-slate-700/50 bg-slate-800/50")}
-        >
-          <div className="relative overflow-hidden">
-            <motion.img
-              src={member.image}
-              alt={member.name}
-              className="h-48 w-full object-cover"
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.3 }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-            {/* Social Links Overlay */}
-            <motion.div
-              className="absolute right-4 bottom-4 left-4 flex gap-2"
-              initial={{ opacity: 0, y: 20 }}
-              whileHover={{ opacity: 1, y: 0 }}
+const MemberCard = ({ member, large = false }: { member: TeamMember; large?: boolean }) => (
+  <motion.div
+    whileHover={{ scale: 1.02, y: -4 }}
+    className="group bg-bg-card overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.15)]"
+  >
+    {large && (
+      <div className="relative h-56 overflow-hidden">
+        <img
+          src={
+            member.image ||
+            `https://placehold.co/300x300/0D1E35/0EA5E9?text=${encodeURIComponent(member.name?.[0] || "?")}`
+          }
+          alt={member.name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D1E35] via-transparent to-transparent" />
+      </div>
+    )}
+    <div className={`p-5 ${!large ? "flex items-center gap-4" : ""}`}>
+      {!large && (
+        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-[rgba(14,165,233,0.2)]">
+          <img
+            src={
+              member.image ||
+              `https://placehold.co/100x100/0D1E35/0EA5E9?text=${encodeURIComponent(member.name?.[0] || "?")}`
+            }
+            alt={member.name}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="flex-1">
+        <h3 className="font-display text-text-primary text-base font-semibold">{member.name}</h3>
+        <p className="font-body text-accent-blue mb-2 text-sm">{member.role}</p>
+        <div className="flex gap-2">
+          {member.linkedin && (
+            <a
+              href={member.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-muted hover:text-accent-blue transition-colors"
             >
-              {member.linkedin && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-blue-500/50"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-              {member.github && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-gray-500/50"
-                  >
-                    <Github className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-              {member.email && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-cyan-500/50"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-            </motion.div>
-          </div>
-
-          <div className="p-6">
-            <h3 className={cn("mb-1 text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-              {member.name}
-            </h3>
-            <p className="mb-3 font-semibold text-amber-500">{member.role}</p>
-            {member.email && (
-              <p
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Mail className="h-4 w-4 shrink-0 text-cyan-500" />
-                <a
-                  href={`mailto:${member.email}`}
-                  className="truncate transition-colors hover:text-cyan-500"
-                >
-                  {member.email}
-                </a>
-              </p>
-            )}
-            {member.contactNo && (
-              <p
-                className={cn(
-                  "mt-1 flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Phone className="h-4 w-4 shrink-0 text-cyan-500" />
-                <a
-                  href={`tel:${member.contactNo}`}
-                  className="transition-colors hover:text-cyan-500"
-                >
-                  {member.contactNo}
-                </a>
-              </p>
-            )}
-            {member.batch && (
-              <p className={cn("mt-2 text-sm", isDark ? "text-gray-500" : "text-gray-400")}>
-                Batch of {member.batch}
-              </p>
-            )}
-          </div>
-        </Card>
-      </motion.div>
-    </FadeInView>
-  );
-};
-
-// Hero Section
-const TeamHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Animated background elements */}
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-          >
-            <Users className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Meet Our{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Team
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Dedicated professionals and students working together to build a vibrant tech community.
-            Meet the people behind ComES.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
-
-// Executive Committee Section
-const ExecutiveSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Executive Committee
-          </h2>
+              <Linkedin className="h-3.5 w-3.5" />
+            </a>
+          )}
+          {member.email && (
+            <a
+              href={`mailto:${member.email}`}
+              className="text-text-muted hover:text-accent-blue transition-colors"
+            >
+              <Mail className="h-3.5 w-3.5" />
+            </a>
+          )}
         </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          The leadership team driving ComES forward.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {executiveCommittee.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
       </div>
-    </Section>
-  );
-};
+    </div>
+  </motion.div>
+);
 
-// Senior Advisors Section
-const AdvisorsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "gray"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Senior Advisors
-          </h2>
-        </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          Faculty members guiding our initiatives with their expertise.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {seniorAdvisors.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// Coordinators Section
-const CoordinatorsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Coordinators
-          </h2>
-        </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          The driving force behind our events and initiatives.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {coordinators.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// Join Team Section
-const JoinTeamSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
-      <FadeInView>
-        <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
-          >
-            <UserPlus className="h-8 w-8 text-white" />
-          </motion.div>
-
-          <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">Join Our Team</h2>
-          <p className={cn("mb-8 text-xl", isDark ? "text-gray-400" : "text-blue-100")}>
-            We're always looking for passionate individuals who want to contribute to our mission of
-            fostering technological excellence. Be a part of something meaningful.
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <HoverScale>
-              <Button
-                href="https://volunteers.comesuor.lk"
-                variant="secondary"
-                size="lg"
-                icon={<Sparkles className="h-5 w-5" />}
-              >
-                Apply Now
-              </Button>
-            </HoverScale>
-            <HoverScale>
-              <Button
-                href="/about"
-                variant="outline"
-                size="lg"
-                className="hover:text-comesBlue border-white text-white hover:bg-white"
-              >
-                Learn More
-              </Button>
-            </HoverScale>
-          </div>
-        </div>
-      </FadeInView>
-    </Section>
-  );
-};
-
-// All Members Section with Filter
-const AllMembersSection = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const filteredMembers = getTeamByCategory(activeCategory);
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "gray"}>
-      <FadeInView>
-        <SectionHeader
-          title="All Team Members"
-          subtitle="Browse through all our amazing team members."
-          light={false}
-        />
-      </FadeInView>
-
-      {/* Category Filter */}
-      <div className="mb-8 flex flex-wrap justify-center gap-2">
-        {teamCategories.map((category) => (
-          <motion.button
-            key={category.id}
-            onClick={() => setActiveCategory(category.id)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-all",
-              activeCategory === category.id
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-                : isDark
-                  ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                  : "bg-white text-gray-600 hover:bg-gray-100",
-            )}
-          >
-            {category.label}
-          </motion.button>
-        ))}
-      </div>
-
-      {/* Members Grid */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="flex flex-wrap justify-center gap-6"
-        >
-          {filteredMembers.map((member, index) => (
-            <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]">
-              <TeamMemberCard member={member} index={index} />
-            </div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
-    </Section>
-  );
-};
-
-// Main Team Page Component
 export const TeamPage = () => {
+  const [activeCategory, setActiveCategory] = useState("all");
+  const members = getTeamByCategory(activeCategory);
+
   return (
     <PageTransition>
-      <TeamHero />
-      <ExecutiveSection />
-      <AdvisorsSection />
-      <CoordinatorsSection />
-      <AllMembersSection />
-      <JoinTeamSection />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#050A14] py-20 lg:py-28">
+        <div className="circuit-grid absolute inset-0 opacity-30" />
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+          >
+            <div className="font-body text-text-muted mb-6 flex items-center justify-center gap-2 text-sm">
+              <Link to="/" className="hover:text-accent-blue transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <span className="text-accent-blue">Team</span>
+            </div>
+            <h1 className="font-display text-text-primary mb-6 text-4xl font-bold lg:text-6xl">
+              Our Team
+            </h1>
+            <p className="font-body text-text-secondary mx-auto max-w-2xl text-lg">
+              Meet the passionate individuals driving ComES forward.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Category Tabs + Members */}
+      <section className="bg-[#0A1628] py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <FadeInView>
+            <div className="mb-10 flex flex-wrap justify-center gap-3">
+              {teamCategories.map((cat) => (
+                <motion.button
+                  key={cat.id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`font-body rounded-full px-5 py-2 text-sm font-medium transition-all ${
+                    activeCategory === cat.id
+                      ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20"
+                      : "bg-bg-card text-text-secondary hover:border-accent-blue/40 border border-[rgba(14,165,233,0.15)]"
+                  }`}
+                >
+                  {cat.label}
+                </motion.button>
+              ))}
+            </div>
+          </FadeInView>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {members.map((member, i) => (
+                <FadeInView key={member.id} direction="up" delay={i * 0.05}>
+                  <MemberCard
+                    member={member}
+                    large={activeCategory === "all" || activeCategory === "executive"}
+                  />
+                </FadeInView>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </section>
     </PageTransition>
   );
 };

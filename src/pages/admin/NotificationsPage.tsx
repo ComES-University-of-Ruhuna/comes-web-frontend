@@ -2,7 +2,7 @@
 // ComES Website - Admin Notifications Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -97,6 +97,18 @@ export const NotificationsPage = () => {
     setTimeout(() => setToast(null), 4000);
   };
 
+  const fetchStudents = useCallback(async () => {
+    try {
+      setLoadingStudents(true);
+      const response = await api.get("/students");
+      setStudents(response.data.data.students || []);
+    } catch {
+      showToast("error", "Failed to fetch students");
+    } finally {
+      setLoadingStudents(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchStats();
   }, []);
@@ -105,7 +117,7 @@ export const NotificationsPage = () => {
     if (activeTab === "individual") {
       fetchStudents();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchStudents]);
 
   const fetchStats = async () => {
     try {
@@ -117,18 +129,6 @@ export const NotificationsPage = () => {
       setActiveSubscribers(newsletterRes.data.data.stats?.active || 0);
     } catch {
       // Stats are non-critical, silently fail
-    }
-  };
-
-  const fetchStudents = async () => {
-    try {
-      setLoadingStudents(true);
-      const response = await api.get("/students");
-      setStudents(response.data.data.students || []);
-    } catch {
-      showToast("error", "Failed to fetch students");
-    } finally {
-      setLoadingStudents(false);
     }
   };
 

@@ -53,8 +53,13 @@ export const SettingsPage = () => {
       await studentService.deleteAccount();
       logout();
       navigate("/");
-    } catch (err: any) {
-      setDeleteError(err.response?.data?.message || "Failed to delete account. Please try again.");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setDeleteError(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to delete account. Please try again.",
+      );
       setIsDeleting(false);
     }
   };

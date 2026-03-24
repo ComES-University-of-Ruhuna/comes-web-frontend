@@ -47,12 +47,6 @@
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged",
-      "commit-msg": "npx commitlint --edit $1"
-    }
-  },
   "lint-staged": {
     "!(dist)/**/*.{js,ts,tsx,jsx}": [
       "eslint --fix",

@@ -2,7 +2,7 @@
 // ComES Website - Admin Analytics Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -162,7 +162,7 @@ export const AnalyticsPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     try {
       const today = new Date();
@@ -193,11 +193,11 @@ export const AnalyticsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [dateRange]);
+  }, [fetchAnalytics]);
 
   const getDeviceIcon = (device: string) => {
     switch (device.toLowerCase()) {

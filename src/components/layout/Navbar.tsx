@@ -1,28 +1,42 @@
 // ============================================
-// ComES Website - Navbar Component
+// ComES Website - Navbar Component (Redesigned)
 // ============================================
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ExternalLink } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
 import { useScrollPosition, useClickOutside } from "@/hooks";
 import { cn } from "@/utils";
-import { ThemeToggle, UserProfileDropdown, NotificationsDropdown } from "@/components/ui";
-import { useThemeStore, useStudentStore, useAuthStore } from "@/store";
+import { UserProfileDropdown, NotificationsDropdown } from "@/components/ui";
+import { useStudentStore, useAuthStore } from "@/store";
 import type { NavLink } from "@/types";
+
+// Circuit node SVG icon for logo
+const CircuitIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="shrink-0">
+    <circle cx="16" cy="16" r="4" fill="#0EA5E9" />
+    <circle cx="16" cy="16" r="7" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.5" />
+    <line x1="16" y1="2" x2="16" y2="9" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.4" />
+    <line x1="16" y1="23" x2="16" y2="30" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.4" />
+    <line x1="2" y1="16" x2="9" y2="16" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.4" />
+    <line x1="23" y1="16" x2="30" y2="16" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.4" />
+    <circle cx="16" cy="4" r="2" fill="#0EA5E9" opacity="0.6" />
+    <circle cx="16" cy="28" r="2" fill="#0EA5E9" opacity="0.6" />
+    <circle cx="4" cy="16" r="2" fill="#0EA5E9" opacity="0.6" />
+    <circle cx="28" cy="16" r="2" fill="#0EA5E9" opacity="0.6" />
+  </svg>
+);
 
 // NavItem component for desktop navigation with dropdown support
 interface NavItemProps {
   link: NavLink;
   index: number;
-  isScrolled: boolean;
-  isDark: boolean;
   isActive: (path: string) => boolean;
 }
 
-const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) => {
+const NavItem = ({ link, index, isActive }: NavItemProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsDropdownOpen(false));
 
@@ -43,55 +57,45 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className={cn(
-            "relative flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
-            isChildActive
-              ? isScrolled
-                ? isDark
-                  ? "bg-blue-500/20 text-blue-400"
-                  : "bg-comesBlue text-white"
-                : "bg-white/20 text-white"
-              : isScrolled
-                ? isDark
-                  ? "text-gray-300 hover:bg-slate-800 hover:text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-                : "text-white/90 hover:bg-white/10 hover:text-white",
+            "font-body relative flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+            isChildActive ? "text-accent-blue" : "text-text-secondary hover:text-text-primary",
           )}
         >
           <span className="relative z-10">{link.label}</span>
           <ChevronDown
             className={cn(
-              "h-4 w-4 transition-transform duration-200",
+              "h-3.5 w-3.5 transition-transform duration-200",
               isDropdownOpen && "rotate-180",
             )}
           />
+          {isChildActive && (
+            <motion.div
+              layoutId="nav-active"
+              className="bg-accent-blue absolute bottom-0 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full"
+              style={{ boxShadow: "0 0 8px rgba(14,165,233,0.6)" }}
+            />
+          )}
         </button>
 
         <AnimatePresence>
           {isDropdownOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className={cn(
-                "absolute top-full left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl shadow-xl",
-                isDark ? "border border-slate-800 bg-slate-900" : "border border-gray-200 bg-white",
-              )}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="absolute top-full left-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-[rgba(14,165,233,0.15)] bg-[#0D1E35]/95 shadow-xl shadow-black/30 backdrop-blur-xl"
             >
-              <div className="py-2">
+              <div className="py-1.5">
                 {link.children?.map((child) => (
                   <Link
                     key={child.path}
                     to={child.path}
                     className={cn(
-                      "block px-4 py-3 text-sm font-medium transition-all duration-200",
+                      "font-body block px-4 py-2.5 text-sm font-medium transition-all duration-200",
                       isActive(child.path)
-                        ? isDark
-                          ? "bg-blue-500/20 text-blue-400"
-                          : "text-comesBlue bg-blue-50"
-                        : isDark
-                          ? "text-gray-300 hover:bg-slate-800 hover:text-white"
-                          : "text-gray-700 hover:bg-gray-100",
+                        ? "bg-accent-blue/10 text-accent-blue"
+                        : "text-text-secondary hover:text-text-primary hover:bg-white/5",
                     )}
                   >
                     {child.label}
@@ -114,73 +118,53 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
       <Link
         to={link.path}
         className={cn(
-          "relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
-          isActive(link.path)
-            ? isScrolled
-              ? isDark
-                ? "bg-blue-500/20 text-blue-400"
-                : "bg-comesBlue text-white"
-              : "bg-white/20 text-white"
-            : isScrolled
-              ? isDark
-                ? "text-gray-300 hover:bg-slate-800 hover:text-white"
-                : "text-gray-700 hover:bg-gray-100"
-              : "text-white/90 hover:bg-white/10 hover:text-white",
+          "font-body relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+          isActive(link.path) ? "text-accent-blue" : "text-text-secondary hover:text-text-primary",
         )}
       >
+        <span className="relative z-10">{link.label}</span>
         {isActive(link.path) && (
           <motion.div
-            layoutId="nav-indicator"
-            className={cn(
-              "absolute inset-0 rounded-xl",
-              isScrolled ? (isDark ? "bg-blue-500/20" : "bg-comesBlue") : "bg-white/20",
-            )}
-            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+            layoutId="nav-active"
+            className="bg-accent-blue absolute bottom-0 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full"
+            style={{ boxShadow: "0 0 8px rgba(14,165,233,0.6)" }}
           />
         )}
-        <span className="relative z-10">{link.label}</span>
       </Link>
     </motion.div>
   );
 };
 
-// MobileNavItem component for mobile navigation with dropdown support
+// MobileNavItem component
 interface MobileNavItemProps {
   link: NavLink;
   index: number;
-  isDark: boolean;
   isActive: (path: string) => boolean;
+  onClose: () => void;
 }
 
-const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) => {
+const MobileNavItem = ({ link, index, isActive, onClose }: MobileNavItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
   const hasChildren = link.children && link.children.length > 0;
   const isChildActive = hasChildren && link.children?.some((child) => isActive(child.path));
 
   if (hasChildren) {
     return (
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
+        initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.05 }}
+        transition={{ delay: 0.1 + index * 0.08 }}
       >
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className={cn(
-            "flex w-full items-center justify-between rounded-xl px-4 py-3 font-medium transition-all duration-200",
-            isChildActive
-              ? isDark
-                ? "bg-blue-500/20 text-blue-400"
-                : "bg-comesBlue text-white"
-              : isDark
-                ? "text-gray-300 hover:bg-slate-800"
-                : "text-gray-700 hover:bg-gray-100",
+            "font-body flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-all duration-200",
+            isChildActive ? "text-accent-blue" : "text-text-secondary hover:text-text-primary",
           )}
         >
           <span>{link.label}</span>
           <ChevronDown
-            className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")}
+            className={cn("h-5 w-5 transition-transform duration-200", isExpanded && "rotate-180")}
           />
         </button>
 
@@ -193,25 +177,17 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div
-                className={cn(
-                  "mt-1 ml-4 space-y-1 border-l-2 pl-4",
-                  isDark ? "border-slate-700" : "border-gray-200",
-                )}
-              >
+              <div className="ml-4 space-y-1 border-l border-[rgba(14,165,233,0.2)] pl-4">
                 {link.children?.map((child) => (
                   <Link
                     key={child.path}
                     to={child.path}
+                    onClick={onClose}
                     className={cn(
-                      "block rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                      "font-body block rounded-lg px-4 py-2 text-base font-medium transition-all duration-200",
                       isActive(child.path)
-                        ? isDark
-                          ? "bg-blue-500/20 text-blue-400"
-                          : "text-comesBlue bg-blue-50"
-                        : isDark
-                          ? "text-gray-400 hover:bg-slate-800 hover:text-gray-200"
-                          : "text-gray-600 hover:bg-gray-100",
+                        ? "text-accent-blue"
+                        : "text-text-muted hover:text-text-secondary",
                     )}
                   >
                     {child.label}
@@ -227,21 +203,16 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: 0.1 + index * 0.08 }}
     >
       <Link
         to={link.path}
+        onClick={onClose}
         className={cn(
-          "block rounded-xl px-4 py-3 font-medium transition-all duration-200",
-          isActive(link.path)
-            ? isDark
-              ? "bg-blue-500/20 text-blue-400"
-              : "bg-comesBlue text-white"
-            : isDark
-              ? "text-gray-300 hover:bg-slate-800"
-              : "text-gray-700 hover:bg-gray-100",
+          "font-body block rounded-xl px-4 py-3 text-lg font-medium transition-all duration-200",
+          isActive(link.path) ? "text-accent-blue" : "text-text-secondary hover:text-text-primary",
         )}
       >
         {link.label}
@@ -254,8 +225,6 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isScrolled } = useScrollPosition();
   const location = useLocation();
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
   const mobileMenuRef = useClickOutside<HTMLDivElement>(() => setIsMobileMenuOpen(false));
 
   // Check if user is authenticated
@@ -282,111 +251,75 @@ export const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Dynamic styles based on scroll and theme
-  const getNavStyles = () => {
-    if (isScrolled) {
-      return isDark
-        ? "bg-slate-900/95 backdrop-blur-md shadow-lg shadow-black/20 border-b border-slate-800"
-        : "bg-white/95 backdrop-blur-md shadow-lg";
-    }
-    return isDark ? "bg-slate-950" : "bg-comesBlue";
-  };
-
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn("fixed top-0 right-0 left-0 z-50 transition-all duration-300", getNavStyles())}
+      className={cn(
+        "fixed top-0 right-0 left-0 z-50 transition-all duration-300",
+        isScrolled
+          ? "border-b border-[rgba(14,165,233,0.1)] bg-[#050A14]/80 shadow-lg shadow-black/20 backdrop-blur-xl"
+          : "bg-transparent",
+      )}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between md:h-20">
           {/* Logo */}
-          <Link to="/" className="group flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl text-lg font-bold transition-all duration-300",
-                isScrolled
-                  ? isDark
-                    ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
-                    : "bg-comesBlue text-white"
-                  : "text-comesBlue bg-white",
-              )}
-            >
-              <span className="relative z-10">CE</span>
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+          <Link to="/" className="group flex items-center gap-2.5">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <CircuitIcon />
             </motion.div>
-            <div className="hidden sm:block">
-              <h1
-                className={cn(
-                  "font-comes text-xl font-bold tracking-wide transition-colors",
-                  isScrolled ? (isDark ? "text-white" : "text-comesBlue") : "text-white",
-                )}
-              >
+            <div>
+              <h1 className="font-display text-text-primary text-xl font-bold tracking-wider">
                 ComES
               </h1>
-              <p
-                className={cn(
-                  "text-xs transition-colors",
-                  isScrolled ? (isDark ? "text-gray-400" : "text-gray-600") : "text-blue-100",
-                )}
-              >
+              <p className="text-text-muted hidden text-[10px] font-medium tracking-wide sm:block">
                 Computer Engineering Society
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-1 lg:flex">
+          <div className="hidden items-center gap-0.5 lg:flex">
             {NAV_LINKS.map((link, index) => (
-              <NavItem
-                key={link.path}
-                link={link}
-                index={index}
-                isScrolled={isScrolled}
-                isDark={isDark}
-                isActive={isActive}
-              />
+              <NavItem key={link.path} link={link} index={index} isActive={isActive} />
             ))}
           </div>
 
           {/* Desktop Actions */}
           <div className="hidden items-center gap-3 lg:flex">
-            {/* Theme Toggle - only show if not authenticated */}
-            {!isAuthenticated && (
-              <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
-            )}
-
             {/* Notifications - only show if authenticated */}
             {isAuthenticated && <NotificationsDropdown isScrolled={isScrolled} />}
 
-            {/* User Profile Dropdown or CTA Button */}
+            {/* User Profile Dropdown or CTA Buttons */}
             {isAuthenticated ? (
               <UserProfileDropdown isScrolled={isScrolled} />
             ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  to="/register"
-                  className={cn(
-                    "flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-300",
-                    "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 hover:from-amber-300 hover:to-yellow-400",
-                    "shadow-lg shadow-amber-500/25",
-                  )}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Join Us
-                </Link>
-              </motion.div>
+              <div className="flex items-center gap-2">
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Link
+                    to="/login"
+                    className="border-accent-blue/50 font-body text-accent-blue hover:border-accent-blue hover:bg-accent-blue/10 flex items-center gap-1.5 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_20px_rgba(14,165,233,0.15)]"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Student Portal
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Link
+                    to="/register"
+                    className="font-body flex items-center gap-1.5 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition-all duration-200 hover:shadow-sky-500/30"
+                  >
+                    Join Us
+                  </Link>
+                </motion.div>
+              </div>
             )}
           </div>
 
           {/* Mobile Actions */}
           <div className="flex items-center gap-2 lg:hidden">
-            {!isAuthenticated && (
-              <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
-            )}
             {isAuthenticated && (
               <>
                 <NotificationsDropdown isScrolled={isScrolled} />
@@ -396,14 +329,7 @@ export const Navbar = () => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={cn(
-                "rounded-xl p-2 transition-colors",
-                isScrolled
-                  ? isDark
-                    ? "text-white hover:bg-slate-800"
-                    : "text-comesBlue hover:bg-gray-100"
-                  : "text-white hover:bg-white/10",
-              )}
+              className="text-text-secondary hover:text-text-primary rounded-xl p-2 transition-colors hover:bg-white/5"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             >
               <AnimatePresence mode="wait">
@@ -434,7 +360,7 @@ export const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — Full Screen Slide-in */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -443,7 +369,7 @@ export const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm md:top-20 lg:hidden"
+              className="fixed inset-0 top-16 bg-black/70 backdrop-blur-sm md:top-20 lg:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -454,30 +380,24 @@ export const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className={cn(
-                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] lg:hidden",
-                isDark ? "border-l border-slate-800 bg-slate-900" : "bg-white",
-              )}
+              className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-full overflow-y-auto border-l border-[rgba(14,165,233,0.1)] bg-[#050A14]/98 backdrop-blur-xl sm:w-80 md:top-20 md:h-[calc(100vh-5rem)] lg:hidden"
             >
-              <div className="space-y-2 p-6">
+              <div className="space-y-1 p-6">
                 {NAV_LINKS.map((link, index) => (
                   <MobileNavItem
                     key={link.path}
                     link={link}
                     index={index}
-                    isDark={isDark}
                     isActive={isActive}
+                    onClose={() => setIsMobileMenuOpen(false)}
                   />
                 ))}
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className={cn(
-                    "mt-4 border-t pt-4",
-                    isDark ? "border-slate-800" : "border-gray-200",
-                  )}
+                  transition={{ delay: 0.4 }}
+                  className="mt-6 space-y-3 border-t border-[rgba(14,165,233,0.1)] pt-6"
                 >
                   {isAuthenticated ? (
                     <UserProfileDropdown variant="mobile" />
@@ -485,20 +405,18 @@ export const Navbar = () => {
                     <>
                       <Link
                         to="/login"
-                        className={cn(
-                          "mb-3 flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all",
-                          isDark
-                            ? "bg-slate-800 text-white hover:bg-slate-700"
-                            : "bg-gray-100 text-gray-900 hover:bg-gray-200",
-                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="border-accent-blue/50 font-body text-accent-blue hover:bg-accent-blue/10 flex w-full items-center justify-center gap-2 rounded-full border px-6 py-3 font-semibold transition-all"
                       >
-                        Login
+                        <ExternalLink className="h-4 w-4" />
+                        Student Portal
                       </Link>
                       <Link
                         to="/register"
-                        className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-600 hover:to-cyan-600"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="font-body flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg transition-all"
                       >
-                        Register
+                        Join Us
                       </Link>
                     </>
                   )}

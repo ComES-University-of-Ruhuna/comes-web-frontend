@@ -1,704 +1,746 @@
 // ============================================
-// ComES Website - Home Page
+// ComES Website - Home Page (Redesigned)
 // ============================================
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { Link } from "react-router";
 import {
   ArrowRight,
   ChevronDown,
   Users,
   Calendar,
-  Code2,
-  Award,
-  Rocket,
-  Zap,
-  Sparkles,
-  TrendingUp,
-  Star,
   Cpu,
   Shield,
   Brain,
   GitBranch,
+  Rocket,
+  Mail,
+  FolderGit2,
+  Clock,
 } from "lucide-react";
-import {
-  Button,
-  Section,
-  SectionHeader,
-  Card,
-  Badge,
-  PageTransition,
-  FadeInView,
-  HoverScale,
-  ModernRobot,
-} from "@/components/ui";
-import { getFeaturedEvents, getFeaturedProjects, testimonials } from "@/data";
-import { useThemeStore } from "@/store";
+import { PageTransition, FadeInView } from "@/components/ui";
+import { getFeaturedEvents, getFeaturedProjects } from "@/data";
 import { cn } from "@/utils";
 
-// Hero Section
-const HeroSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
+// ─── Ease curve used throughout ───
+const ease = [0.25, 0.46, 0.45, 0.94];
+
+// ─── Animated Counter ───
+const Counter = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    let start = 0;
+    const end = value;
+    const duration = 2000;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [isInView, value]);
 
   return (
-    <section
-      className={cn(
-        "relative flex min-h-[90vh] items-center justify-center overflow-hidden",
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950"
-          : "bg-gradient-to-br from-blue-50 via-white to-indigo-50",
-      )}
-    >
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div
-          className={cn(
-            "absolute inset-0 [background-size:24px_24px]",
-            isDark
-              ? "bg-[radial-gradient(#3b82f6_1px,transparent_1px)]"
-              : "bg-[radial-gradient(#003366_1px,transparent_1px)]",
-          )}
-        />
-      </div>
+    <span ref={ref} className="font-display text-text-primary text-4xl font-bold lg:text-5xl">
+      {count}
+      {suffix}
+    </span>
+  );
+};
 
-      {/* Animated Decorative Elements */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 4, repeat: Infinity }}
-        className={cn(
-          "absolute top-20 left-10 h-72 w-72 rounded-full blur-3xl",
-          isDark ? "bg-blue-500/20" : "bg-comesBlue/10",
-        )}
-      />
-      <motion.div
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 5, repeat: Infinity }}
-        className={cn(
-          "absolute right-10 bottom-20 h-96 w-96 rounded-full blur-3xl",
-          isDark ? "bg-cyan-500/20" : "bg-comesGold/10",
-        )}
-      />
+// ─── Section 1: Hero ───
+const HeroSection = () => (
+  <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050A14]">
+    {/* Animated circuit grid background */}
+    <div className="circuit-grid absolute inset-0 opacity-40" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20">
-        <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
-          {/* Left Side - Content */}
-          <div className="flex-1 text-center lg:text-left">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Badge
-                variant="secondary"
-                size="lg"
-                className={cn(
-                  "mb-6 inline-flex items-center gap-2",
-                  isDark && "border-blue-500/30 bg-blue-500/20 text-blue-300",
-                )}
-              >
-                <Sparkles className="h-4 w-4" />
-                Registration Open for Membership
-              </Badge>
-            </motion.div>
+    {/* Animated gradient orbs */}
+    <motion.div
+      animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
+      transition={{ duration: 6, repeat: Infinity }}
+      className="absolute top-20 left-10 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"
+    />
+    <motion.div
+      animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.25, 0.1] }}
+      transition={{ duration: 8, repeat: Infinity }}
+      className="absolute right-10 bottom-20 h-[500px] w-[500px] rounded-full bg-cyan-500/15 blur-3xl"
+    />
 
-            {/* Main Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-6 text-5xl font-extrabold md:text-7xl lg:text-8xl"
-            >
-              <span
-                className={cn(
-                  "bg-clip-text text-transparent",
-                  isDark
-                    ? "bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400"
-                    : "from-comesBlue to-comesBlue bg-gradient-to-r via-blue-600",
-                )}
-              >
-                ComES
-              </span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className={cn(
-                "mb-8 text-xl font-medium md:text-3xl",
-                isDark ? "text-gray-300" : "text-comesBlue opacity-90",
-              )}
-            >
-              Computer Engineering Society
-            </motion.h2>
-
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className={cn(
-                "mb-10 max-w-2xl text-justify text-lg leading-relaxed md:text-xl",
-                isDark ? "text-gray-400" : "text-gray-600",
-                "mx-auto lg:mx-0",
-              )}
-            >
-              The official student society for Computer Engineering at the Faculty of Engineering,
-              University of Ruhuna. Empowering students, fostering innovation, and building a
-              vibrant tech community.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start"
-            >
-              <HoverScale>
-                <Button
-                  href="/register"
-                  size="lg"
-                  icon={<Rocket className="h-5 w-5" />}
-                  className="shadow-comesBlue/25 shadow-lg"
-                >
-                  Join ComES
-                </Button>
-              </HoverScale>
-              <HoverScale>
-                <Button
-                  href="/about"
-                  variant="outline"
-                  size="lg"
-                  className={cn(
-                    isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
-                  )}
-                >
-                  Learn More
-                </Button>
-              </HoverScale>
-            </motion.div>
-          </div>
-
-          {/* Right Side - Robot */}
+    <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-20">
+        {/* Left — Content */}
+        <div className="flex-1 text-center lg:text-left">
+          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="w-full max-w-md flex-1 lg:max-w-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
           >
-            <ModernRobot isDark={isDark} className="h-auto w-full" />
+            <span className="text-accent-blue mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(14,165,233,0.3)] bg-[rgba(14,165,233,0.1)] px-4 py-1.5 font-mono text-xs font-medium tracking-widest uppercase">
+              Est. 2026 · UoR Faculty of Engineering
+            </span>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease }}
+            className="text-accent-blue mb-3 font-mono text-sm tracking-[0.3em] uppercase"
+          >
+            Computer Engineering Society
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease }}
+            className="font-display text-text-primary mb-2 text-5xl leading-tight font-bold md:text-7xl lg:text-8xl"
+          >
+            Build. Innovate.
+          </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease }}
+            className="font-display mb-8 bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-5xl leading-tight font-bold text-transparent md:text-7xl lg:text-8xl"
+          >
+            Engineer the Future.
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease }}
+            className="font-body text-text-secondary mx-auto mb-10 max-w-xl text-lg leading-relaxed lg:mx-0"
+          >
+            University of Ruhuna · Faculty of Engineering
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5, ease }}
+            className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start"
+          >
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/events"
+                className="font-body inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-8 py-3.5 font-semibold text-white shadow-lg shadow-sky-500/25 transition-all hover:shadow-sky-500/40"
+              >
+                Explore Events
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/register"
+                className="border-accent-blue/50 font-body text-accent-blue hover:bg-accent-blue/10 inline-flex items-center gap-2 rounded-full border px-8 py-3.5 font-semibold transition-all"
+              >
+                Join ComES
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
 
-        {/* Domains */}
+        {/* Right — Abstract geometric shape */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.4, ease }}
+          className="hidden flex-1 items-center justify-center lg:flex"
         >
-          {[
-            {
-              icon: <Cpu className="h-6 w-6" />,
-              label: "Electronics & Embedded Systems",
-              gradient: "from-emerald-500 to-teal-500",
-              glow: "shadow-emerald-500/30",
-              href: "/subgroups/embedded-electronics",
-            },
-            {
-              icon: <GitBranch className="h-6 w-6" />,
-              label: "Software Engineering",
-              gradient: "from-blue-500 to-cyan-500",
-              glow: "shadow-blue-500/30",
-              href: "/subgroups/software-engineering",
-            },
-            {
-              icon: <Shield className="h-6 w-6" />,
-              label: "Network & Cyber Security",
-              gradient: "from-purple-500 to-indigo-500",
-              glow: "shadow-purple-500/30",
-              href: "/subgroups/network-security",
-            },
-            {
-              icon: <Brain className="h-6 w-6" />,
-              label: "AI & Data Science",
-              gradient: "from-amber-500 to-orange-500",
-              glow: "shadow-amber-500/30",
-              href: "/subgroups/ai-data-science",
-            },
-          ].map((domain, index) => (
+          <div className="relative h-80 w-80">
+            {/* Rotating cube wireframe */}
             <motion.div
-              key={domain.label}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-              whileHover={{ y: -8, scale: 1.03 }}
+              animate={{ rotateY: 360, rotateX: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0"
+              style={{ transformStyle: "preserve-3d", perspective: "800px" }}
             >
-              <Link
-                to={domain.href}
-                className={cn(
-                  "group relative flex cursor-pointer flex-col items-center gap-4 overflow-hidden rounded-2xl border p-6 text-center backdrop-blur-sm transition-all",
-                  isDark
-                    ? "border-slate-700/50 bg-slate-800/50 shadow-lg shadow-black/20 hover:border-slate-600/70"
-                    : "border-white/70 bg-white/80 shadow-lg hover:border-white",
-                )}
-              >
-              {/* Animated background glow on hover */}
               <div
-                className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-10",
-                  domain.gradient,
-                )}
+                className="absolute inset-8 rounded-2xl border border-sky-500/30"
+                style={{ transform: "translateZ(60px)" }}
               />
-              {/* Floating icon */}
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 3 + index * 0.4, repeat: Infinity, ease: "easeInOut" }}
-                className={cn(
-                  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg",
-                  domain.gradient,
-                  domain.glow,
-                )}
-              >
-                {domain.icon}
-              </motion.div>
-              <span
-                className={cn(
-                  "relative z-10 text-sm font-semibold leading-tight",
-                  isDark ? "text-gray-200" : "text-comesBlue",
-                )}
-              >
-                {domain.label}
-              </span>
-              </Link>
+              <div
+                className="absolute inset-8 rounded-2xl border border-cyan-500/20"
+                style={{ transform: "translateZ(-60px)" }}
+              />
+              <div
+                className="absolute inset-8 rounded-2xl border border-sky-400/15"
+                style={{ transform: "rotateY(90deg) translateZ(60px)" }}
+              />
             </motion.div>
-          ))}
+            {/* Central glow */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-32 w-32 rounded-full bg-sky-500/20 blur-2xl" />
+              <div className="absolute h-16 w-16 rounded-full bg-cyan-400/30 blur-xl" />
+            </div>
+          </div>
         </motion.div>
+      </div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 transform"
-        >
-          <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-            <ChevronDown className={cn("h-8 w-8", isDark ? "text-blue-400" : "text-comesBlue")} />
-          </motion.div>
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+      >
+        <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+          <ChevronDown className="text-text-muted h-6 w-6" />
         </motion.div>
+      </motion.div>
+    </div>
+  </section>
+);
+
+// ─── Section 2: Stats Bar ───
+const StatsSection = () => {
+  const stats = [
+    { icon: <Users className="h-5 w-5" />, value: 150, suffix: "+", label: "Members" },
+    { icon: <Calendar className="h-5 w-5" />, value: 25, suffix: "+", label: "Events Held" },
+    { icon: <FolderGit2 className="h-5 w-5" />, value: 12, suffix: "+", label: "Projects" },
+    { icon: <Clock className="h-5 w-5" />, value: 1, suffix: "", label: "Year Active" },
+  ];
+
+  return (
+    <section className="relative border-y border-[rgba(14,165,233,0.1)] bg-[#0A1628]">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+          {stats.map((stat, i) => (
+            <FadeInView key={stat.label} direction="up" delay={i * 0.1}>
+              <div className="flex flex-col items-center text-center">
+                <div className="text-accent-blue mb-3">{stat.icon}</div>
+                <Counter value={stat.value} suffix={stat.suffix} />
+                <span className="font-body text-text-muted mt-1 text-sm">{stat.label}</span>
+              </div>
+            </FadeInView>
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
-// About Preview Section
-const AboutPreviewSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  const features = [
-    {
-      icon: <Users className="h-7 w-7" />,
-      title: "Community",
-      description: "Building connections and networks among students and professionals.",
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: <Calendar className="h-7 w-7" />,
-      title: "Events",
-      description: "Workshops, hackathons, and seminars on trending technologies.",
-      gradient: "from-amber-500 to-orange-500",
-    },
-    {
-      icon: <Code2 className="h-7 w-7" />,
-      title: "Projects",
-      description: "Hands-on projects solving real-world problems.",
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: <Award className="h-7 w-7" />,
-      title: "Excellence",
-      description: "Striving for the highest standards in everything we do.",
-      gradient: "from-emerald-500 to-teal-500",
-    },
-  ];
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
+// ─── Section 3: About Teaser ───
+const AboutTeaser = () => (
+  <section className="bg-[#050A14] py-20 lg:py-32">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <FadeInView direction="right">
-          <h2
-            className={cn(
-              "mb-6 text-3xl font-bold md:text-4xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
+          <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+            About ComES
+          </p>
+          <h2 className="font-display text-text-primary mb-6 text-3xl font-bold lg:text-5xl">
             Empowering Future Engineers
           </h2>
-          <p
-            className={cn(
-              "mb-6 text-lg leading-relaxed font-medium text-justify",
-              isDark ? "text-gray-300" : "text-gray-600",
-            )}
-          >
+          <p className="font-body text-text-secondary mb-6 text-lg leading-relaxed">
             ComES is dedicated to creating an environment where students can thrive, innovate, and
             make meaningful contributions to the field of computer engineering. Through workshops,
             hackathons, and industry connections, we prepare students for successful careers in
             technology.
           </p>
-          <p
-            className={cn(
-              "mb-8 text-lg leading-relaxed font-medium",
-              isDark ? "text-gray-300" : "text-gray-600",
-            )}
-          >
-            Join our community of passionate learners and future tech leaders.
-          </p>
-          <HoverScale>
-            <Button
-              href="/about"
-              variant="outline"
-              icon={<ArrowRight className="h-4 w-4" />}
-              className={cn(
-                isDark && "hover:text-comesBlue border-white text-white hover:bg-white",
-              )}
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              to="/about"
+              className="border-accent-blue/50 font-body text-accent-blue hover:bg-accent-blue/10 inline-flex items-center gap-2 rounded-full border px-6 py-3 font-semibold transition-all"
             >
-              Discover Our Story
-            </Button>
-          </HoverScale>
+              Read More
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </motion.div>
         </FadeInView>
 
-        <div className="grid grid-cols-2 gap-4">
-          {features.map((feature, index) => (
-            <FadeInView key={index} direction="up" delay={index * 0.1}>
+        <FadeInView direction="left">
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              {
+                title: "Our Mission",
+                text: "Empower students through innovation and collaboration in computer engineering.",
+              },
+              {
+                title: "Our Vision",
+                text: "A globally connected community of tech leaders from University of Ruhuna.",
+              },
+            ].map((card) => (
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                className={cn(
-                  "rounded-2xl border p-6 text-center transition-all",
-                  isDark
-                    ? "border-slate-700/50 bg-slate-800/50"
-                    : "border-gray-100 bg-white shadow-lg",
-                )}
+                key={card.title}
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="glass rounded-2xl p-6"
               >
-                <motion.div
-                  whileHover={{ rotate: 10 }}
-                  className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shadow-lg`}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3 className={cn("mb-2 font-semibold", isDark ? "text-white" : "text-comesBlue")}>
-                  {feature.title}
+                <h3 className="font-display text-accent-blue mb-3 text-sm font-bold tracking-wider">
+                  {card.title}
                 </h3>
-                <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                  {feature.description}
-                </p>
+                <p className="font-body text-text-secondary text-sm">{card.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </FadeInView>
+      </div>
+    </div>
+  </section>
+);
+
+// ─── Section 4: Subgroups ───
+const SubgroupsSection = () => {
+  const subgroups = [
+    {
+      icon: <GitBranch className="h-7 w-7" />,
+      name: "Software Engineering",
+      desc: "Web, mobile, DevOps, and software architecture.",
+      href: "/subgroups/software-engineering",
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <Brain className="h-7 w-7" />,
+      name: "AI & Data Science",
+      desc: "Machine learning, deep learning, and data analytics.",
+      href: "/subgroups/ai-data-science",
+      gradient: "from-violet-500 to-purple-500",
+    },
+    {
+      icon: <Cpu className="h-7 w-7" />,
+      name: "Embedded Electronics",
+      desc: "Microcontrollers, PCB design, robotics, and IoT.",
+      href: "/subgroups/embedded-electronics",
+      gradient: "from-emerald-500 to-teal-500",
+    },
+    {
+      icon: <Shield className="h-7 w-7" />,
+      name: "Network Security",
+      desc: "Cybersecurity, pentesting, and cryptography.",
+      href: "/subgroups/network-security",
+      gradient: "from-orange-500 to-amber-500",
+    },
+  ];
+
+  return (
+    <section className="bg-[#0A1628] py-20 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FadeInView>
+          <div className="mb-12 text-center">
+            <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+              Our Subgroups
+            </p>
+            <h2 className="font-display text-text-primary text-3xl font-bold lg:text-5xl">
+              Specialized Divisions
+            </h2>
+          </div>
+        </FadeInView>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {subgroups.map((sg, i) => (
+            <FadeInView key={sg.name} direction="up" delay={i * 0.1}>
+              <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ ease }}>
+                <Link
+                  to={sg.href}
+                  className="group bg-bg-card flex items-start gap-5 rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.4)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+                >
+                  <div
+                    className={cn(
+                      "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white",
+                      sg.gradient,
+                    )}
+                  >
+                    {sg.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-display text-text-primary mb-1 text-lg font-semibold">
+                      {sg.name}
+                    </h3>
+                    <p className="font-body text-text-secondary text-sm">{sg.desc}</p>
+                  </div>
+                  <ArrowRight className="text-text-muted group-hover:text-accent-blue mt-1 h-5 w-5 shrink-0 opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
+                </Link>
               </motion.div>
             </FadeInView>
           ))}
         </div>
       </div>
-    </Section>
+    </section>
   );
 };
 
-// Events Preview Section
-const EventsPreviewSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-  const featuredEvents = getFeaturedEvents(3);
+// ─── Section 5: Featured Events ───
+const FeaturedEvents = () => {
+  const events = getFeaturedEvents(3);
 
   return (
-    <Section background={isDark ? "dark" : "white"} className={isDark ? "bg-slate-950 " : "text-comesBlue"}>
-      <FadeInView>
-        <SectionHeader
-          title="Upcoming Events"
-          subtitle="Join us for exciting events that foster learning, innovation, and community building."
-          light={isDark}
-        />
-      </FadeInView>
+    <section className="bg-[#050A14] py-20 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FadeInView>
+          <div className="mb-12 text-center">
+            <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+              Events
+            </p>
+            <h2 className="font-display text-text-primary text-3xl font-bold lg:text-5xl">
+              Upcoming & Recent Events
+            </h2>
+          </div>
+        </FadeInView>
 
-      <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {featuredEvents.map((event, index) => (
-          <FadeInView key={event.id} direction="up" delay={index * 0.1}>
-            <motion.div whileHover={{ y: -10 }}>
-              <Card
-                hoverable
-                padding="none"
-                className={cn("flex h-full flex-col", isDark && "border-slate-700 bg-slate-800")}
+        <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {events.map((event, i) => (
+            <FadeInView key={event.id} direction="up" delay={i * 0.1}>
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="group bg-bg-card flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(14,165,233,0.15)] transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
               >
-                <div
-                  className={`bg-gradient-to-r ${event.color} relative overflow-hidden p-6 text-white`}
-                >
-                  <div className="absolute top-0 right-0 h-32 w-32 translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-2xl" />
-                  <div className="relative z-10">
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="text-4xl">{event.icon}</span>
-                      <Badge
-                        variant="secondary"
-                        size="sm"
-                        className="border-white/30 bg-white/20 text-white"
-                      >
-                        {event.type}
-                      </Badge>
-                    </div>
-                    <h3 className="mb-2 text-xl font-bold">{event.title}</h3>
-                    <div className="flex items-center gap-4 text-sm opacity-90">
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {event.date}
-                      </span>
-                    </div>
+                {/* Image placeholder */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={`https://placehold.co/600x300/0D1E35/0EA5E9?text=${encodeURIComponent(event.title)}`}
+                    alt={event.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-accent-blue/90 rounded-full px-3 py-1 font-mono text-xs font-medium text-white">
+                      {event.type}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-lg bg-black/50 px-2.5 py-1 backdrop-blur-sm">
+                    <Calendar className="text-accent-blue h-3.5 w-3.5" />
+                    <span className="font-body text-xs text-white">{event.date}</span>
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <p
-                    className={cn("mb-4 line-clamp-2", isDark ? "text-gray-400" : "text-gray-600")}
-                  >
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="font-display text-text-primary mb-2 text-lg font-semibold">
+                    {event.title}
+                  </h3>
+                  <p className="font-body text-text-secondary mb-4 line-clamp-2 flex-1 text-sm">
                     {event.description}
                   </p>
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-                      {event.registered}/{event.capacity} registered
-                    </span>
-                    <div
-                      className={cn(
-                        "h-2 w-24 rounded-full",
-                        isDark ? "bg-slate-700" : "bg-gray-200",
-                      )}
-                    >
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${(event.registered / event.capacity) * 100}%` }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
-                      />
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full" href="/events">
-                    Register Now
-                  </Button>
+                  <Link
+                    to="/events"
+                    className="font-body text-accent-blue hover:text-accent-cyan inline-flex items-center gap-1 text-sm font-medium transition-colors"
+                  >
+                    Learn More <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
-              </Card>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
+              </motion.div>
+            </FadeInView>
+          ))}
+        </div>
 
-      <FadeInView className="text-center">
-        <HoverScale>
-          <Button href="/events" icon={<ArrowRight className="h-4 w-4" />}>
-            View All Events
-          </Button>
-        </HoverScale>
-      </FadeInView>
-    </Section>
-  );
-};
-
-// Projects Preview Section
-const ProjectsPreviewSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-  const featuredProjects = getFeaturedProjects(4);
-
-  return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
-      <FadeInView>
-        <SectionHeader
-          title="Our Projects"
-          subtitle="Explore innovative projects built by our talented members."
-        />
-      </FadeInView>
-
-      <div className="mb-12 grid gap-6 md:grid-cols-2">
-        {featuredProjects.map((project, index) => (
-          <FadeInView
-            key={project.id}
-            direction={index % 2 === 0 ? "left" : "right"}
-            delay={index * 0.1}
-          >
-            <motion.div whileHover={{ y: -5 }}>
-              <Card
-                hoverable
-                padding="none"
-                className={cn(
-                  "flex flex-col overflow-hidden",
-                  isDark && "border-slate-700/50 bg-slate-800/50",
-                )}
-              >
-                <div className="flex-1 p-6">
-                  <div className="mb-4 flex items-start justify-between">
-                    <Badge variant={project.status === "Completed" ? "success" : "info"} size="sm">
-                      <Zap className="mr-1 h-3 w-3" />
-                      {project.status}
-                    </Badge>
-                    <Badge variant="secondary" size="sm">
-                      {project.category}
-                    </Badge>
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-white">{project.title}</h3>
-                  <p className={cn("mb-4", isDark ? "text-gray-300" : "text-blue-100")}>
-                    {project.shortDescription}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech}
-                        className={cn(
-                          "rounded-lg px-2 py-1 text-xs",
-                          isDark ? "bg-slate-700 text-gray-300" : "bg-white/20 text-blue-100",
-                        )}
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
-
-      <FadeInView className="text-center">
-        <HoverScale>
-          <Button href="/projects" icon={<ArrowRight className="h-4 w-4" />}>
-            View All Projects
-          </Button>
-        </HoverScale>
-      </FadeInView>
-    </Section>
-  );
-};
-
-// Testimonials Section
-const TestimonialsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
-      <FadeInView>
-        <SectionHeader
-          title="What Our Alumni Say"
-          subtitle="Hear from our past members about their ComES experience."
-        />
-      </FadeInView>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {testimonials.slice(0, 3).map((testimonial, index) => (
-          <FadeInView key={testimonial.id} direction="up" delay={index * 0.15}>
-            <motion.div
-              whileHover={{ y: -10, scale: 1.02 }}
-              className={cn(
-                "flex h-full flex-col rounded-2xl border p-6 backdrop-blur-sm transition-all",
-                isDark ? "border-slate-700/50 bg-slate-800/50" : "border-white/10 bg-white/10",
-              )}
-            >
-              <div className="mb-4 flex items-center gap-4">
-                <motion.img
-                  whileHover={{ scale: 1.1 }}
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="h-14 w-14 rounded-full object-cover ring-2 ring-white/20"
-                />
-                <div>
-                  <h4 className="font-semibold text-white">{testimonial.name}</h4>
-                  <p className={cn("text-sm", isDark ? "text-blue-300" : "text-blue-200")}>
-                    {testimonial.role} at {testimonial.company}
-                  </p>
-                  <p className={cn("text-xs", isDark ? "text-blue-400" : "text-blue-300")}>
-                    Batch of {testimonial.batch}
-                  </p>
-                </div>
-              </div>
-              <div className="mb-3 flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <p className={cn("flex-1 italic", isDark ? "text-gray-300" : "text-blue-100")}>
-                "{testimonial.quote}"
-              </p>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// CTA Section
-const CTASection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={cn(isDark && "bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900")}
-    >
-      <FadeInView direction="up">
-        <div className="relative text-center">
+        <div className="text-center">
           <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-block"
           >
-            <TrendingUp className="h-8 w-8 text-white" />
+            <Link
+              to="/events"
+              className="font-body inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-8 py-3 font-semibold text-white shadow-lg shadow-sky-500/20"
+            >
+              View All Events <ArrowRight className="h-4 w-4" />
+            </Link>
           </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
-          <h2
-            className={cn(
-              "mb-6 text-3xl font-bold md:text-4xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Ready to Join Our Community?
-          </h2>
-          <p
-            className={cn(
-              "mx-auto mb-8 max-w-2xl text-lg",
-              isDark ? "text-gray-400" : "text-gray-600",
-            )}
-          >
-            Be part of a vibrant community of future engineers. Learn, grow, and make lasting
-            connections.
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <HoverScale>
-              <Button href="/register" size="lg" icon={<Rocket className="h-5 w-5" />}>
-                Get Started
-              </Button>
-            </HoverScale>
-            <HoverScale>
-              <Button href="/events" variant="outline" size="lg">
-                Explore Events
-              </Button>
-            </HoverScale>
+// ─── Section 6: Featured Projects ───
+const FeaturedProjects = () => {
+  const projects = getFeaturedProjects(3);
+
+  return (
+    <section className="bg-[#0A1628] py-20 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FadeInView>
+          <div className="mb-12 text-center">
+            <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+              Projects
+            </p>
+            <h2 className="font-display text-text-primary text-3xl font-bold lg:text-5xl">
+              What We&apos;re Building
+            </h2>
           </div>
+        </FadeInView>
+
+        <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project, i) => (
+            <FadeInView key={project.id} direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1}>
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="group bg-bg-card flex h-full flex-col rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="bg-accent-blue/15 text-accent-blue rounded-full px-3 py-1 font-mono text-xs">
+                    {project.status}
+                  </span>
+                  <span className="font-body text-text-muted text-xs">{project.category}</span>
+                </div>
+                <h3 className="font-display text-text-primary mb-2 text-lg font-semibold">
+                  {project.title}
+                </h3>
+                <p className="font-body text-text-secondary mb-4 flex-1 text-sm">
+                  {project.shortDescription}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.technologies.slice(0, 4).map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-text-secondary rounded-lg border border-[rgba(14,165,233,0.15)] bg-white/5 px-2 py-0.5 font-mono text-xs"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </FadeInView>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-block"
+          >
+            <Link
+              to="/projects"
+              className="border-accent-blue/50 font-body text-accent-blue hover:bg-accent-blue/10 inline-flex items-center gap-2 rounded-full border px-8 py-3 font-semibold transition-all"
+            >
+              Explore Projects <ArrowRight className="h-4 w-4" />
+            </Link>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Section 7: Team Spotlight ───
+const TeamSpotlight = () => {
+  const team = [
+    { name: "President", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=P" },
+    { name: "Vice President", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=VP" },
+    { name: "Secretary", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=S" },
+    { name: "Treasurer", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=T" },
+    { name: "Tech Lead", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=TL" },
+    { name: "Event Lead", img: "https://placehold.co/120x120/0D1E35/0EA5E9?text=EL" },
+  ];
+
+  return (
+    <section className="bg-[#050A14] py-20 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FadeInView>
+          <div className="mb-12 text-center">
+            <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+              Our Team
+            </p>
+            <h2 className="font-display text-text-primary text-3xl font-bold lg:text-5xl">
+              Meet the Executive Committee
+            </h2>
+          </div>
+        </FadeInView>
+
+        <div className="flex justify-center gap-6 overflow-x-auto pb-4">
+          {team.map((member, i) => (
+            <FadeInView key={member.name} direction="up" delay={i * 0.08}>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -4 }}
+                className="flex flex-col items-center"
+              >
+                <div className="hover:border-accent-blue mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(14,165,233,0.3)] transition-all hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]">
+                  <img src={member.img} alt={member.name} className="h-full w-full object-cover" />
+                </div>
+                <span className="font-body text-text-secondary text-sm font-medium">
+                  {member.name}
+                </span>
+              </motion.div>
+            </FadeInView>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            to="/team"
+            className="font-body text-accent-blue text-sm font-medium hover:underline"
+          >
+            View Full Team →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Section 8: Blog Posts ───
+const BlogSection = () => {
+  const posts = [
+    {
+      title: "Getting Started with Embedded Systems",
+      date: "Mar 2026",
+      category: "Tutorial",
+      excerpt: "A beginner's guide to microcontroller programming and circuit design.",
+    },
+    {
+      title: "AI in Sri Lankan Agriculture",
+      date: "Feb 2026",
+      category: "Research",
+      excerpt: "How machine learning can improve crop yield prediction in tropical climates.",
+    },
+    {
+      title: "Web Security Best Practices",
+      date: "Jan 2026",
+      category: "Security",
+      excerpt: "Essential security patterns every web developer should implement.",
+    },
+  ];
+
+  return (
+    <section className="bg-[#0A1628] py-20 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FadeInView>
+          <div className="mb-12 text-center">
+            <p className="text-accent-blue mb-4 font-mono text-sm tracking-widest uppercase">
+              Blog
+            </p>
+            <h2 className="font-display text-text-primary text-3xl font-bold lg:text-5xl">
+              Latest from ComES
+            </h2>
+          </div>
+        </FadeInView>
+
+        <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post, i) => (
+            <FadeInView key={post.title} direction="up" delay={i * 0.1}>
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="group bg-bg-card flex h-full flex-col rounded-2xl border border-[rgba(14,165,233,0.15)] p-6 transition-all hover:border-[rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.1)]"
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="bg-accent-blue/15 text-accent-blue rounded-full px-3 py-1 font-mono text-xs">
+                    {post.category}
+                  </span>
+                  <span className="font-body text-text-muted text-xs">{post.date}</span>
+                </div>
+                <h3 className="font-display text-text-primary mb-2 text-lg font-semibold">
+                  {post.title}
+                </h3>
+                <p className="font-body text-text-secondary mb-4 flex-1 text-sm">{post.excerpt}</p>
+                <Link
+                  to="/blog"
+                  className="font-body text-accent-blue inline-flex items-center gap-1 text-sm font-medium"
+                >
+                  Read More <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </motion.div>
+            </FadeInView>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── Section 9: CTA Banner ───
+const CTABanner = () => (
+  <section className="relative overflow-hidden bg-gradient-to-br from-sky-900/40 via-[#0A1628] to-cyan-900/30 py-20 lg:py-28">
+    {/* Animated gradient mesh bg */}
+    <motion.div
+      animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }}
+      transition={{ duration: 5, repeat: Infinity }}
+      className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-cyan-500/10"
+    />
+
+    <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+      <FadeInView>
+        <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-lg shadow-sky-500/30">
+          <Rocket className="h-7 w-7 text-white" />
+        </div>
+        <h2 className="font-display text-text-primary mb-6 text-3xl font-bold lg:text-5xl">
+          Ready to Build the Future?
+        </h2>
+        <p className="font-body text-text-secondary mb-8 text-lg">
+          Join a vibrant community of passionate engineers. Learn, grow, and make lasting
+          connections.
+        </p>
+        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              to="/register"
+              className="font-body inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-8 py-3.5 font-semibold text-white shadow-lg shadow-sky-500/25"
+            >
+              Register as Student
+            </Link>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              to="/contact"
+              className="border-accent-blue/50 font-body text-accent-blue hover:bg-accent-blue/10 inline-flex items-center gap-2 rounded-full border px-8 py-3.5 font-semibold transition-all"
+            >
+              Contact Us
+            </Link>
+          </motion.div>
         </div>
       </FadeInView>
-    </Section>
-  );
-};
+    </div>
+  </section>
+);
 
-// Main Home Page Component
+// ─── Section 10: Newsletter ───
+const NewsletterSection = () => (
+  <section className="bg-[#050A14] py-20 lg:py-28">
+    <div className="mx-auto max-w-xl px-4 text-center sm:px-6">
+      <FadeInView>
+        <div className="bg-accent-blue/10 mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[rgba(14,165,233,0.2)]">
+          <Mail className="text-accent-blue h-6 w-6" />
+        </div>
+        <h2 className="font-display text-text-primary mb-3 text-2xl font-bold">Stay in the Loop</h2>
+        <p className="font-body text-text-secondary mb-8">
+          Get updates on events, projects, and opportunities from ComES.
+        </p>
+        <form className="flex gap-3" onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="bg-bg-card font-body text-text-primary placeholder:text-text-muted focus:border-accent-blue flex-1 rounded-full border border-[rgba(14,165,233,0.2)] px-6 py-3 text-sm transition-colors outline-none"
+          />
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            className="font-body rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-500/20"
+          >
+            Subscribe
+          </motion.button>
+        </form>
+      </FadeInView>
+    </div>
+  </section>
+);
+
+// ─── Main HomePage ───
 export const HomePage = () => {
   return (
     <PageTransition>
       <HeroSection />
-      <AboutPreviewSection />
-      <EventsPreviewSection />
-      <ProjectsPreviewSection />
-      <TestimonialsSection />
-      <CTASection />
+      <StatsSection />
+      <AboutTeaser />
+      <SubgroupsSection />
+      <FeaturedEvents />
+      <FeaturedProjects />
+      <TeamSpotlight />
+      <BlogSection />
+      <CTABanner />
+      <NewsletterSection />
     </PageTransition>
   );
 };

@@ -68,8 +68,9 @@ export const StudentPortfolioPage = () => {
         setError("");
         const response = await api.get(`/students/portfolio/${username}`);
         setStudent(response.data.data.student);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load student portfolio");
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(error.response?.data?.message || "Failed to load student portfolio");
       } finally {
         setLoading(false);
       }
