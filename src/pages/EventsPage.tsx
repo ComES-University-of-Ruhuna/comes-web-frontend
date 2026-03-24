@@ -49,7 +49,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
           )}
         >
           <CardHeader gradient={event.color}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex items-center justify-between">
               <motion.span className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
                 {event.icon}
               </motion.span>
@@ -77,7 +77,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                 isDark ? "text-gray-400" : "text-gray-600",
               )}
             >
-              <MapPin className="w-4 h-4" />
+              <MapPin className="h-4 w-4" />
               <span className="text-sm">{event.location}</span>
             </div>
 
@@ -88,7 +88,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             </p>
 
             {event.tags && (
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="mb-4 flex flex-wrap gap-2">
                 {event.tags.map((tag) => (
                   <span
                     key={tag}
@@ -104,7 +104,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             )}
 
             <div className="mt-auto">
-              <div className="flex items-center justify-between mb-3">
+              <div className="mb-3 flex items-center justify-between">
                 <span
                   className={cn(
                     "flex items-center gap-1 text-sm",
@@ -151,7 +151,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                   size="sm"
                   className="w-full"
                   disabled={!event.registrationOpen || event.registered >= event.capacity}
-                  icon={<Ticket className="w-4 h-4" />}
+                  icon={<Ticket className="h-4 w-4" />}
                 >
                   {event.registrationOpen
                     ? event.registered >= event.capacity
@@ -182,7 +182,7 @@ const FilterTabs = ({
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-8">
+    <div className="mb-8 flex flex-wrap justify-center gap-2">
       {options.map((option) => (
         <motion.button
           key={option}
@@ -216,17 +216,17 @@ const EventsHero = () => {
       padding="xl"
       className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
     >
-      <div className="relative max-w-4xl mx-auto text-center">
+      <div className="relative mx-auto max-w-4xl text-center">
         {/* Animated background elements */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute w-32 h-32 rounded-full -top-10 -left-10 bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
+          className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
         />
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute w-40 h-40 rounded-full -right-10 -bottom-10 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
+          className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
         />
 
         <FadeInView>
@@ -234,9 +234,9 @@ const EventsHero = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center justify-center w-20 h-20 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/30"
+            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
-            <PartyPopper className="w-10 h-10 text-white" />
+            <PartyPopper className="h-10 w-10 text-white" />
           </motion.div>
         </FadeInView>
 
@@ -248,7 +248,7 @@ const EventsHero = () => {
             )}
           >
             Events &{" "}
-            <span className="text-transparent bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text">
+            <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
               Workshops
             </span>
           </h1>
@@ -344,7 +344,7 @@ const PastEventsSection = () => {
                   {event.icon}
                 </motion.div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center gap-2">
                     <h3
                       className={cn("text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}
                     >
@@ -390,13 +390,13 @@ const CTASection = () => {
   return (
     <Section background={isDark ? "dark" : "white"} padding="xl">
       <FadeInView>
-        <div className="relative max-w-3xl mx-auto text-center">
+        <div className="relative mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="inline-flex items-center justify-center w-16 h-16 mb-6 shadow-lg rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/30"
+            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
-            <Sparkles className="w-8 h-8 text-white" />
+            <Sparkles className="h-8 w-8 text-white" />
           </motion.div>
 
           <h2
@@ -412,7 +412,7 @@ const CTASection = () => {
             Let's collaborate and create amazing experiences for our community.
           </p>
           <HoverScale>
-            <Button href="/contact" size="lg" icon={<ArrowRight className="w-5 h-5" />}>
+            <Button href="/contact" size="lg" icon={<ArrowRight className="h-5 w-5" />}>
               Get In Touch
             </Button>
           </HoverScale>

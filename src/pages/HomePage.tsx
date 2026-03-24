@@ -247,33 +247,33 @@ const HeroSection = () => {
                     : "border-white/70 bg-white/80 shadow-lg hover:border-white",
                 )}
               >
-              {/* Animated background glow on hover */}
-              <div
-                className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-10",
-                  domain.gradient,
-                )}
-              />
-              {/* Floating icon */}
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 3 + index * 0.4, repeat: Infinity, ease: "easeInOut" }}
-                className={cn(
-                  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg",
-                  domain.gradient,
-                  domain.glow,
-                )}
-              >
-                {domain.icon}
-              </motion.div>
-              <span
-                className={cn(
-                  "relative z-10 text-sm font-semibold leading-tight",
-                  isDark ? "text-gray-200" : "text-comesBlue",
-                )}
-              >
-                {domain.label}
-              </span>
+                {/* Animated background glow on hover */}
+                <div
+                  className={cn(
+                    "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-10",
+                    domain.gradient,
+                  )}
+                />
+                {/* Floating icon */}
+                <motion.div
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 3 + index * 0.4, repeat: Infinity, ease: "easeInOut" }}
+                  className={cn(
+                    "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg",
+                    domain.gradient,
+                    domain.glow,
+                  )}
+                >
+                  {domain.icon}
+                </motion.div>
+                <span
+                  className={cn(
+                    "relative z-10 text-sm leading-tight font-semibold",
+                    isDark ? "text-gray-200" : "text-comesBlue",
+                  )}
+                >
+                  {domain.label}
+                </span>
               </Link>
             </motion.div>
           ))}
@@ -341,7 +341,7 @@ const AboutPreviewSection = () => {
           </h2>
           <p
             className={cn(
-              "mb-6 text-lg leading-relaxed font-medium text-justify",
+              "mb-6 text-justify text-lg leading-relaxed font-medium",
               isDark ? "text-gray-300" : "text-gray-600",
             )}
           >
@@ -412,7 +412,10 @@ const EventsPreviewSection = () => {
   const featuredEvents = getFeaturedEvents(3);
 
   return (
-    <Section background={isDark ? "dark" : "white"} className={isDark ? "bg-slate-950 " : "text-comesBlue"}>
+    <Section
+      background={isDark ? "dark" : "white"}
+      className={isDark ? "bg-slate-950" : "text-comesBlue"}
+    >
       <FadeInView>
         <SectionHeader
           title="Upcoming Events"

@@ -23,6 +23,8 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { FadeInView } from "@/components/ui";
 
+import LogoWhite from "@/assets/logo/Logo White Coloured.png";
+
 const getSocialIcon = (platform: string) => {
   const icons: Record<string, React.ReactNode> = {
     facebook: <Facebook size={18} />,
@@ -71,23 +73,12 @@ export const Footer = () => {
           {/* Brand Section */}
           <FadeInView direction="up" className="lg:col-span-1">
             <Link to="/" className="group mb-6 flex items-center gap-3">
-              <motion.div
-                whileHover={{ rotate: 5, scale: 1.05 }}
-                className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-xl text-xl font-bold transition-all",
-                  isDark
-                    ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
-                    : "text-comesBlue bg-white",
-                )}
-              >
-                CE
-              </motion.div>
-              <div>
-                <h3 className="text-xl font-bold">{SITE_CONFIG.name}</h3>
-                <p className={cn("text-sm", isDark ? "text-gray-400" : "text-blue-200")}>
-                  {SITE_CONFIG.fullName}
-                </p>
-              </div>
+              <motion.img
+                src={LogoWhite}
+                alt="ComES Logo"
+                whileHover={{ scale: 1.05 }}
+                className="h-48 w-auto object-contain drop-shadow-lg transition-all"
+              />
             </Link>
             <p className={cn("mb-6 leading-relaxed", isDark ? "text-gray-400" : "text-blue-100")}>
               {SITE_CONFIG.description}

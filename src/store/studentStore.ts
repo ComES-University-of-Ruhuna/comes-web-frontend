@@ -2,10 +2,10 @@
 // ComES Website - Student Store (Zustand)
 // ============================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { studentService, type Student, type StudentRegisterData } from '@/services/student.service';
-import { setStudentAccessToken } from '@/services/student.service';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { studentService, type Student, type StudentRegisterData } from "@/services/student.service";
+import { setStudentAccessToken } from "@/services/student.service";
 
 interface StudentState {
   student: Student | null;
@@ -34,7 +34,7 @@ export const useStudentStore = create<StudentState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await studentService.login(credentials);
-          
+
           if (response.success && response.data) {
             set({
               student: response.data.student,
@@ -43,8 +43,8 @@ export const useStudentStore = create<StudentState>()(
             });
             return true;
           }
-          
-          set({ isLoading: false, error: response.message || 'Login failed' });
+
+          set({ isLoading: false, error: response.message || "Login failed" });
           return false;
         } catch (error) {
           const message = error instanceof Error ? error.message : "Login failed";
