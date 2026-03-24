@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
 import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { initializeTheme, initializeCookies } from "@/store";
+import { initializeTheme, initializeCookies, useAuthStore } from "@/store";
 import {
   HomePage,
   AboutPage,
@@ -20,6 +20,7 @@ import {
   ContactPage,
   FAQPage,
   NotFoundPage,
+  UnderMaintenancePage,
   StudentRegisterPage,
   StudentLoginPage,
   StudentPortfolioPage,
@@ -91,6 +92,7 @@ const AnimatedRoutes = () => {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/maintenance" element={<UnderMaintenancePage />} />
           </Route>
 
           {/* Student Registration Route (public) */}
@@ -151,6 +153,7 @@ const AnimatedRoutes = () => {
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showApp, setShowApp] = useState(false);
+  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     // Check if user has already visited (skip loading on subsequent visits)
@@ -158,6 +161,13 @@ function App() {
     if (hasVisited) {
       setIsLoading(false);
       setShowApp(true);
+    }
+  }, []);
+
+  // Proactively validate/refresh the admin session on every app load
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      checkAuth();
     }
   }, []);
 

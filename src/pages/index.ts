@@ -12,6 +12,7 @@ export { BlogPage } from "./BlogPage";
 export { ContactPage } from "./ContactPage";
 export { FAQPage } from "./FAQPage";
 export { NotFoundPage } from "./NotFoundPage";
+export { UnderMaintenancePage } from "./UnderMaintenancePage";
 export { StudentRegisterPage } from "./StudentRegisterPage";
 export { StudentLoginPage } from "./StudentLoginPage";
 export { StudentPortfolioPage } from "./StudentPortfolioPage";

@@ -28,6 +28,9 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { ThemeToggle } from "@/components/ui";
 
+import LogoBlack from "@/assets/logo/Logo Black Coloured.png";
+import LogoWhite from "@/assets/logo/Logo White Coloured.png";
+
 const navItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { path: "/admin/analytics", label: "Analytics", icon: BarChart3 },
@@ -66,16 +69,17 @@ export const AdminLayout = () => {
           isDark ? "border-r border-slate-800 bg-slate-900" : "border-r border-gray-200 bg-white",
         )}
       >
-        {/* Logo */}
         <div
           className={cn(
             "flex h-16 items-center gap-3 border-b px-4",
             isDark ? "border-slate-800" : "border-gray-200",
           )}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 font-bold text-white">
-            CE
-          </div>
+          <img
+            src={isDark ? LogoWhite : LogoBlack}
+            alt="ComES Logo"
+            className="h-20 w-auto object-contain drop-shadow-md"
+          />
           {sidebarOpen && (
             <motion.span
               initial={{ opacity: 0 }}

@@ -19,7 +19,11 @@ import {
 import { useThemeStore, toast } from "@/store";
 import { cn } from "@/utils";
 import { Button, Input } from "@/components/ui";
-import { validateRegistrationNo, extractBatchFromRegNo, studentService } from "@/services/student.service";
+import {
+  validateRegistrationNo,
+  extractBatchFromRegNo,
+  studentService,
+} from "@/services/student.service";
 
 interface FormData {
   name: string;
@@ -257,7 +261,7 @@ export const StudentRegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative w-full max-w-lg rounded-2xl p-8",
+          "relative w-full max-w-lg rounded-2xl p-8 lg:max-w-2xl",
           isDark
             ? "border border-slate-800 bg-slate-900/90 backdrop-blur-xl"
             : "bg-white/90 shadow-xl backdrop-blur-xl",
@@ -286,129 +290,135 @@ export const StudentRegisterPage = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Full Name *
-            </label>
-            <div className="relative">
-              <User
+          {/* Name + Registration Number */}
+          <div className="grid gap-5 lg:grid-cols-2">
+            {/* Name */}
+            <div>
+              <label
                 className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
                 )}
-              />
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className={cn("pl-10", errors.name && "border-red-500")}
-              />
+              >
+                Full Name *
+              </label>
+              <div className="relative">
+                <User
+                  className={cn(
+                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
+                  )}
+                />
+                <Input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  className={cn("pl-10", errors.name && "border-red-500")}
+                />
+              </div>
+              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
             </div>
-            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+
+            {/* Registration Number */}
+            <div>
+              <label
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                Registration Number *
+              </label>
+              <div className="relative">
+                <GraduationCap
+                  className={cn(
+                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
+                  )}
+                />
+                <Input
+                  type="text"
+                  name="registrationNo"
+                  value={formData.registrationNo}
+                  onChange={handleChange}
+                  placeholder="EG/20XX/XXXX"
+                  maxLength={12}
+                  className={cn("pl-10 uppercase", errors.registrationNo && "border-red-500")}
+                />
+              </div>
+              {errors.registrationNo ? (
+                <p className="mt-1 text-sm text-red-500">{errors.registrationNo}</p>
+              ) : (
+                batch && (
+                  <p className={cn("mt-1 text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+                    Batch: {batch}
+                  </p>
+                )
+              )}
+            </div>
           </div>
 
-          {/* Registration Number */}
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Registration Number *
-            </label>
-            <div className="relative">
-              <GraduationCap
+          {/* Email + Contact Number */}
+          <div className="grid gap-5 lg:grid-cols-2">
+            {/* Email */}
+            <div>
+              <label
                 className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
                 )}
-              />
-              <Input
-                type="text"
-                name="registrationNo"
-                value={formData.registrationNo}
-                onChange={handleChange}
-                placeholder="EG/20XX/XXXX"
-                maxLength={12}
-                className={cn("pl-10 uppercase", errors.registrationNo && "border-red-500")}
-              />
+              >
+                Email Address *
+              </label>
+              <div className="relative">
+                <Mail
+                  className={cn(
+                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
+                  )}
+                />
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your.email@example.com"
+                  className={cn("pl-10", errors.email && "border-red-500")}
+                />
+              </div>
+              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
             </div>
-            {errors.registrationNo ? (
-              <p className="mt-1 text-sm text-red-500">{errors.registrationNo}</p>
-            ) : (
-              batch && (
-                <p className={cn("mt-1 text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-                  Batch: {batch}
-                </p>
-              )
-            )}
-          </div>
 
-          {/* Email */}
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Email Address *
-            </label>
-            <div className="relative">
-              <Mail
+            {/* Contact Number */}
+            <div>
+              <label
                 className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
                 )}
-              />
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="your.email@example.com"
-                className={cn("pl-10", errors.email && "border-red-500")}
-              />
+              >
+                Contact Number <span className="text-gray-500">(Optional)</span>
+              </label>
+              <div className="relative">
+                <Phone
+                  className={cn(
+                    "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+                    isDark ? "text-gray-500" : "text-gray-400",
+                  )}
+                />
+                <Input
+                  type="tel"
+                  name="contactNo"
+                  value={formData.contactNo}
+                  onChange={handleChange}
+                  placeholder="+94 XX XXX XXXX"
+                  className={cn("pl-10", errors.contactNo && "border-red-500")}
+                />
+              </div>
+              {errors.contactNo && <p className="mt-1 text-sm text-red-500">{errors.contactNo}</p>}
             </div>
-            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
-          </div>
-
-          {/* Contact Number */}
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Contact Number <span className="text-gray-500">(Optional)</span>
-            </label>
-            <div className="relative">
-              <Phone
-                className={cn(
-                  "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                  isDark ? "text-gray-500" : "text-gray-400",
-                )}
-              />
-              <Input
-                type="tel"
-                name="contactNo"
-                value={formData.contactNo}
-                onChange={handleChange}
-                placeholder="+94 XX XXX XXXX"
-                className={cn("pl-10", errors.contactNo && "border-red-500")}
-              />
-            </div>
-            {errors.contactNo && <p className="mt-1 text-sm text-red-500">{errors.contactNo}</p>}
           </div>
 
           {/* Password */}

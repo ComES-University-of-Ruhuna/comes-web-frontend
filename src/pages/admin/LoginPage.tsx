@@ -10,6 +10,9 @@ import { useAuthStore, useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, ThemeToggle } from "@/components/ui";
 
+import LogoBlack from "@/assets/logo/Logo Black Coloured.png";
+import LogoWhite from "@/assets/logo/Logo White Coloured.png";
+
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,9 +88,11 @@ export const LoginPage = () => {
       >
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-2xl font-bold text-white shadow-lg shadow-blue-500/30">
-            CE
-          </div>
+          <img
+            src={isDark ? LogoWhite : LogoBlack}
+            alt="ComES Logo"
+            className="mx-auto mb-6 h-48 w-auto object-contain drop-shadow-lg"
+          />
           <h1 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
             Admin Login
           </h1>

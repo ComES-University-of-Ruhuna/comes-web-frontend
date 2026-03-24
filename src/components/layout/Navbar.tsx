@@ -13,6 +13,9 @@ import { ThemeToggle, UserProfileDropdown, NotificationsDropdown } from "@/compo
 import { useThemeStore, useStudentStore, useAuthStore } from "@/store";
 import type { NavLink } from "@/types";
 
+import LogoBlack from "@/assets/logo/Logo Black Coloured.png";
+import LogoWhite from "@/assets/logo/Logo White Coloured.png";
+
 // NavItem component for desktop navigation with dropdown support
 interface NavItemProps {
   link: NavLink;
@@ -292,6 +295,9 @@ export const Navbar = () => {
     return isDark ? "bg-slate-950" : "bg-comesBlue";
   };
 
+  // Determine appropriate logo
+  const logoSrc = isScrolled ? (isDark ? LogoWhite : LogoBlack) : LogoWhite;
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -303,39 +309,13 @@ export const Navbar = () => {
         <div className="flex h-16 items-center justify-between md:h-20">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
+            <motion.img
+              src={logoSrc}
+              alt="ComES Logo"
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={cn(
-                "relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl text-lg font-bold transition-all duration-300",
-                isScrolled
-                  ? isDark
-                    ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
-                    : "bg-comesBlue text-white"
-                  : "text-comesBlue bg-white",
-              )}
-            >
-              <span className="relative z-10">CE</span>
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-            </motion.div>
-            <div className="hidden sm:block">
-              <h1
-                className={cn(
-                  "font-comes text-xl font-bold tracking-wide transition-colors",
-                  isScrolled ? (isDark ? "text-white" : "text-comesBlue") : "text-white",
-                )}
-              >
-                ComES
-              </h1>
-              <p
-                className={cn(
-                  "text-xs transition-colors",
-                  isScrolled ? (isDark ? "text-gray-400" : "text-gray-600") : "text-blue-100",
-                )}
-              >
-                Computer Engineering Society
-              </p>
-            </div>
+              className="h-32 w-auto object-contain drop-shadow-md transition-all duration-300"
+            />
           </Link>
 
           {/* Desktop Navigation */}

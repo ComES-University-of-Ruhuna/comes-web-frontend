@@ -2,7 +2,9 @@
 // ComES Website - Admin Events Management Page
 // ============================================
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "@/services/api";
+import { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit, Trash2, Calendar, MapPin, Users, Clock, Save, X } from "lucide-react";
 import { useThemeStore } from "@/store";
@@ -10,58 +12,21 @@ import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
 
 interface Event {
-  id: string;
+  _id: string;
   title: string;
-  type: string;
-  date: string;
-  time: string;
+  slug: string;
+  type: "workshop" | "hackathon" | "seminar" | "competition" | "social" | "other";
+  date: string; // ISO datetime string
   location: string;
-  capacity: number;
-  registered: number;
+  maxParticipants?: number;
+  registeredCount: number;
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   description: string;
+  shortDescription?: string;
+  isFeatured: boolean;
 }
 
-const mockEvents: Event[] = [
-  {
-    id: "1",
-    title: "AI Workshop 2026",
-    type: "Workshop",
-    date: "2026-02-15",
-    time: "10:00 AM",
-    location: "Computer Lab 1",
-    capacity: 50,
-    registered: 42,
-    status: "upcoming",
-    description: "Learn the fundamentals of AI and ML.",
-  },
-  {
-    id: "2",
-    title: "ComES Hackathon",
-    type: "Competition",
-    date: "2026-03-20",
-    time: "09:00 AM",
-    location: "Main Auditorium",
-    capacity: 200,
-    registered: 156,
-    status: "upcoming",
-    description: "24-hour hackathon with amazing prizes.",
-  },
-  {
-    id: "3",
-    title: "Tech Talk: Cloud Computing",
-    type: "Seminar",
-    date: "2026-01-20",
-    time: "02:00 PM",
-    location: "Seminar Hall",
-    capacity: 100,
-    registered: 100,
-    status: "completed",
-    description: "Introduction to cloud computing concepts.",
-  },
-];
-
-const eventTypes = ["All", "Workshop", "Seminar", "Competition", "Hackathon", "Webinar", "Social"];
+const eventTypes = ["All", "workshop", "seminar", "competition", "hackathon", "social", "other"];
 const eventStatuses = ["All", "upcoming", "ongoing", "completed", "cancelled"];
 
 const EventEditor = ({
@@ -77,20 +42,34 @@ const EventEditor = ({
   const isDark = resolvedTheme === "dark";
   const isEditing = !!event;
 
-  const [formData, setFormData] = useState({
+  const eventDate = event?.date ? new Date(event.date) : null;
+  const [formData, setFormData] = useState<{
+    title: string;
+    type: Event["type"];
+    date: string;
+    time: string;
+    location: string;
+    maxParticipants: number;
+    description: string;
+    status: Event["status"];
+    isFeatured: boolean;
+  }>({
     title: event?.title || "",
-    type: event?.type || "Workshop",
-    date: event?.date || "",
-    time: event?.time || "",
+    type: event?.type || "workshop",
+    date: eventDate ? eventDate.toISOString().split("T")[0] : "",
+    time: eventDate ? eventDate.toTimeString().slice(0, 5) : "",
     location: event?.location || "",
-    capacity: event?.capacity || 50,
+    maxParticipants: event?.maxParticipants || 50,
     description: event?.description || "",
     status: event?.status || "upcoming",
+    isFeatured: event?.isFeatured || false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    const { date, time, ...rest } = formData;
+    const combinedDate = new Date(`${date}T${time || "00:00"}`).toISOString();
+    onSave({ ...rest, date: combinedDate });
   };
 
   return (
@@ -166,7 +145,9 @@ const EventEditor = ({
               </label>
               <select
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value as Event["type"] })
+                }
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 transition-colors",
                   isDark
@@ -298,12 +279,14 @@ const EventEditor = ({
                   isDark ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                Capacity
+                Max Participants
               </label>
               <input
                 type="number"
-                value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                value={formData.maxParticipants}
+                onChange={(e) =>
+                  setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })
+                }
                 min={1}
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 transition-colors",
@@ -359,12 +342,39 @@ export const EventsManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const [events, setEvents] = useState<Event[]>(mockEvents);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const showToast = (type: "success" | "error", message: string) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/events?limit=100&sort=-date");
+      setEvents(response.data.data.events || []);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError?.response?.status !== 401) {
+        showToast("error", "Failed to fetch events");
+      }
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -373,19 +383,37 @@ export const EventsManagementPage = () => {
     return matchesSearch && matchesType && matchesStatus;
   });
 
-  const handleSave = (data: Partial<Event>) => {
-    if (editingEvent) {
-      setEvents(events.map((e) => (e.id === editingEvent.id ? { ...e, ...data } : e)));
-    } else {
-      setEvents([...events, { ...data, id: Date.now().toString(), registered: 0 } as Event]);
+  const handleSave = async (data: Partial<Event>) => {
+    try {
+      if (editingEvent) {
+        const response = await api.patch(`/events/${editingEvent._id}`, data);
+        const updated = response.data.data.event;
+        setEvents(events.map((e) => (e._id === editingEvent._id ? updated : e)));
+        showToast("success", "Event updated successfully");
+      } else {
+        const response = await api.post("/events", data);
+        const created = response.data.data.event;
+        setEvents([created, ...events]);
+        showToast("success", "Event created successfully");
+      }
+    } catch (error) {
+      showToast("error", editingEvent ? "Failed to update event" : "Failed to create event");
+      console.error("Error saving event:", error);
+    } finally {
+      setEditingEvent(null);
+      setIsCreating(false);
     }
-    setEditingEvent(null);
-    setIsCreating(false);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this event?")) {
-      setEvents(events.filter((e) => e.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    try {
+      await api.delete(`/events/${id}`);
+      setEvents(events.filter((e) => e._id !== id));
+      showToast("success", "Event deleted successfully");
+    } catch (error) {
+      showToast("error", "Failed to delete event");
+      console.error("Error deleting event:", error);
     }
   };
 
@@ -406,6 +434,27 @@ export const EventsManagementPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-4 right-4 z-50"
+          >
+            <div
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg",
+                toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white",
+              )}
+            >
+              <span className="text-sm font-medium">{toast.message}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
@@ -490,95 +539,109 @@ export const EventsManagementPage = () => {
       </div>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredEvents.map((event, index) => (
-          <motion.div
-            key={event.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={cn(
-              "rounded-2xl border p-6 transition-all",
-              isDark
-                ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-                : "border-gray-200 bg-white hover:shadow-lg",
-            )}
-          >
-            <div className="mb-4 flex items-start justify-between">
-              <Badge
-                variant={
-                  getStatusColor(event.status) as "primary" | "success" | "secondary" | "error"
-                }
-              >
-                {event.status}
-              </Badge>
-              <Badge variant="secondary">{event.type}</Badge>
-            </div>
-
-            <h3
-              className={cn("mb-3 text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}
+      {loading ? (
+        <div className="flex items-center justify-center p-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500/30 border-t-blue-500" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event, index) => (
+            <motion.div
+              key={event._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={cn(
+                "rounded-2xl border p-6 transition-all",
+                isDark
+                  ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                  : "border-gray-200 bg-white hover:shadow-lg",
+              )}
             >
-              {event.title}
-            </h3>
-
-            <div className="mb-4 space-y-2">
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Calendar className="h-4 w-4" />
-                <span>{event.date}</span>
-                <Clock className="ml-2 h-4 w-4" />
-                <span>{event.time}</span>
+              <div className="mb-4 flex items-start justify-between">
+                <Badge
+                  variant={
+                    getStatusColor(event.status) as "primary" | "success" | "secondary" | "error"
+                  }
+                >
+                  {event.status}
+                </Badge>
+                <Badge variant="secondary">{event.type}</Badge>
               </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <MapPin className="h-4 w-4" />
-                <span>{event.location}</span>
-              </div>
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Users className="h-4 w-4" />
-                <span>
-                  {event.registered}/{event.capacity} registered
-                </span>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setEditingEvent(event)}
-                className="flex-1"
-              >
-                <Edit className="mr-1 h-4 w-4" /> Edit
-              </Button>
-              <button
-                onClick={() => handleDelete(event.id)}
+              <h3
                 className={cn(
-                  "rounded-lg p-2 text-red-500 transition-colors",
-                  isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
+                  "mb-3 text-lg font-semibold",
+                  isDark ? "text-white" : "text-gray-900",
                 )}
               >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+                {event.title}
+              </h3>
 
-      {filteredEvents.length === 0 && (
+              <div className="mb-4 space-y-2">
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>{new Date(event.date).toLocaleDateString()}</span>
+                  <Clock className="ml-2 h-4 w-4" />
+                  <span>
+                    {new Date(event.date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <MapPin className="h-4 w-4" />
+                  <span>{event.location}</span>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  <Users className="h-4 w-4" />
+                  <span>
+                    {event.registeredCount}/{event.maxParticipants ?? "∞"} registered
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingEvent(event)}
+                  className="flex-1"
+                >
+                  <Edit className="mr-1 h-4 w-4" /> Edit
+                </Button>
+                <button
+                  onClick={() => handleDelete(event._id)}
+                  className={cn(
+                    "rounded-lg p-2 text-red-500 transition-colors",
+                    isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
+                  )}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {!loading && filteredEvents.length === 0 && (
         <div
           className={cn(
             "rounded-2xl border p-12 text-center",

@@ -20,6 +20,7 @@ import {
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button } from "@/components/ui";
+import { AxiosError } from "axios";
 import api from "@/services/api";
 
 interface Student {
@@ -440,8 +441,13 @@ export const MembersManagementPage = () => {
       const response = await api.get("/students");
       setStudents(response.data.data.students || []);
     } catch (error) {
-      showToast("error", "Failed to fetch students");
-      console.error("Error fetching students:", error);
+      const axiosError = error as AxiosError;
+      // 401 means the session expired — the api interceptor will refresh the token and retry.
+      // If refresh also fails, it dispatches auth:logout and redirects to login.
+      if (axiosError?.response?.status !== 401) {
+        showToast("error", "Failed to fetch students");
+      }
+      console.error("Error fetching students:", axiosError);
     } finally {
       setLoading(false);
     }
