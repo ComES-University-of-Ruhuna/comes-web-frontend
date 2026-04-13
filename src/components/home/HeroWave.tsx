@@ -1,20 +1,40 @@
-/**
- *
- * Props:
- *   variant       – "desktop" | "mobile"  (auto-detected if omitted)
- *   scrollSpeed   – 0–1, wave scroll reactivity  (default 0.15)
- *   className     – extra CSS class for the wrapper
- *   style         – extra inline styles for the wrapper
- */
-
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type CSSProperties, type FC } from 'react';
 import * as THREE from 'three';
+
+/* ================================================================== *
+ *  Types                                                              *
+ * ================================================================== */
+
+/** Responsive variant override. Auto-detects if omitted. */
+export type WaveVariant = 'desktop' | 'mobile';
+
+export interface HeroWaveProps {
+  /**
+   * Force a responsive variant. When omitted the component auto-detects
+   * based on `window.innerWidth` against the built-in breakpoint (700 px).
+   */
+  variant?: WaveVariant;
+
+  /**
+   * Scroll reactivity multiplier. Controls how much page scroll shifts
+   * the wave animation time.
+   * @default 0.15
+   * @range 0 – 1
+   */
+  scrollSpeed?: number;
+
+  /** Extra CSS class(es) for the root wrapper `<div>`. */
+  className?: string;
+
+  /** Extra inline styles for the root wrapper `<div>`. */
+  style?: CSSProperties;
+}
 
 /* ================================================================== *
  *  GLSL – Simplex noise library (shared by vertex & fragment)        *
  * ================================================================== */
 
-const NOISE_GLSL = /* glsl */ `
+const NOISE_GLSL: string = /* glsl */ `
 float rand_v2(vec2 n) {
   return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
 }
@@ -73,7 +93,7 @@ float snoise(vec2 v) {
  *        declare attribute vec2 uv & varying vec2 vUv automatically  *
  * ================================================================== */
 
-const WAVE_VERT_PARS = /* glsl */ `
+const WAVE_VERT_PARS: string = /* glsl */ `
 uniform float uWavesX;
 uniform float uWavesY;
 uniform float uDisplacementHeight;
@@ -94,7 +114,7 @@ varying float vDisplaceNoise;
  *  GLSL – Wave fragment pars                                         *
  * ================================================================== */
 
-const WAVE_FRAG_PARS = /* glsl */ `
+const WAVE_FRAG_PARS: string = /* glsl */ `
 varying vec3  vColor;
 varying float vTime;
 varying float vConstantTime;
@@ -115,10 +135,10 @@ uniform float uFlowMixAmount;
 `;
 
 /* ================================================================== *
- *  GLSL – Vertex displacement (replaces #include <displacementmap_vertex>) *
+ *  GLSL – Vertex displacement                                       *
  * ================================================================== */
 
-const DISPLACE_AND_COLOR_VERT = /* glsl */ `
+const DISPLACE_AND_COLOR_VERT: string = /* glsl */ `
 // Re-assign vUv from raw attribute (bypass any uvTransform)
 vUv = uv;
 
@@ -143,7 +163,7 @@ vColor = mix(vColor, uValleyColor, smoothstep(0.5, 1.0, remapedNoise));
  *  GLSL – Fragment: #include <color_fragment> replacement            *
  * ================================================================== */
 
-const COLOR_FRAG = /* glsl */ `
+const COLOR_FRAG: string = /* glsl */ `
 float noiseValue = snoise(vec2(vUv.x * uTextureScaleX, vUv.y * uTextureScaleY));
 diffuseColor.rgb = vColor - (uTextureColor * abs(noiseValue));
 
@@ -167,7 +187,7 @@ diffuseColor.rgb = mix(diffuseColor.rgb, uFlowValleyColor, flow_mix2 * vDisplace
  *  GLSL – Fragment: #include <lights_physical_fragment> replacement  *
  * ================================================================== */
 
-const LIGHTS_FRAG = /* glsl */ `
+const LIGHTS_FRAG: string = /* glsl */ `
 #include <lights_physical_fragment>
 float iri_ft = fract(vConstantTime / uIridescenceSpeed);
 float iri_w  = uIridescenceWidth;
@@ -181,7 +201,7 @@ material.iridescence *= abs(pow(noiseValue, uIridescenceExponent));
  *  GLSL – Fragment: #include <dithering_fragment> replacement        *
  * ================================================================== */
 
-const DITHERING_FRAG = /* glsl */ `
+const DITHERING_FRAG: string = /* glsl */ `
 #include <dithering_fragment>
 float visibleBandY = 1.0 - smoothstep(uVisibleBand, uVisibleBand + uVisibleFade, 1.0 - vUv.y);
 gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(1.0), visibleBandY);
@@ -191,7 +211,7 @@ gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(1.0), visibleBandY);
  *  GLSL – Background gradient quad                                   *
  * ================================================================== */
 
-const BG_VERT = /* glsl */ `
+const BG_VERT: string = /* glsl */ `
 varying vec2 vUv;
 void main() {
   vUv = uv;
@@ -199,7 +219,7 @@ void main() {
 }
 `;
 
-const BG_FRAG = /* glsl */ `
+const BG_FRAG: string = /* glsl */ `
 uniform vec3  uColor1;
 uniform vec3  uColor2;
 uniform vec3  uColor3;
@@ -231,12 +251,106 @@ void main() {
 `;
 
 /* ================================================================== *
- *  Configs – exact values from production JS bundle         *
+ *  Internal types – config shapes                                    *
  * ================================================================== */
+
+interface SceneConfig {
+  color1: string;
+  color2: string;
+  color3: string;
+  color4: string;
+  colorExpo1: number;
+  colorExpo2: number;
+  colorExpo3: number;
+  fogColor: string;
+  density: number;
+}
+
+interface GeometryConfig {
+  width: number;
+  height: number;
+  subdivisionsX: number;
+  subdivisionsY: number;
+  twistX: number;
+  twistY: number;
+}
+
+interface TopologyConfig {
+  wavesX: number;
+  wavesY: number;
+  speedX: number;
+  speedY: number;
+  height: number;
+}
+
+interface MaterialConfig {
+  primaryColor: string;
+  valleyColor: string;
+  peakColor: string;
+  sheenColor: string;
+  sheenAmount: number;
+  metalness: number;
+  roughness: number;
+}
+
+interface TextureConfig {
+  textureColor: string;
+  textureScaleX: number;
+  textureScaleY: number;
+  iridescence: number;
+  iridescenceIOR: number;
+  iridescenceThick: number;
+  iridescenceWidth: number;
+  iridescenceSpeed: number;
+  iridescenceExpo: number;
+}
+
+interface LightsConfig {
+  ambientLight: string;
+  ambientLightIntensity: number;
+  pointLight0: string;
+  pl0X: number;
+  pl0Y: number;
+  pl0Z: number;
+  pl0I: number;
+  pointLight1: string;
+  pl1X: number;
+  pl1Y: number;
+  pl1Z: number;
+  pl1I: number;
+  pointLight2: string;
+  pl2X: number;
+  pl2Y: number;
+  pl2Z: number;
+  pl2I: number;
+}
+
+interface GUIConfig {
+  Scene: SceneConfig;
+  Geometry: GeometryConfig;
+  Topology: TopologyConfig;
+  Material: MaterialConfig;
+  Texture: TextureConfig;
+  Lights: LightsConfig;
+}
+
+interface CameraPosition {
+  x: number;
+  y: number;
+  z: number;
+}
+
+interface HeroConfig {
+  gui: GUIConfig;
+  cam: {
+    pos: CameraPosition;
+    lookAt: CameraPosition;
+  };
+}
 
 const BREAKPOINT = 700;
 
-const HERO_DESKTOP = {
+const HERO_DESKTOP: HeroConfig = {
   gui: {
     Scene: {
       color1: '#040a12', color2: '#252751', color3: '#040a12', color4: '#040a12',
@@ -270,7 +384,7 @@ const HERO_DESKTOP = {
   },
 };
 
-const HERO_MOBILE = {
+const HERO_MOBILE: HeroConfig = {
   gui: {
     ...HERO_DESKTOP.gui,
     Lights: {
@@ -290,10 +404,14 @@ const HERO_MOBILE = {
  *  Helper – twist a PlaneGeometry along its surface                  *
  * ================================================================== */
 
-function twistGeometry(geometry, twistX, twistY) {
+function twistGeometry(
+  geometry: THREE.PlaneGeometry,
+  twistX: number,
+  twistY: number,
+): void {
   const q    = new THREE.Quaternion();
   const axis = new THREE.Vector3(0, -1, 0);
-  const pos  = geometry.attributes.position;
+  const pos  = geometry.attributes.position as THREE.BufferAttribute;
   const ox   = 1 - twistX;  // 0.91
   const oy   = 1 - twistY;  // 0.71
 
@@ -308,20 +426,20 @@ function twistGeometry(geometry, twistX, twistY) {
   }
   geometry.computeVertexNormals();
   pos.needsUpdate = true;
-  geometry.attributes.normal.needsUpdate = true;
+  (geometry.attributes.normal as THREE.BufferAttribute).needsUpdate = true;
 }
 
 /* ================================================================== *
  *  React component                                                   *
  * ================================================================== */
 
-export default function HeroWave({
+const HeroWave: FC<HeroWaveProps> = ({
   variant,
   scrollSpeed: scrollSpeedProp,
   className,
   style,
-}) {
-  const containerRef = useRef(null);
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -335,8 +453,8 @@ export default function HeroWave({
     const isDesktop =
       variant === 'desktop' ||
       (variant !== 'mobile' && window.innerWidth > BREAKPOINT);
-    const config      = isDesktop ? HERO_DESKTOP : HERO_MOBILE;
-    const scrollSpeed =
+    const config: HeroConfig = isDesktop ? HERO_DESKTOP : HERO_MOBILE;
+    const scrollSpeed: number =
       scrollSpeedProp !== undefined ? scrollSpeedProp : 0.15;
     const S = config.gui.Scene;
     const G = config.gui.Geometry;
@@ -382,7 +500,7 @@ export default function HeroWave({
     bgScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat));
 
     /* ── wave uniforms (shared objects mutated in anim loop) ─── */
-    const waveU = {
+    const waveU: Record<string, THREE.IUniform> = {
       uWavesX:             { value: T.wavesX },
       uWavesY:             { value: T.wavesY },
       uDisplacementHeight: { value: T.height },
@@ -426,7 +544,7 @@ export default function HeroWave({
     waveMat.defines = waveMat.defines || {};
     waveMat.defines['USE_UV'] = '';
 
-    waveMat.onBeforeCompile = (shader) => {
+    waveMat.onBeforeCompile = (shader: THREE.WebGLProgramParametersWithUniforms) => {
       // Merge custom uniforms into the Three.js shader
       for (const [key, val] of Object.entries(waveU)) {
         shader.uniforms[key] = val;
@@ -523,7 +641,7 @@ export default function HeroWave({
     let extraTimeTarget = 0;
     let lastScrollY     = window.scrollY;
 
-    const onScroll = () => {
+    const onScroll = (): void => {
       const dy = window.scrollY - lastScrollY;
       extraTimeTarget += dy * 150;
       lastScrollY = window.scrollY;
@@ -531,7 +649,7 @@ export default function HeroWave({
     window.addEventListener('scroll', onScroll, { passive: true });
 
     /* ── resize ──────────────────────────────────────────────── */
-    const onResize = () => {
+    const onResize = (): void => {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (w === 0 || h === 0) return;
@@ -542,17 +660,20 @@ export default function HeroWave({
     window.addEventListener('resize', onResize);
 
     /* ── animation loop (render directly to screen) ──────────── */
-    let raf;
-    const animate = (time) => {
+    let raf: number;
+    const animate = (time: number): void => {
       raf = requestAnimationFrame(animate);
+
+      // Speed up the animation loop
+      const fastTime = time * 1.5;
 
       // Scroll-driven time shift
       extraTime += (extraTimeTarget - extraTime) * scrollSpeed;
 
       // Update wave uniforms
       if (waveMat.userData.shader) {
-        waveMat.userData.shader.uniforms.uTime.value         = time + extraTime;
-        waveMat.userData.shader.uniforms.uConstantTime.value = time;
+        waveMat.userData.shader.uniforms.uTime.value         = fastTime + extraTime;
+        waveMat.userData.shader.uniforms.uConstantTime.value = fastTime;
       }
 
       // Render: background first, then wave scene on top
@@ -589,4 +710,6 @@ export default function HeroWave({
       }}
     />
   );
-}
+};
+
+export default HeroWave;
