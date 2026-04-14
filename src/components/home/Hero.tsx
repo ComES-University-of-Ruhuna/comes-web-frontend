@@ -2,7 +2,7 @@ import HeroWave from './HeroWave'
 
 const Hero = () => {
   return (
-    <section className="relative flex w-full flex-col items-center justify-center overflow-hidden px-5 sm:px-10 md:px-20 min-h-[100dvh] bg-[#0a0f1e]">
+    <section className="relative flex w-full flex-col items-center justify-center overflow-hidden px-5 sm:px-10 md:px-20 min-h-[100dvh] bg-[#1F2246]">
       {/* Background layer */}
       <div className="absolute inset-0 z-0">
         <HeroWave />

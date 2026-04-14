@@ -353,7 +353,7 @@ const BREAKPOINT = 700;
 const HERO_DESKTOP: HeroConfig = {
   gui: {
     Scene: {
-      color1: '#040a12', color2: '#252751', color3: '#040a12', color4: '#040a12',
+      color1: '#0D1222', color2: '#1F2246', color3: '#12162C', color4: '#3968a5',
       colorExpo1: 0.27, colorExpo2: 3.09, colorExpo3: 0.91,
       fogColor: '#24264e', density: 0,
     },

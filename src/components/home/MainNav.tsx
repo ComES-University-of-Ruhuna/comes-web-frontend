@@ -23,7 +23,7 @@ const MainNav = () => {
   }
 
   return (
-    <header className="fixed top-0 z-50 w-full flex justify-center bg-black/10 px-16 py-2 backdrop-blur-[10px] max-[900px]:px-3">
+    <header className="fixed top-0 z-50 w-full flex justify-center bg-black/10 px-16 py-1 backdrop-blur-[10px] max-[900px]:px-3">
       <nav
         className="relative flex w-full max-w-[1440px] items-center justify-between gap-5 overflow-hidden rounded-lg px-4 py-2 max-[900px]:items-start max-[900px]:gap-3 max-[900px]:overflow-visible max-[900px]:px-[10px]"
         aria-label="Primary"
