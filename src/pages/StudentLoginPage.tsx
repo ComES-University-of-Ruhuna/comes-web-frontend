@@ -3,7 +3,7 @@
 // ============================================
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useLocation, useNavigate, Link } from "react-router";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft, GraduationCap } from "lucide-react";
 import { useStudentStore } from "@/store/studentStore";
@@ -19,14 +19,19 @@ export const StudentLoginPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
 
-    const success = await login({ email, password });
+    const success = await login({ email: email.trim().toLowerCase(), password });
     if (success) {
-      navigate("/student/dashboard");
+      const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from
+        ?.pathname;
+      navigate(requestedPath?.startsWith("/student/") ? requestedPath : "/student/dashboard", {
+        replace: true,
+      });
     }
   };
 
@@ -123,6 +128,7 @@ export const StudentLoginPage = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
+              htmlFor="student-email"
               className={cn(
                 "mb-2 block text-sm font-medium",
                 isDark ? "text-gray-300" : "text-gray-700",
@@ -138,6 +144,7 @@ export const StudentLoginPage = () => {
                 )}
               />
               <input
+                id="student-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -148,6 +155,7 @@ export const StudentLoginPage = () => {
                     : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="your.email@example.com"
+                autoComplete="email"
                 required
               />
             </div>
@@ -155,6 +163,7 @@ export const StudentLoginPage = () => {
 
           <div>
             <label
+              htmlFor="student-password"
               className={cn(
                 "mb-2 block text-sm font-medium",
                 isDark ? "text-gray-300" : "text-gray-700",
@@ -170,6 +179,7 @@ export const StudentLoginPage = () => {
                 )}
               />
               <input
+                id="student-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -180,6 +190,7 @@ export const StudentLoginPage = () => {
                     : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 required
               />
               <button
@@ -191,34 +202,11 @@ export const StudentLoginPage = () => {
                     ? "text-gray-500 hover:text-gray-300"
                     : "text-gray-400 hover:text-gray-600",
                 )}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                className={cn(
-                  "h-4 w-4 rounded border transition-colors",
-                  isDark ? "border-slate-600 bg-slate-800" : "border-gray-300",
-                )}
-              />
-              <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                Remember me
-              </span>
-            </label>
-            <Link
-              to="/forgot-password"
-              className={cn(
-                "text-sm font-medium",
-                isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700",
-              )}
-            >
-              Forgot password?
-            </Link>
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">

@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
 import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { initializeTheme, initializeCookies, useAuthStore } from "@/store";
+import { initializeTheme, initializeCookies, useAuthStore, useStudentStore } from "@/store";
 import {
   HomePage,
   AboutPage,
@@ -164,6 +164,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showApp, setShowApp] = useState(false);
   const { checkAuth } = useAuthStore();
+  const checkStudentAuth = useStudentStore((state) => state.checkAuth);
 
   useEffect(() => {
     // Check if user has already visited (skip loading on subsequent visits)
@@ -179,6 +180,7 @@ function App() {
     if (localStorage.getItem("accessToken")) {
       checkAuth();
     }
+    checkStudentAuth();
   }, []);
 
   const handleLoadingComplete = () => {

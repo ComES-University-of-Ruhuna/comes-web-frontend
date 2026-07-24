@@ -5,7 +5,7 @@
 // API Configuration - Single place to change backend URL
 export const API_CONFIG = {
   // Base URL for the API - change this when deploying to production
-  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1",
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5001/api/v1",
 
   // Request timeout in milliseconds
   timeout: 30000,

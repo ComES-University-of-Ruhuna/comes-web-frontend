@@ -242,7 +242,7 @@ Create a `.env` file in the root directory:
 
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://localhost:5001/api/v1
 
 # Optional: Analytics
 VITE_GA_TRACKING_ID=UA-XXXXXXXXX-X

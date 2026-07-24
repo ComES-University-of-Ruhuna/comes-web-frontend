@@ -4,8 +4,32 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { isAxiosError } from "axios";
 import { studentService, type Student, type StudentRegisterData } from "@/services/student.service";
 import { setStudentAccessToken } from "@/services/student.service";
+
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+  errors?: Array<{ msg?: string }>;
+}
+
+const getAuthErrorMessage = (error: unknown, fallback: string): string => {
+  if (!isAxiosError<ApiErrorResponse>(error)) {
+    return error instanceof Error ? error.message : fallback;
+  }
+
+  if (error.code === "ERR_NETWORK") {
+    return "Unable to connect to the server. Please try again shortly.";
+  }
+
+  return (
+    error.response?.data?.message ||
+    error.response?.data?.error ||
+    error.response?.data?.errors?.[0]?.msg ||
+    fallback
+  );
+};
 
 interface StudentState {
   student: Student | null;
@@ -47,8 +71,7 @@ export const useStudentStore = create<StudentState>()(
           set({ isLoading: false, error: response.message || "Login failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : "Login failed";
-          set({ isLoading: false, error: message });
+          set({ isLoading: false, error: getAuthErrorMessage(error, "Login failed") });
           return false;
         }
       },
@@ -70,8 +93,10 @@ export const useStudentStore = create<StudentState>()(
           set({ isLoading: false, error: response.message || "Registration failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : "Registration failed";
-          set({ isLoading: false, error: message });
+          set({
+            isLoading: false,
+            error: getAuthErrorMessage(error, "Registration failed"),
+          });
           return false;
         }
       },
