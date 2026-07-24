@@ -3,7 +3,7 @@
 // ============================================
 
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router";
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router";
 import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
 import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
@@ -31,6 +31,8 @@ import {
   StudentTeamsPage,
   StudentQuizzesPage,
   StudentQuizTakePage,
+  StudentCertificatesPage,
+  StudentResourcesPage,
   SoftwareEngineeringPage,
   AIDataSciencePage,
   EmbeddedElectronicsPage,
@@ -74,7 +76,7 @@ const AnimatedRoutes = () => {
     <>
       <ScrollToTop />
       <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location}>
           {/* Public Routes */}
 
           <Route element={<Layout />}>
@@ -105,15 +107,23 @@ const AnimatedRoutes = () => {
           <Route path="/portfolio/:username" element={<StudentPortfolioPage />} />
 
           {/* Student Dashboard Routes */}
-          <Route path="/student/dashboard" element={<StudentDashboardPage />} />
-          <Route path="/student/profile" element={<StudentProfilePage />} />
-          <Route path="/student/events" element={<StudentEventsPage />} />
-          <Route path="/student/settings" element={<StudentSettingsPage />} />
-          <Route path="/student/teams" element={<StudentTeamsPage />} />
-          <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
-          <Route path="/student/quizzes/:id" element={<StudentQuizTakePage />} />
-          <Route path="/student/certificates" element={<StudentDashboardPage />} />
-          <Route path="/student/resources" element={<StudentDashboardPage />} />
+          <Route
+            element={
+              <ProtectedRoute requireStudent>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+            <Route path="/student/profile" element={<StudentProfilePage />} />
+            <Route path="/student/events" element={<StudentEventsPage />} />
+            <Route path="/student/settings" element={<StudentSettingsPage />} />
+            <Route path="/student/teams" element={<StudentTeamsPage />} />
+            <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
+            <Route path="/student/quizzes/:id" element={<StudentQuizTakePage />} />
+            <Route path="/student/certificates" element={<StudentCertificatesPage />} />
+            <Route path="/student/resources" element={<StudentResourcesPage />} />
+          </Route>
 
           {/* Admin Login Route (public) */}
           <Route path="/admin/login" element={<AdminLoginPage />} />

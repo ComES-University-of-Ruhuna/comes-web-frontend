@@ -319,7 +319,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-1 lg:flex">
+          <div className="hidden items-center gap-1 xl:flex">
             {NAV_LINKS.map((link, index) => (
               <NavItem
                 key={link.path}
@@ -333,7 +333,7 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="hidden items-center gap-3 xl:flex">
             {/* Theme Toggle - only show if not authenticated */}
             {!isAuthenticated && (
               <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
@@ -363,7 +363,7 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             {!isAuthenticated && (
               <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
             )}
@@ -423,7 +423,7 @@ export const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm md:top-20 lg:hidden"
+              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm md:top-20 xl:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -435,7 +435,7 @@ export const Navbar = () => {
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
               className={cn(
-                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] lg:hidden",
+                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] xl:hidden",
                 isDark ? "border-l border-slate-800 bg-slate-900" : "bg-white",
               )}
             >

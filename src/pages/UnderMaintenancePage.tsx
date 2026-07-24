@@ -154,7 +154,7 @@ export const UnderMaintenancePage = () => {
               onClick={() => window.history.back()}
               className={cn(
                 "mt-8 inline-flex items-center gap-2 text-sm transition-colors",
-                isDark ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600",
+                isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900",
               )}
             >
               <ArrowLeft className="h-4 w-4" />

@@ -146,7 +146,7 @@ export const StudentDashboardPage = () => {
                       isDark ? "text-white" : "text-gray-900",
                     )}
                   >
-                    Welcome back, {student?.name?.split(" ")[0] || "Student"}! 👋
+                    Welcome back, {student?.name?.split(" ")[0] || "Student"}
                   </h1>
                   <p className={cn("text-lg", isDark ? "text-gray-400" : "text-gray-600")}>
                     {student?.registrationNo && (
@@ -219,7 +219,7 @@ export const StudentDashboardPage = () => {
 
             <div className="grid gap-8 lg:grid-cols-3">
               {/* Main Content */}
-              <div className="space-y-8 lg:col-span-2">
+              <div className="min-w-0 space-y-8 lg:col-span-2">
                 {/* Quick Links */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

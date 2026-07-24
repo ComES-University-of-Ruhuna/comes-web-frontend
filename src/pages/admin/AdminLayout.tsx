@@ -60,7 +60,9 @@ export const AdminLayout = () => {
   };
 
   return (
-    <div className={cn("flex min-h-screen", isDark ? "bg-slate-950" : "bg-gray-100")}>
+    <div
+      className={cn("flex min-h-screen overflow-x-clip", isDark ? "bg-slate-950" : "bg-gray-100")}
+    >
       {/* Desktop Sidebar */}
       <aside
         className={cn(
@@ -101,10 +103,10 @@ export const AdminLayout = () => {
                   end={item.end}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all",
+                      "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all",
                       sidebarOpen ? "justify-start" : "justify-center",
                       isActive
-                        ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
+                        ? "bg-comesBlue text-white"
                         : isDark
                           ? "text-gray-400 hover:bg-slate-800 hover:text-white"
                           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
@@ -123,7 +125,7 @@ export const AdminLayout = () => {
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={cn(
-            "absolute top-20 -right-3 flex h-6 w-6 items-center justify-center rounded-full shadow-lg",
+            "absolute top-20 -right-4 flex h-8 w-8 items-center justify-center rounded-lg shadow-sm",
             isDark ? "bg-slate-800 text-gray-400" : "border border-gray-200 bg-white text-gray-600",
           )}
         >
@@ -176,7 +178,10 @@ export const AdminLayout = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-lg",
+              isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
+            )}
           >
             <Menu className={cn("h-6 w-6", isDark ? "text-white" : "text-gray-900")} />
           </button>
@@ -188,7 +193,7 @@ export const AdminLayout = () => {
           <ThemeToggle />
           <button
             className={cn(
-              "relative rounded-lg p-2",
+              "relative flex h-10 w-10 items-center justify-center rounded-lg",
               isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
             )}
           >
@@ -227,7 +232,10 @@ export const AdminLayout = () => {
                 <span className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
                   Admin Panel
                 </span>
-                <button onClick={() => setMobileMenuOpen(false)}>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg"
+                >
                   <X className={cn("h-6 w-6", isDark ? "text-gray-400" : "text-gray-600")} />
                 </button>
               </div>
@@ -241,9 +249,9 @@ export const AdminLayout = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
                           cn(
-                            "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all",
+                            "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all",
                             isActive
-                              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                              ? "bg-comesBlue text-white"
                               : isDark
                                 ? "text-gray-400 hover:bg-slate-800 hover:text-white"
                                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
@@ -279,12 +287,12 @@ export const AdminLayout = () => {
       {/* Main Content */}
       <main
         className={cn(
-          "min-h-screen flex-1 transition-all duration-300",
+          "min-h-screen min-w-0 flex-1 transition-all duration-300",
           "pt-16 lg:pt-0",
           sidebarOpen ? "lg:ml-64" : "lg:ml-20",
         )}
       >
-        <div className="p-4 lg:p-8">
+        <div className="min-w-0 p-4 lg:p-8">
           <Outlet />
         </div>
       </main>

@@ -81,7 +81,7 @@ export const NotFoundPage = () => {
               <motion.span
                 className={cn(
                   "text-[150px] font-black select-none md:text-[200px]",
-                  isDark ? "text-slate-800" : "text-gray-100",
+                  "text-gray-500",
                 )}
                 animate={{
                   textShadow: isDark
@@ -171,7 +171,7 @@ export const NotFoundPage = () => {
             <div
               className={cn("mt-12 border-t pt-8", isDark ? "border-slate-700" : "border-gray-200")}
             >
-              <p className={cn("mb-6", isDark ? "text-gray-500" : "text-gray-500")}>
+              <p className={cn("mb-6", isDark ? "text-gray-400" : "text-gray-600")}>
                 Here are some helpful links:
               </p>
               <div className="flex flex-wrap justify-center gap-4">

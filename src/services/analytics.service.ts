@@ -208,7 +208,6 @@ class AnalyticsService {
       return { visitors: [], total: 0 };
     }
   }
-
   // Mock data for demonstration when API is not available
   private getMockAnalyticsSummary(): AnalyticsSummary {
     const today = new Date();

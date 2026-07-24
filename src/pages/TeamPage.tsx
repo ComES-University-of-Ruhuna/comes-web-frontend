@@ -3,21 +3,13 @@
 // ============================================
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Linkedin, Github, Mail, Phone, Users, UserPlus, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Github, Linkedin, Mail, Phone, UserPlus } from "lucide-react";
+import { Button, PageTransition, Section } from "@/components/ui";
 import {
-  Section,
-  SectionHeader,
-  Card,
-  Button,
-  PageTransition,
-  FadeInView,
-  HoverScale,
-} from "@/components/ui";
-import {
+  allTeamMembers,
   executiveCommittee,
   seniorAdvisors,
-  coordinators,
   teamCategories,
   getTeamByCategory,
 } from "@/data";
@@ -25,118 +17,113 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import type { TeamMember } from "@/types";
 
-// Team Member Card Component
-const TeamMemberCard = ({ member, index = 0 }: { member: TeamMember; index?: number }) => {
+const TeamMemberCard = ({ member }: { member: TeamMember }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
   return (
-    <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10 }}>
-        <Card
-          hoverable
-          padding="none"
-          className={cn("group overflow-hidden", isDark && "border-slate-700/50 bg-slate-800/50")}
+    <article
+      className={cn(
+        "flex h-full flex-col border p-5 transition-colors",
+        isDark
+          ? "border-slate-800 bg-slate-900 hover:border-slate-700"
+          : "border-gray-200 bg-white hover:border-gray-300",
+      )}
+    >
+      <div className="flex min-w-0 items-start gap-4">
+        <img
+          src={member.image}
+          alt={member.name}
+          className={cn(
+            "h-16 w-16 shrink-0 rounded-full border object-cover",
+            isDark ? "border-slate-700" : "border-gray-200",
+          )}
+        />
+        <div className="min-w-0 flex-1 pt-1">
+          <h3
+            className={cn(
+              "text-lg leading-tight font-semibold",
+              isDark ? "text-white" : "text-gray-950",
+            )}
+          >
+            {member.name}
+          </h3>
+          <p className={cn("mt-1 text-sm font-medium", isDark ? "text-blue-300" : "text-blue-700")}>
+            {member.role}
+          </p>
+          {member.batch && (
+            <p className={cn("mt-1 text-xs", isDark ? "text-gray-500" : "text-gray-500")}>
+              Batch of {member.batch}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {(member.email || member.contactNo) && (
+        <div
+          className={cn(
+            "mt-5 space-y-2 border-t pt-4 text-sm",
+            isDark ? "border-slate-800 text-gray-400" : "border-gray-100 text-gray-600",
+          )}
         >
-          <div className="relative overflow-hidden">
-            <motion.img
-              src={member.image}
-              alt={member.name}
-              className="h-48 w-full object-cover"
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.3 }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-            {/* Social Links Overlay */}
-            <motion.div
-              className="absolute right-4 bottom-4 left-4 flex gap-2"
-              initial={{ opacity: 0, y: 20 }}
-              whileHover={{ opacity: 1, y: 0 }}
+          {member.email && (
+            <a
+              href={`mailto:${member.email}`}
+              className="flex min-w-0 items-center gap-2 transition-colors hover:text-blue-500"
             >
-              {member.linkedin && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-blue-500/50"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-              {member.github && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-gray-500/50"
-                  >
-                    <Github className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-              {member.email && (
-                <HoverScale scale={1.2}>
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-cyan-500/50"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </a>
-                </HoverScale>
-              )}
-            </motion.div>
-          </div>
+              <Mail className="h-4 w-4 shrink-0" />
+              <span className="truncate">{member.email}</span>
+            </a>
+          )}
+          {member.contactNo && (
+            <a
+              href={`tel:${member.contactNo}`}
+              className="flex items-center gap-2 transition-colors hover:text-blue-500"
+            >
+              <Phone className="h-4 w-4 shrink-0" />
+              <span>{member.contactNo}</span>
+            </a>
+          )}
+        </div>
+      )}
 
-          <div className="p-6">
-            <h3 className={cn("mb-1 text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-              {member.name}
-            </h3>
-            <p className="mb-3 font-semibold text-amber-500">{member.role}</p>
-            {member.email && (
-              <p
-                className={cn(
-                  "flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Mail className="h-4 w-4 shrink-0 text-cyan-500" />
-                <a
-                  href={`mailto:${member.email}`}
-                  className="truncate transition-colors hover:text-cyan-500"
-                >
-                  {member.email}
-                </a>
-              </p>
-            )}
-            {member.contactNo && (
-              <p
-                className={cn(
-                  "mt-1 flex items-center gap-2 text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                <Phone className="h-4 w-4 shrink-0 text-cyan-500" />
-                <a
-                  href={`tel:${member.contactNo}`}
-                  className="transition-colors hover:text-cyan-500"
-                >
-                  {member.contactNo}
-                </a>
-              </p>
-            )}
-            {member.batch && (
-              <p className={cn("mt-2 text-sm", isDark ? "text-gray-500" : "text-gray-400")}>
-                Batch of {member.batch}
-              </p>
-            )}
-          </div>
-        </Card>
-      </motion.div>
-    </FadeInView>
+      {(member.linkedin || member.github) && (
+        <div className="mt-auto flex gap-2 pt-5">
+          {member.linkedin && (
+            <a
+              href={member.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${member.name} on LinkedIn`}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center border transition-colors",
+                isDark
+                  ? "border-slate-700 text-gray-400 hover:border-blue-400 hover:text-blue-300"
+                  : "border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-700",
+              )}
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+          )}
+          {member.github && (
+            <a
+              href={member.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${member.name} on GitHub`}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center border transition-colors",
+                isDark
+                  ? "border-slate-700 text-gray-400 hover:border-gray-400 hover:text-white"
+                  : "border-gray-200 text-gray-500 hover:border-gray-900 hover:text-gray-950",
+              )}
+            >
+              <Github className="h-4 w-4" />
+            </a>
+          )}
+        </div>
+      )}
+    </article>
   );
 };
 
@@ -144,146 +131,82 @@ const TeamMemberCard = ({ member, index = 0 }: { member: TeamMember; index?: num
 const TeamHero = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const summary = [
+    { value: allTeamMembers.length, label: "Team members" },
+    { value: executiveCommittee.length, label: "Executive leaders" },
+    { value: seniorAdvisors.length, label: "Faculty advisors" },
+  ];
 
   return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
+    <section
+      className={cn(
+        "border-b pt-16 pb-14 sm:pt-20 sm:pb-16",
+        isDark ? "border-slate-800 bg-slate-950" : "border-gray-200 bg-white",
+      )}
     >
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Animated background elements */}
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid items-end gap-10 lg:grid-cols-[1fr_auto]">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="max-w-3xl"
           >
-            <Users className="h-10 w-10 text-white" />
+            <div
+              className={cn(
+                "mb-4 text-sm font-semibold tracking-wider uppercase",
+                isDark ? "text-blue-300" : "text-blue-700",
+              )}
+            >
+              Leadership and community
+            </div>
+            <h1
+              className={cn(
+                "text-4xl leading-tight font-bold sm:text-5xl lg:text-6xl",
+                isDark ? "text-white" : "text-gray-950",
+              )}
+            >
+              The people behind ComES
+            </h1>
+            <p
+              className={cn(
+                "mt-5 max-w-2xl text-base leading-7 sm:text-lg",
+                isDark ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Students, faculty advisors, and coordinators working together to strengthen the
+              computer engineering community at the University of Ruhuna.
+            </p>
           </motion.div>
-        </FadeInView>
 
-        <FadeInView delay={0.1}>
-          <h1
+          <motion.dl
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.1 }}
             className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
+              "grid grid-cols-3 divide-x border-y py-5 lg:min-w-[420px]",
+              isDark ? "divide-slate-800 border-slate-800" : "divide-gray-200 border-gray-200",
             )}
           >
-            Meet Our{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Team
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Dedicated professionals and students working together to build a vibrant tech community.
-            Meet the people behind ComES.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
-
-// Executive Committee Section
-const ExecutiveSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Executive Committee
-          </h2>
+            {summary.map((item) => (
+              <div key={item.label} className="px-3 text-center sm:px-5">
+                <dd className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-950")}>
+                  {item.value}
+                </dd>
+                <dt
+                  className={cn(
+                    "mt-1 text-xs leading-4",
+                    isDark ? "text-gray-500" : "text-gray-500",
+                  )}
+                >
+                  {item.label}
+                </dt>
+              </div>
+            ))}
+          </motion.dl>
         </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          The leadership team driving ComES forward.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {executiveCommittee.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
       </div>
-    </Section>
-  );
-};
-
-// Senior Advisors Section
-const AdvisorsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "gray"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Senior Advisors
-          </h2>
-        </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          Faculty members guiding our initiatives with their expertise.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {seniorAdvisors.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// Coordinators Section
-const CoordinatorsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-            Coordinators
-          </h2>
-        </div>
-        <p className={cn("mb-12 text-center", isDark ? "text-gray-400" : "text-gray-600")}>
-          The driving force behind our events and initiatives.
-        </p>
-      </FadeInView>
-
-      <div className="flex flex-wrap justify-center gap-6">
-        {coordinators.map((member, index) => (
-          <div key={member.id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-            <TeamMemberCard member={member} index={index} />
-          </div>
-        ))}
-      </div>
-    </Section>
+    </section>
   );
 };
 
@@ -293,46 +216,44 @@ const JoinTeamSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
-      <FadeInView>
-        <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
+    <Section background={isDark ? "dark" : "white"} padding="lg">
+      <div
+        className={cn(
+          "grid items-center gap-8 border px-6 py-8 sm:px-8 lg:grid-cols-[1fr_auto] lg:px-10",
+          isDark ? "border-slate-700 bg-slate-900" : "border-gray-200 bg-gray-50",
+        )}
+      >
+        <div className="flex items-start gap-4">
+          <div
+            className={cn(
+              "hidden h-12 w-12 shrink-0 items-center justify-center sm:flex",
+              isDark ? "bg-blue-400 text-slate-950" : "bg-blue-800 text-white",
+            )}
           >
-            <UserPlus className="h-8 w-8 text-white" />
-          </motion.div>
-
-          <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">Join Our Team</h2>
-          <p className={cn("mb-8 text-xl", isDark ? "text-gray-400" : "text-blue-100")}>
-            We're always looking for passionate individuals who want to contribute to our mission of
-            fostering technological excellence. Be a part of something meaningful.
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <HoverScale>
-              <Button
-                href="https://volunteers.comesuor.lk"
-                variant="secondary"
-                size="lg"
-                icon={<Sparkles className="h-5 w-5" />}
-              >
-                Apply Now
-              </Button>
-            </HoverScale>
-            <HoverScale>
-              <Button
-                href="/about"
-                variant="outline"
-                size="lg"
-                className="hover:text-comesBlue border-white text-white hover:bg-white"
-              >
-                Learn More
-              </Button>
-            </HoverScale>
+            <UserPlus className="h-6 w-6" />
+          </div>
+          <div>
+            <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-950")}>
+              Contribute to the community
+            </h2>
+            <p
+              className={cn("mt-2 max-w-2xl leading-7", isDark ? "text-gray-400" : "text-gray-600")}
+            >
+              Help organize events, lead technical initiatives, and build meaningful connections
+              across the faculty.
+            </p>
           </div>
         </div>
-      </FadeInView>
+        <Button
+          href="https://volunteers.comesuor.lk"
+          external
+          size="lg"
+          icon={<ArrowRight className="h-5 w-5" />}
+          className="w-full lg:w-auto"
+        >
+          Apply to volunteer
+        </Button>
+      </div>
     </Section>
   );
 };
@@ -345,53 +266,63 @@ const AllMembersSection = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <Section background={isDark ? "dark" : "gray"}>
-      <FadeInView>
-        <SectionHeader
-          title="All Team Members"
-          subtitle="Browse through all our amazing team members."
-          light={false}
-        />
-      </FadeInView>
-
-      {/* Category Filter */}
-      <div className="mb-8 flex flex-wrap justify-center gap-2">
-        {teamCategories.map((category) => (
-          <motion.button
-            key={category.id}
-            onClick={() => setActiveCategory(category.id)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-all",
-              activeCategory === category.id
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-                : isDark
-                  ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                  : "bg-white text-gray-600 hover:bg-gray-100",
-            )}
-          >
-            {category.label}
-          </motion.button>
-        ))}
+    <Section background={isDark ? "dark" : "gray"} padding="lg">
+      <div className="mb-9 flex flex-col gap-5 border-b border-[var(--border-color)] pb-7 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-950")}>
+            Team directory
+          </h2>
+          <p className={cn("mt-2", isDark ? "text-gray-400" : "text-gray-600")}>
+            Browse the current committee, advisors, and working groups.
+          </p>
+        </div>
+        <p className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+          Showing {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"}
+        </p>
       </div>
 
-      {/* Members Grid */}
+      <div
+        className="mb-8 flex gap-2 overflow-x-auto pb-2"
+        role="tablist"
+        aria-label="Team categories"
+      >
+        {teamCategories.map((category) => {
+          const isActive = activeCategory === category.id;
+          return (
+            <button
+              key={category.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => setActiveCategory(category.id)}
+              className={cn(
+                "shrink-0 border px-4 py-2 text-sm font-medium transition-colors",
+                isActive
+                  ? isDark
+                    ? "border-blue-400 bg-blue-400 text-slate-950"
+                    : "border-blue-800 bg-blue-800 text-white"
+                  : isDark
+                    ? "border-slate-700 bg-slate-900 text-gray-300 hover:border-slate-500"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-400",
+              )}
+            >
+              {category.label}
+            </button>
+          );
+        })}
+      </div>
+
       <AnimatePresence mode="wait">
         <motion.div
           key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="flex flex-wrap justify-center gap-6"
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {filteredMembers.map((member, index) => (
-            <div
-              key={member.id}
-              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]"
-            >
-              <TeamMemberCard member={member} index={index} />
-            </div>
+          {filteredMembers.map((member) => (
+            <TeamMemberCard key={member.id} member={member} />
           ))}
         </motion.div>
       </AnimatePresence>
@@ -404,9 +335,6 @@ export const TeamPage = () => {
   return (
     <PageTransition>
       <TeamHero />
-      <ExecutiveSection />
-      <AdvisorsSection />
-      <CoordinatorsSection />
       <AllMembersSection />
       <JoinTeamSection />
     </PageTransition>

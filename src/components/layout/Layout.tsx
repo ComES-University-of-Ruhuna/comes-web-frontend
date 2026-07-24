@@ -14,7 +14,7 @@ export const Layout: FC = () => {
 
   return (
     <div
-      className={`font-comes flex min-h-screen flex-col transition-colors duration-300 ${
+      className={`font-comes flex min-h-screen flex-col overflow-x-clip transition-colors duration-300 ${
         resolvedTheme === "dark" ? "bg-slate-950 text-gray-100" : "bg-white text-gray-900"
       }`}
     >

@@ -57,7 +57,7 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
             <div
               className={cn(
                 "mb-3 flex items-center gap-4 text-sm",
-                isDark ? "text-gray-500" : "text-gray-500",
+                isDark ? "text-gray-400" : "text-gray-600",
               )}
             >
               <span className="flex items-center gap-1">
@@ -104,7 +104,12 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
               </div>
               <Link
                 to={`/blog/${post.slug}`}
-                className="flex items-center gap-1 text-sm font-medium text-blue-500 transition-colors hover:text-blue-400"
+                className={cn(
+                  "flex items-center gap-1 text-sm font-medium transition-colors",
+                  isDark
+                    ? "text-blue-300 hover:text-blue-200"
+                    : "text-blue-700 hover:text-blue-800",
+                )}
               >
                 Read More <ArrowRight className="h-3.5 w-3.5" />
               </Link>

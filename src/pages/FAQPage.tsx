@@ -254,32 +254,34 @@ const FAQListSection = () => {
     <Section background={isDark ? "white" : "gray"}>
       <div className="mx-auto max-w-3xl space-y-10">
         {Object.entries(faqsByCategory).map(([category, categoryFaqs], catIndex) => (
-          <FadeInView key={category} delay={catIndex * 0.1}>
-            <motion.div layout>
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
-                  <BookOpen className="h-5 w-5 text-white" />
+            <FadeInView key={category} delay={catIndex * 0.1}>
+              <motion.div layout>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
+                    <BookOpen className="h-5 w-5 text-white" />
+                  </div>
+                  <h2
+                    className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}
+                  >
+                    {category}
+                  </h2>
                 </div>
-                <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-                  {category}
-                </h2>
-              </div>
-              <div className="space-y-4">
-                {categoryFaqs.map((faq, index) => (
-                  <FAQItem
-                    key={faq.id}
-                    question={faq.question}
-                    answer={faq.answer}
-                    isOpen={openIndex === faqs.indexOf(faq)}
-                    onToggle={() =>
-                      setOpenIndex(openIndex === faqs.indexOf(faq) ? null : faqs.indexOf(faq))
-                    }
-                    index={index}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </FadeInView>
+                <div className="space-y-4">
+                  {categoryFaqs.map((faq, index) => (
+                    <FAQItem
+                      key={faq.id}
+                      question={faq.question}
+                      answer={faq.answer}
+                      isOpen={openIndex === faqs.indexOf(faq)}
+                      onToggle={() =>
+                        setOpenIndex(openIndex === faqs.indexOf(faq) ? null : faqs.indexOf(faq))
+                      }
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </FadeInView>
         ))}
       </div>
     </Section>

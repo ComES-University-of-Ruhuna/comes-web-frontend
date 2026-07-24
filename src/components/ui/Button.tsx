@@ -19,8 +19,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variants = {
   primary: "bg-comesBlue text-white hover:bg-blue-800 shadow-lg hover:shadow-xl",
   secondary: "bg-comesGold text-comesBlue hover:bg-yellow-400 shadow-lg hover:shadow-xl",
-  outline: "border-2 border-comesBlue text-comesBlue hover:bg-comesBlue hover:text-white",
-  ghost: "text-comesBlue hover:bg-blue-50",
+  outline:
+    "border-2 border-comesBlue text-comesBlue hover:bg-comesBlue hover:text-white dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-400 dark:hover:text-slate-950",
+  ghost: "text-comesBlue hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-400/10",
 };
 
 const sizes = {
@@ -45,7 +46,7 @@ export const Button: FC<ButtonProps> = ({
   const baseStyles = cn(
     "inline-flex items-center justify-center gap-2 font-semibold rounded-full",
     "transition-all duration-300 transform",
-    "focus:outline-none focus:ring-2 focus:ring-comesBlue focus:ring-offset-2",
+    "focus:outline-none focus:ring-2 focus:ring-comesBlue focus:ring-offset-2 dark:focus:ring-blue-400 dark:focus:ring-offset-slate-950",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none",
     !disabled && !loading && "hover:scale-105",
     variants[variant],

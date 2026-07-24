@@ -26,6 +26,8 @@ export {
   StudentTeamsPage,
   StudentQuizzesPage,
   StudentQuizTakePage,
+  StudentCertificatesPage,
+  StudentResourcesPage,
 } from "./student";
 
 // Subgroup pages

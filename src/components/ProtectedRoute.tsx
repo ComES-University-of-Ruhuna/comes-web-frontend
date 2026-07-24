@@ -4,14 +4,25 @@
 
 import { Navigate, useLocation } from "react-router";
 import { useAuthStore } from "@/store/authStore";
+import { useStudentStore } from "@/store/studentStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
+  requireStudent?: boolean;
 }
 
-export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  children,
+  requireAdmin = false,
+  requireStudent = false,
+}: ProtectedRouteProps) => {
   const { user, isAuthenticated, isLoading } = useAuthStore();
+  const {
+    student,
+    isAuthenticated: isStudentAuthenticated,
+    isLoading: isStudentLoading,
+  } = useStudentStore();
   const location = useLocation();
 
   // TEMPORARY: Bypass authentication for development
@@ -19,6 +30,22 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   const BYPASS_AUTH = false;
 
   if (BYPASS_AUTH) {
+    return <>{children}</>;
+  }
+
+  if (requireStudent) {
+    if (isStudentLoading) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-slate-950">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+        </div>
+      );
+    }
+
+    if (!isStudentAuthenticated || !student) {
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
     return <>{children}</>;
   }
 

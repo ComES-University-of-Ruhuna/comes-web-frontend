@@ -24,7 +24,7 @@ export const Input: FC<InputProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="mb-2 block font-medium text-gray-700">
+        <label htmlFor={inputId} className="mb-2 block font-medium text-[var(--text-primary)]">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
@@ -32,9 +32,9 @@ export const Input: FC<InputProps> = ({
       <input
         id={inputId}
         className={cn(
-          "w-full rounded-lg border px-4 py-3 transition-all duration-200",
+          "w-full rounded-lg border bg-[var(--bg-primary)] px-4 py-3 text-[var(--text-primary)] transition-all duration-200 placeholder:text-[var(--text-tertiary)]",
           "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
-          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          error ? "border-red-500 focus:ring-red-500" : "border-[var(--border-color)]",
           className,
         )}
         {...props}
@@ -65,7 +65,7 @@ export const Textarea: FC<TextareaProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={textareaId} className="mb-2 block font-medium text-gray-700">
+        <label htmlFor={textareaId} className="mb-2 block font-medium text-[var(--text-primary)]">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
@@ -74,9 +74,9 @@ export const Textarea: FC<TextareaProps> = ({
         id={textareaId}
         rows={rows}
         className={cn(
-          "w-full resize-none rounded-lg border px-4 py-3 transition-all duration-200",
+          "w-full resize-none rounded-lg border bg-[var(--bg-primary)] px-4 py-3 text-[var(--text-primary)] transition-all duration-200 placeholder:text-[var(--text-tertiary)]",
           "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
-          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          error ? "border-red-500 focus:ring-red-500" : "border-[var(--border-color)]",
           className,
         )}
         {...props}
@@ -112,7 +112,7 @@ export const Select: FC<SelectProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={selectId} className="mb-2 block font-medium text-gray-700">
+        <label htmlFor={selectId} className="mb-2 block font-medium text-[var(--text-primary)]">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
@@ -120,9 +120,9 @@ export const Select: FC<SelectProps> = ({
       <select
         id={selectId}
         className={cn(
-          "w-full rounded-lg border px-4 py-3 transition-all duration-200",
+          "w-full rounded-lg border bg-[var(--bg-primary)] px-4 py-3 text-[var(--text-primary)] transition-all duration-200",
           "focus:ring-comesBlue focus:border-transparent focus:ring-2 focus:outline-none",
-          error ? "border-red-500 focus:ring-red-500" : "border-gray-300 hover:border-gray-400",
+          error ? "border-red-500 focus:ring-red-500" : "border-[var(--border-color)]",
           className,
         )}
         {...props}

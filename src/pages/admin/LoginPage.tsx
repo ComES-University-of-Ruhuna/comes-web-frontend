@@ -80,7 +80,7 @@ export const LoginPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl",
+          "relative z-10 w-full max-w-md rounded-lg p-6 shadow-xl sm:p-8",
           isDark
             ? "border border-slate-800 bg-slate-900/80 backdrop-blur-xl"
             : "border border-gray-200 bg-white/80 backdrop-blur-xl",
@@ -184,7 +184,7 @@ export const LoginPage = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className={cn(
-                  "absolute top-1/2 right-4 -translate-y-1/2",
+                  "absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg",
                   isDark
                     ? "text-gray-500 hover:text-gray-300"
                     : "text-gray-400 hover:text-gray-600",

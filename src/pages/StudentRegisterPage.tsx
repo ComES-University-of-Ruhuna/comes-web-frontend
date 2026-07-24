@@ -261,7 +261,7 @@ export const StudentRegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "relative w-full max-w-lg rounded-2xl p-8 lg:max-w-2xl",
+          "relative w-full max-w-lg rounded-lg p-6 sm:p-8 lg:max-w-2xl",
           isDark
             ? "border border-slate-800 bg-slate-900/90 backdrop-blur-xl"
             : "bg-white/90 shadow-xl backdrop-blur-xl",
@@ -399,7 +399,8 @@ export const StudentRegisterPage = () => {
                   isDark ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                Contact Number <span className="text-gray-500">(Optional)</span>
+                Contact Number{" "}
+                <span className={isDark ? "text-gray-400" : "text-gray-600"}>(Optional)</span>
               </label>
               <div className="relative">
                 <Phone
@@ -450,7 +451,7 @@ export const StudentRegisterPage = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className={cn(
-                  "absolute top-1/2 right-3 -translate-y-1/2",
+                  "absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg",
                   isDark
                     ? "text-gray-500 hover:text-gray-300"
                     : "text-gray-400 hover:text-gray-600",
@@ -491,7 +492,7 @@ export const StudentRegisterPage = () => {
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className={cn(
-                  "absolute top-1/2 right-3 -translate-y-1/2",
+                  "absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg",
                   isDark
                     ? "text-gray-500 hover:text-gray-300"
                     : "text-gray-400 hover:text-gray-600",
@@ -543,7 +544,7 @@ export const StudentRegisterPage = () => {
             to="/"
             className={cn(
               "text-sm hover:underline",
-              isDark ? "text-gray-500 hover:text-gray-300" : "text-gray-500 hover:text-gray-700",
+              isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900",
             )}
           >
             ← Back to Home

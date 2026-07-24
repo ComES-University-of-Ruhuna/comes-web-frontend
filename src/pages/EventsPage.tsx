@@ -108,7 +108,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                 <span
                   className={cn(
                     "flex items-center gap-1 text-sm",
-                    isDark ? "text-gray-500" : "text-gray-500",
+                    isDark ? "text-gray-400" : "text-gray-600",
                   )}
                 >
                   <Users className="h-3.5 w-3.5" />
@@ -116,7 +116,13 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                 </span>
                 <span
                   className={`text-sm font-medium ${
-                    event.registered >= event.capacity ? "text-red-500" : "text-green-500"
+                    event.registered >= event.capacity
+                      ? isDark
+                        ? "text-red-400"
+                        : "text-red-700"
+                      : isDark
+                        ? "text-green-400"
+                        : "text-green-700"
                   }`}
                 >
                   {event.registered >= event.capacity
@@ -331,51 +337,54 @@ const PastEventsSection = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         {pastEvents.map((event, index) => (
-          <FadeInView key={event.id} direction="left" delay={index * 0.1}>
-            <motion.div whileHover={{ x: 10 }}>
-              <Card
-                padding="lg"
-                className={cn(
-                  "flex items-start gap-4",
-                  isDark && "border-slate-700/50 bg-slate-800/50",
-                )}
-              >
-                <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                  {event.icon}
-                </motion.div>
-                <div className="flex-1">
-                  <div className="mb-2 flex items-center gap-2">
-                    <h3
-                      className={cn("text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}
+            <FadeInView key={event.id} direction="left" delay={index * 0.1}>
+              <motion.div whileHover={{ x: 10 }}>
+                <Card
+                  padding="lg"
+                  className={cn(
+                    "flex items-start gap-4",
+                    isDark && "border-slate-700/50 bg-slate-800/50",
+                  )}
+                >
+                  <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
+                    {event.icon}
+                  </motion.div>
+                  <div className="flex-1">
+                    <div className="mb-2 flex items-center gap-2">
+                      <h3
+                        className={cn(
+                          "text-lg font-bold",
+                          isDark ? "text-white" : "text-comesBlue",
+                        )}
+                      >
+                        {event.title}
+                      </h3>
+                      <Badge variant="secondary" size="sm">
+                        {event.type}
+                      </Badge>
+                    </div>
+                    <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                      {event.description}
+                    </p>
+                    <div
+                      className={cn(
+                        "flex items-center gap-4 text-sm",
+                        isDark ? "text-gray-400" : "text-gray-600",
+                      )}
                     >
-                      {event.title}
-                    </h3>
-                    <Badge variant="secondary" size="sm">
-                      {event.type}
-                    </Badge>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {event.date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />
+                        {event.registered} participants
+                      </span>
+                    </div>
                   </div>
-                  <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    {event.description}
-                  </p>
-                  <div
-                    className={cn(
-                      "flex items-center gap-4 text-sm",
-                      isDark ? "text-gray-500" : "text-gray-500",
-                    )}
-                  >
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {event.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5" />
-                      {event.registered} participants
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </FadeInView>
+                </Card>
+              </motion.div>
+            </FadeInView>
         ))}
       </div>
     </Section>

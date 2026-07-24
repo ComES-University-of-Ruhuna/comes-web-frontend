@@ -9,3 +9,4 @@ export { SettingsPage as StudentSettingsPage } from "./SettingsPage";
 export { TeamsPage as StudentTeamsPage } from "./TeamsPage";
 export { QuizzesPage as StudentQuizzesPage } from "./QuizzesPage";
 export { QuizTakePage as StudentQuizTakePage } from "./QuizTakePage";
+export { StudentCertificatesPage, StudentResourcesPage } from "./ComingSoonPage";

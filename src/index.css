@@ -1,11 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
 
 /* Theme configuration */
 @theme {
   --color-comesBlue: #003366;
-  --color-comesGold: #FFD700;
-  --font-family-comes: 'Montserrat', sans-serif;
+  --color-comesGold: #ffd700;
+  --font-family-comes: "Montserrat", sans-serif;
 }
 
 /* CSS Custom Properties for theming */
@@ -33,12 +35,78 @@
 
 /* Base Styles */
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+@layer utilities {
+  /* Keep raw utility colors readable when they are used for copy or status labels. */
+  :where(:root:not(.dark)) .text-gray-400 {
+    color: #4b5563;
+  }
+
+  :where(:root:not(.dark)) .text-blue-500 {
+    color: #1d4ed8;
+  }
+
+  :where(:root:not(.dark)) .text-green-500 {
+    color: #15803d;
+  }
+
+  :where(:root:not(.dark)) .text-amber-500 {
+    color: #b45309;
+  }
+
+  :where(:root:not(.dark)) .text-red-500 {
+    color: #b91c1c;
+  }
+
+  :where(:root:not(.dark))
+    :where(.bg-slate-900, .bg-blue-900, .bg-comesBlue)
+    :is(.text-gray-400, .text-gray-500),
+  :where(:root:not(.dark))
+    :where(.bg-slate-900, .bg-blue-900, .bg-comesBlue):is(.text-gray-400, .text-gray-500) {
+    color: #d1d5db;
+  }
+
+  :where(:root:not(.dark))
+    :where(.bg-slate-900, .bg-blue-900, .bg-comesBlue)
+    :is(.text-blue-500, .text-green-500, .text-amber-500, .text-red-500),
+  :where(:root:not(.dark))
+    :where(.bg-slate-900, .bg-blue-900, .bg-comesBlue):is(
+      .text-blue-500,
+      .text-green-500,
+      .text-amber-500,
+      .text-red-500
+    ) {
+    color: #bfdbfe;
+  }
+
+  :where(.dark) :where(.text-gray-500, .text-gray-600) {
+    color: #d1d5db;
+  }
+
+  :where(.dark) .text-blue-500 {
+    color: #93c5fd;
+  }
+
+  :where(.dark) .text-green-500 {
+    color: #86efac;
+  }
+
+  :where(.dark) .text-amber-500 {
+    color: #fcd34d;
+  }
+
+  :where(.dark) .text-red-500 {
+    color: #fca5a5;
+  }
 }
 
 /* Custom animations */
@@ -85,7 +153,8 @@ body {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -94,7 +163,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
   50% {
@@ -112,7 +182,8 @@ body {
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -130,7 +201,8 @@ body {
 }
 
 @keyframes bounce-subtle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -163,7 +235,7 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -285,13 +357,15 @@ html {
 
 .card-hover:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .dark .card-hover:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 
-              0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
 /* Futuristic glow effects */
@@ -309,12 +383,15 @@ html {
 
 /* Neon text */
 .neon-text {
-  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  text-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 30px currentColor;
 }
 
 /* Cyber grid background */
 .cyber-grid {
-  background-image: 
+  background-image:
     linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -327,13 +404,15 @@ html {
 }
 
 .gradient-border::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   padding: 2px;
   background: linear-gradient(135deg, #3b82f6, #06b6d4, #8b5cf6);
   border-radius: inherit;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: xor;
   -webkit-mask-composite: xor;
   pointer-events: none;
@@ -341,10 +420,12 @@ html {
 
 /* Loading skeleton */
 .skeleton {
-  background: linear-gradient(90deg, 
-    var(--bg-secondary) 25%, 
-    var(--bg-tertiary) 50%, 
-    var(--bg-secondary) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

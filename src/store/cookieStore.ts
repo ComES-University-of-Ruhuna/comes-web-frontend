@@ -4,6 +4,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { analyticsService } from "@/services/analytics.service";
 
 export type CookiePreference = "all" | "necessary" | "rejected" | null;
 
@@ -33,9 +34,7 @@ export const useCookieStore = create<CookieState>()(
 
         // If analytics enabled, track the visit
         if (analyticsEnabled) {
-          import("@/services/analytics.service").then(({ analyticsService }) => {
-            analyticsService.trackVisit();
-          });
+          analyticsService.trackVisit();
         }
       },
 
@@ -63,8 +62,6 @@ export const useCookieStore = create<CookieState>()(
 export const initializeCookies = () => {
   const state = useCookieStore.getState();
   if (state.consent === "all" && state.analyticsEnabled) {
-    import("@/services/analytics.service").then(({ analyticsService }) => {
-      analyticsService.trackVisit();
-    });
+    analyticsService.trackVisit();
   }
 };

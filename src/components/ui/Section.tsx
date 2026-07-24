@@ -13,19 +13,19 @@ interface SectionProps extends HTMLAttributes<HTMLElement> {
 }
 
 const backgrounds = {
-  white: "bg-white",
-  gray: "bg-gray-50",
-  gradient: "bg-gradient-to-b from-white to-gray-50",
-  dark: "bg-gradient-to-r from-comesBlue to-blue-600 text-white",
+  white: "bg-[var(--bg-primary)]",
+  gray: "bg-[var(--bg-secondary)]",
+  gradient: "bg-gradient-to-b from-[var(--bg-primary)] to-[var(--bg-secondary)]",
+  dark: "bg-slate-950 text-white",
   pattern:
     "bg-white bg-[radial-gradient(#003366_1px,transparent_1px)] [background-size:20px_20px] bg-opacity-5",
 };
 
 const paddings = {
-  sm: "py-12",
-  md: "py-16",
-  lg: "py-20",
-  xl: "py-24",
+  sm: "py-10 sm:py-12",
+  md: "py-12 sm:py-14 lg:py-16",
+  lg: "py-14 sm:py-16 lg:py-20",
+  xl: "py-16 sm:py-20 lg:py-24",
 };
 
 export const Section: FC<SectionProps> = ({
@@ -59,7 +59,7 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   title,
   subtitle,
   centered = true,
-  light = true,
+  light = false,
   className = "",
   ...props
 }) => {

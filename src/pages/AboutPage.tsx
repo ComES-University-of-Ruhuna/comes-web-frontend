@@ -532,48 +532,48 @@ const AchievementsSection = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         {achievements.map((achievement, index) => (
-          <FadeInView
-            key={achievement.id}
-            direction={index % 2 === 0 ? "left" : "right"}
-            delay={index * 0.1}
-          >
-            <motion.div whileHover={{ x: 10 }}>
-              <Card
-                hoverable
-                padding="lg"
-                className={cn(
-                  "flex items-start gap-4",
-                  isDark && "border-slate-700/50 bg-slate-800/50",
-                )}
-              >
-                <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                  {achievement.icon}
-                </motion.div>
-                <div>
-                  <h3
-                    className={cn(
-                      "mb-1 text-lg font-bold",
-                      isDark ? "text-white" : "text-comesBlue",
-                    )}
-                  >
-                    {achievement.title}
-                  </h3>
-                  <p className={cn("mb-2", isDark ? "text-gray-400" : "text-gray-600")}>
-                    {achievement.description}
-                  </p>
-                  <p
-                    className={cn(
-                      "flex items-center gap-1 text-sm",
-                      isDark ? "text-gray-500" : "text-gray-400",
-                    )}
-                  >
-                    <Calendar className="h-3 w-3" />
-                    {achievement.date}
-                  </p>
-                </div>
-              </Card>
-            </motion.div>
-          </FadeInView>
+            <FadeInView
+              key={achievement.id}
+              direction={index % 2 === 0 ? "left" : "right"}
+              delay={index * 0.1}
+            >
+              <motion.div whileHover={{ x: 10 }}>
+                <Card
+                  hoverable
+                  padding="lg"
+                  className={cn(
+                    "flex items-start gap-4",
+                    isDark && "border-slate-700/50 bg-slate-800/50",
+                  )}
+                >
+                  <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
+                    {achievement.icon}
+                  </motion.div>
+                  <div>
+                    <h3
+                      className={cn(
+                        "mb-1 text-lg font-bold",
+                        isDark ? "text-white" : "text-comesBlue",
+                      )}
+                    >
+                      {achievement.title}
+                    </h3>
+                    <p className={cn("mb-2", isDark ? "text-gray-400" : "text-gray-600")}>
+                      {achievement.description}
+                    </p>
+                    <p
+                      className={cn(
+                        "flex items-center gap-1 text-sm",
+                        isDark ? "text-gray-400" : "text-gray-600",
+                      )}
+                    >
+                      <Calendar className="h-3 w-3" />
+                      {achievement.date}
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
+            </FadeInView>
         ))}
       </div>
     </Section>

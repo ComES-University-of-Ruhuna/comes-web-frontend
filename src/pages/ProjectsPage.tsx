@@ -103,7 +103,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
             <div
               className={cn(
                 "mb-4 flex items-center gap-1 text-sm",
-                isDark ? "text-gray-500" : "text-gray-500",
+                isDark ? "text-gray-400" : "text-gray-600",
               )}
             >
               <Users className="h-4 w-4" />
@@ -344,7 +344,7 @@ const FeaturedProjectsSection = () => {
 
       <div className="space-y-8">
         {featuredProjects.map((project, index) => (
-          <FeaturedProjectCard key={project.id} project={project} index={index} />
+            <FeaturedProjectCard key={project.id} project={project} index={index} />
         ))}
       </div>
     </Section>

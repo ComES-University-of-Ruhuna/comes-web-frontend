@@ -444,46 +444,48 @@ const FAQSection = () => {
 
       <div className="mx-auto max-w-3xl space-y-4">
         {faqs.slice(0, 6).map((faq, index) => (
-          <FadeInView key={faq.id} delay={index * 0.1}>
-            <motion.div
-              className={cn(
-                "overflow-hidden rounded-xl border",
-                isDark ? "border-slate-700 bg-slate-800/50" : "border-gray-200 bg-white",
-              )}
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            <FadeInView key={faq.id} delay={index * 0.1}>
+              <motion.div
                 className={cn(
-                  "flex w-full items-center justify-between px-6 py-4 text-left transition-colors",
-                  isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50",
+                  "overflow-hidden rounded-xl border",
+                  isDark ? "border-slate-700 bg-slate-800/50" : "border-gray-200 bg-white",
                 )}
               >
-                <span className={cn("font-semibold", isDark ? "text-white" : "text-gray-800")}>
-                  {faq.question}
-                </span>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 180 : 0 }}
-                  className="text-blue-500"
+                <button
+                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  className={cn(
+                    "flex w-full items-center justify-between px-6 py-4 text-left transition-colors",
+                    isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50",
+                  )}
                 >
-                  <ChevronDown className="h-5 w-5" />
-                </motion.div>
-              </button>
-              <AnimatePresence>
-                {openIndex === index && (
+                  <span className={cn("font-semibold", isDark ? "text-white" : "text-gray-800")}>
+                    {faq.question}
+                  </span>
                   <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className={cn("border-t", isDark ? "border-slate-700" : "border-gray-200")}
+                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    className="text-blue-500"
                   >
-                    <div className={cn("px-6 py-4", isDark ? "bg-slate-900/50" : "bg-gray-50")}>
-                      <p className={cn(isDark ? "text-gray-400" : "text-gray-600")}>{faq.answer}</p>
-                    </div>
+                    <ChevronDown className="h-5 w-5" />
                   </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </FadeInView>
+                </button>
+                <AnimatePresence>
+                  {openIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className={cn("border-t", isDark ? "border-slate-700" : "border-gray-200")}
+                    >
+                      <div className={cn("px-6 py-4", isDark ? "bg-slate-900/50" : "bg-gray-50")}>
+                        <p className={cn(isDark ? "text-gray-400" : "text-gray-600")}>
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </FadeInView>
         ))}
       </div>
     </Section>
