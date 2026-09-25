@@ -1,325 +1,343 @@
-// ============================================
-// ComES Website - Gallery Page
-// ============================================
-
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Image, Send, Sparkles } from "lucide-react";
-import { Section, Badge, PageTransition, FadeInView, HoverScale } from "@/components/ui";
-import { galleryCategories, getImagesByCategory } from "@/data";
-import { useThemeStore } from "@/store";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+  Images,
+  RefreshCw,
+  X,
+} from "lucide-react";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
+import {
+  galleryService,
+  type GalleryPhoto,
+  type GalleryAlbum,
+  type GalleryData,
+} from "@/services/gallery.service";
 import { cn } from "@/utils";
-import type { GalleryImage } from "@/types";
 
-// Lightbox Component
-const Lightbox = ({
-  image,
-  onClose,
-  onPrev,
-  onNext,
-  hasPrev,
-  hasNext,
+const Photo = ({
+  photo,
+  className,
+  eager = false,
 }: {
-  image: GalleryImage;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
-  hasPrev: boolean;
-  hasNext: boolean;
+  photo: GalleryPhoto;
+  className: string;
+  eager?: boolean;
 }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  return failedSource === photo.image ? (
+    <div
+      role="img"
+      aria-label={`${photo.title}: image unavailable`}
+      className={cn(className, "flex items-center justify-center bg-neutral-200 text-neutral-600")}
     >
-      {/* Close Button */}
-      <motion.button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-      >
-        <X className="h-6 w-6" />
-      </motion.button>
-
-      {/* Navigation Buttons */}
-      {hasPrev && (
-        <motion.button
-          onClick={onPrev}
-          className="absolute top-1/2 left-4 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-        >
-          <ChevronLeft className="h-8 w-8" />
-        </motion.button>
-      )}
-      {hasNext && (
-        <motion.button
-          onClick={onNext}
-          className="absolute top-1/2 right-4 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-        >
-          <ChevronRight className="h-8 w-8" />
-        </motion.button>
-      )}
-
-      {/* Image */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        className="max-h-[80vh] max-w-5xl px-4"
-      >
-        <img
-          src={image.src}
-          alt={image.alt}
-          className="mx-auto max-h-[70vh] max-w-full rounded-lg object-contain"
-        />
-        <div className="mt-4 text-center">
-          <h3 className="mb-2 text-xl font-bold text-white">{image.title}</h3>
-          {image.description && <p className="mb-2 text-gray-300">{image.description}</p>}
-          <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
-            <span>{image.category}</span>
-            {image.date && <span>{image.date}</span>}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
+      <Images className="h-10 w-10" />
+    </div>
+  ) : (
+    <img
+      src={photo.image}
+      alt={photo.title}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      onError={() => setFailedSource(photo.image)}
+      className={className}
+    />
   );
 };
 
-// Gallery Image Card
-const GalleryCard = ({
-  image,
-  onClick,
+const Lightbox = ({
+  photos,
   index,
+  onChange,
+  onClose,
 }: {
-  image: GalleryImage;
-  onClick: () => void;
+  photos: GalleryPhoto[];
   index: number;
+  onChange: (index: number) => void;
+  onClose: () => void;
 }) => {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [previous] = useState(() => document.activeElement);
+  const photo = photos[index];
+  useEffect(() => {
+    const element = dialog.current;
+    element?.showModal();
+    return () => {
+      element?.close();
+      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+    };
+  }, [previous]);
   return (
-    <FadeInView direction="up" delay={index * 0.05}>
-      <motion.div
-        onClick={onClick}
-        className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg shadow-lg"
-      >
-        <motion.img
-          src={image.src}
-          alt={image.alt}
-          className="h-full w-full object-cover"
-          transition={{ duration: 0.5 }}
-        />
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-        {/* Content */}
-        <motion.div
-          className="absolute right-0 bottom-0 left-0 p-4"
-          initial={{ y: 20, opacity: 0 }}
-        >
-          <h3 className="font-semibold text-white">{image.title}</h3>
-          <p className="text-sm text-gray-300">{image.category}</p>
-        </motion.div>
-
-        {/* Featured Badge */}
-        {image.featured && (
-          <motion.div
-            className="absolute top-3 right-3"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3 }}
+    <dialog
+      ref={dialog}
+      aria-label="Photo viewer"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          onClose();
+        }
+        if (event.key === "ArrowLeft" && index > 0) {
+          event.preventDefault();
+          onChange(index - 1);
+        }
+        if (event.key === "ArrowRight" && index < photos.length - 1) {
+          event.preventDefault();
+          onChange(index + 1);
+        }
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-neutral-950 p-0 text-white backdrop:bg-black/80"
+    >
+      <div className="flex h-full flex-col">
+        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-white/15 px-4 py-4 sm:px-8">
+          <div className="min-w-0">
+            <p className="text-xs text-neutral-400">
+              {index + 1} / {photos.length}
+            </p>
+            <h2 className="mt-1 text-lg font-semibold break-words">{photo.title}</h2>
+          </div>
+          <button
+            type="button"
+            autoFocus
+            onClick={onClose}
+            aria-label="Close photo viewer"
+            title="Close"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-white/30"
           >
-            <Badge variant="warning" size="sm">
-              ⭐ Featured
-            </Badge>
-          </motion.div>
-        )}
-      </motion.div>
-    </FadeInView>
-  );
-};
-
-// Hero Section
-
-// Main Gallery Section
-const MainGallerySection = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  const filteredImages = getImagesByCategory(activeCategory);
-
-  const handlePrev = () => {
-    if (lightboxIndex !== null && lightboxIndex > 0) {
-      setLightboxIndex(lightboxIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (lightboxIndex !== null && lightboxIndex < filteredImages.length - 1) {
-      setLightboxIndex(lightboxIndex + 1);
-    }
-  };
-
-  return (
-    <Section background={isDark ? "dark" : "white"}>
-      {/* Category Filter */}
-      <div className="mb-8 flex flex-wrap justify-center gap-2">
-        {galleryCategories.map((category) => (
-          <motion.button
-            key={category.id}
-            onClick={() => setActiveCategory(category.id)}
-            aria-pressed={activeCategory === category.id}
-            className={cn(
-              "site-filter rounded-lg px-4 py-2 text-sm font-medium transition-all",
-              activeCategory === category.id
-                ? "site-accent-panel from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30"
-                : isDark
-                  ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200",
-            )}
-          >
-            {category.label}
-          </motion.button>
-        ))}
-      </div>
-
-      {/* Gallery Grid */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"
-        >
-          {filteredImages.map((image, index) => (
-            <GalleryCard
-              key={image.id}
-              image={image}
-              onClick={() => setLightboxIndex(index)}
-              index={index}
-            />
-          ))}
-        </motion.div>
-      </AnimatePresence>
-
-      {filteredImages.length === 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12 text-center">
-          <Image
-            className={cn("mx-auto mb-4 h-16 w-16", isDark ? "text-gray-600" : "text-gray-400")}
-          />
-          <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
-            No images in this category yet.
-          </p>
-        </motion.div>
-      )}
-
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxIndex !== null && filteredImages[lightboxIndex] && (
-          <Lightbox
-            image={filteredImages[lightboxIndex]}
-            onClose={() => setLightboxIndex(null)}
-            onPrev={handlePrev}
-            onNext={handleNext}
-            hasPrev={lightboxIndex > 0}
-            hasNext={lightboxIndex < filteredImages.length - 1}
-          />
-        )}
-      </AnimatePresence>
-    </Section>
-  );
-};
-
-// Stats Section
-const StatsSection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  const stats = [
-    { value: "500+", label: "Photos" },
-    { value: "50+", label: "Events Covered" },
-    { value: "1000+", label: "Memories" },
-    { value: "5+", label: "Years of History" },
-  ];
-
-  return (
-    <Section background="dark" className={isDark ? "bg-slate-900" : ""}>
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-        {stats.map((stat, index) => (
-          <FadeInView key={index} direction="up" delay={index * 0.1}>
-            <motion.div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                transition={{ delay: index * 0.1 + 0.2, type: "spring" }}
-                className="mb-2 text-4xl font-bold text-white md:text-5xl"
-              >
-                {stat.value}
-              </motion.div>
-              <div className={cn(isDark ? "text-gray-400" : "text-blue-200")}>{stat.label}</div>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
-    </Section>
-  );
-};
-
-// CTA Section
-const CTASection = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section background={isDark ? "white" : "gray"} padding="xl">
-      <FadeInView>
-        <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-pink-500 to-purple-600 shadow-lg shadow-pink-500/30"
-          >
-            <Sparkles className="h-8 w-8 text-white" />
-          </motion.div>
-
-          <h2
-            className={cn(
-              "mb-6 text-3xl font-bold md:text-4xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Share Your Moments
-          </h2>
-          <p className={cn("mb-8 text-lg", isDark ? "text-gray-400" : "text-gray-600")}>
-            Have photos from ComES events? We'd love to add them to our gallery. Reach out to us and
-            help build our memory bank!
-          </p>
-          <HoverScale>
-            <a
-              href="mailto:media@comes.ruh.ac.lk"
-              className="site-button site-button--primary inline-flex items-center gap-2"
-            >
-              <Send className="h-5 w-5" />
-              Submit Your Photos
-            </a>
-          </HoverScale>
+            <X className="h-5 w-5" />
+          </button>
+        </header>
+        <div className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:px-20 sm:py-6">
+          <Photo photo={photo} eager className="h-full max-h-full w-full object-contain" />
         </div>
-      </FadeInView>
-    </Section>
+        <footer className="shrink-0 space-y-3 border-t border-white/15 px-4 py-4 sm:px-8">
+          {photo.description && (
+            <p className="max-h-24 overflow-y-auto text-sm whitespace-pre-wrap text-neutral-300">
+              {photo.description}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0 text-sm">
+              {photo.event ? (
+                <Link
+                  to={`/events/${photo.event.slug}`}
+                  className="inline-flex items-center gap-2 break-words text-emerald-300"
+                >
+                  {photo.event.title}
+                  <ArrowUpRight className="h-4 w-4 shrink-0" />
+                </Link>
+              ) : (
+                <span>Community archive</span>
+              )}
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <a
+                href={photo.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open original image"
+                title="Open original"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/30"
+              >
+                <Expand className="h-4 w-4" />
+              </a>
+              <button
+                type="button"
+                disabled={index === 0}
+                onClick={() => onChange(index - 1)}
+                aria-label="Previous photo"
+                title="Previous photo"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/30 disabled:opacity-30"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                disabled={index === photos.length - 1}
+                onClick={() => onChange(index + 1)}
+                aria-label="Next photo"
+                title="Next photo"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/30 disabled:opacity-30"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </dialog>
   );
 };
 
-// Main Gallery Page Component
 export const GalleryPage = () => {
+  const [event, setEvent] = useState("");
+  const [page, setPage] = useState(1);
+  const [data, setData] = useState<GalleryData | null>(null);
+  const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [index, setIndex] = useState<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(false);
+    setIndex(null);
+    Promise.all([galleryService.list({ event, page }), galleryService.albums()])
+      .then(([images, events]) => {
+        if (active) {
+          setData(images);
+          setAlbums(events);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setError(true);
+          setData(null);
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [event, page, retry]);
   return (
-    <PageTransition>
-      <MainGallerySection />
-      <StatsSection />
-      <CTASection />
-    </PageTransition>
+    <section
+      className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8"
+      aria-label="Event photographs"
+    >
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-5 border-y border-current/15 py-5">
+        <div>
+          <p className="text-xs font-semibold text-emerald-600">THE PHOTO ARCHIVE</p>
+          <p className="mt-2 text-sm opacity-70" aria-live="polite">
+            {loading
+              ? "Loading photographs..."
+              : `${data?.pagination.total ?? 0} photographs${event ? "" : ` / ${albums.length} events`}`}
+          </p>
+        </div>
+        <label className="w-full text-sm sm:w-80">
+          Event
+          <select
+            value={event}
+            onChange={(change) => {
+              setEvent(change.target.value);
+              setPage(1);
+              setIndex(null);
+            }}
+            className="mt-2 block w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] px-3 py-2.5 text-[var(--text-primary)]"
+          >
+            <option value="">All events</option>
+            {albums.map((album) => (
+              <option key={album._id} value={album._id}>
+                {album.title} ({album.count})
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {loading ? (
+        <div
+          role="status"
+          aria-label="Loading gallery"
+          className="grid grid-cols-2 gap-5 md:grid-cols-3"
+        >
+          {Array.from({ length: 6 }, (_, position) => (
+            <div key={position} className="aspect-[4/3] animate-pulse bg-current/5" />
+          ))}
+        </div>
+      ) : error ? (
+        <div role="alert" className="py-16 text-center">
+          <p>Unable to load the gallery.</p>
+          <button
+            type="button"
+            onClick={() => setRetry(retry + 1)}
+            className="mx-auto mt-4 flex items-center gap-2 rounded border border-current/20 px-4 py-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </button>
+        </div>
+      ) : !data?.images.length ? (
+        <div className="py-20 text-center">
+          <Images className="mx-auto mb-4 h-10 w-10 text-emerald-600" />
+          <h2 className="text-xl font-semibold">
+            {event ? "No photographs for this event yet." : "The next chapter is coming."}
+          </h2>
+          <p className="mt-2 text-sm opacity-60">
+            {event
+              ? "No published photographs."
+              : "Event photographs will appear here once published."}
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+            {data.images.map((photo, position) => (
+              <figure key={photo._id} className="mb-8 break-inside-avoid">
+                <button
+                  type="button"
+                  onClick={() => setIndex(position)}
+                  aria-label={`View photo: ${photo.title}`}
+                  className={cn(
+                    "group relative block w-full overflow-hidden bg-neutral-100 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600",
+                    position % 5 === 1
+                      ? "aspect-[3/4]"
+                      : position % 5 === 3
+                        ? "aspect-square"
+                        : "aspect-[4/3]",
+                  )}
+                >
+                  <Photo
+                    photo={photo}
+                    eager={position < 3}
+                    className="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
+                  />
+                  <span className="absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded bg-white/95 text-neutral-900 shadow">
+                    <Expand className="h-4 w-4" />
+                  </span>
+                </button>
+                <figcaption className="flex items-start gap-3 pt-3">
+                  <span className="pt-0.5 font-mono text-xs text-emerald-600">
+                    {String((page - 1) * 24 + position + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0">
+                    <h2 className="text-base font-semibold break-words">{photo.title}</h2>
+                    <p className="mt-1 text-xs opacity-65">
+                      {photo.event?.title || "Community archive"}
+                      {photo.event?.date ? ` / ${new Date(photo.event.date).getFullYear()}` : ""}
+                    </p>
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <CollectionPagination
+            page={page}
+            pages={data.pagination.pages}
+            onChange={(next) => {
+              setIndex(null);
+              setPage(next);
+            }}
+          />
+        </>
+      )}
+      {index !== null && data?.images[index] && (
+        <Lightbox
+          photos={data.images}
+          index={index}
+          onChange={setIndex}
+          onClose={() => setIndex(null)}
+        />
+      )}
+    </section>
   );
 };
-
 export default GalleryPage;

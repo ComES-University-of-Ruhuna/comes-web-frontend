@@ -30,6 +30,7 @@ export interface ApiEvent {
 }
 
 export interface EventFilters {
+  search?: string;
   type?: string;
   status?: string;
   featured?: boolean;

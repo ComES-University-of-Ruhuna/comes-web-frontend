@@ -83,6 +83,7 @@ const BlogManagementPage = lazy(() =>
 const EventsManagementPage = lazy(() =>
   import("@/pages/admin").then((pages) => ({ default: pages.EventsManagementPage })),
 );
+const GalleryManagementPage = lazy(() => import("@/pages/admin/GalleryManagementPage"));
 const ProjectsManagementPage = lazy(() =>
   import("@/pages/admin").then((pages) => ({ default: pages.ProjectsManagementPage })),
 );
@@ -208,6 +209,7 @@ const AnimatedRoutes = () => {
             <Route path="members" element={<MembersManagementPage />} />
             <Route path="blog" element={<BlogManagementPage />} />
             <Route path="events" element={<EventsManagementPage />} />
+            <Route path="gallery" element={<GalleryManagementPage />} />
             <Route path="events/:id/committee" element={<OrganizingWorkspace mode="admin" />} />
             <Route path="projects" element={<ProjectsManagementPage />} />
             <Route path="team" element={<TeamManagementPage />} />

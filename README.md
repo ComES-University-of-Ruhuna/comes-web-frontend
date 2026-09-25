@@ -32,6 +32,14 @@
 
 The ComES Website serves as the digital platform for the Computer Engineering Society at the University of Ruhuna. It provides information about events, projects, team members, and resources for computer engineering students.
 
+### Event Gallery
+
+`/gallery` is an API-backed photo archive with event filters, pagination, and a full-screen keyboard-accessible viewer. Only published photographs are public; no sample photos are substituted when the gallery is empty or unavailable.
+
+In **Admin > Gallery**, select an event, add up to 20 JPEG/PNG/WebP photos (maximum 3 MiB each), edit their titles/captions, and choose **Save photos**. Uncheck **Publish photos** for drafts. Individual photos can be edited, published/unpublished, or removed with confirmation. Uploads preserve the original framing and run sequentially; partial failures can be retried without repeating completed uploads. Keep the page open until the queue finishes.
+
+Configure `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` on the backend only. Gallery files are stored in Cloudinary's `comes/gallery` folder and their metadata in MongoDB. Deleting a gallery record does not delete its Cloudinary file. No new frontend environment variables are required.
+
 ### Purpose
 - Disseminate knowledge of computer engineering theory and practice
 - Promote professional development of students
