@@ -24,6 +24,7 @@ import { cn } from "@/utils";
 import { Button, Badge, Input } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
 import { eventsService, type ApiEvent } from "@/services/events.service";
+import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
 
 // Event Card Component
 const EventCard = ({
@@ -116,6 +117,19 @@ const EventCard = ({
           <Clock className="h-4 w-4" />
           <span>{eventDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
+        {event.endDate && (
+          <div
+            className={cn(
+              "flex items-center gap-2 text-sm",
+              isDark ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            <Clock className="h-4 w-4 shrink-0" />
+            <span>
+              Ends <time dateTime={event.endDate}>{new Date(event.endDate).toLocaleString()}</time>
+            </span>
+          </div>
+        )}
         <div
           className={cn(
             "flex items-center gap-2 text-sm",
@@ -207,6 +221,9 @@ const EventCard = ({
             </span>
           </div>
         )}
+      </div>
+      <div className={isDark ? "text-gray-300" : "text-gray-700"}>
+        <EventCommitteeTable eventId={event._id} title={event.title} />
       </div>
     </motion.div>
   );

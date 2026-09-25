@@ -14,6 +14,7 @@ import { BlogPage } from "../src/pages/BlogPage";
 import { BlogPostPage } from "../src/pages/BlogPostPage";
 import { ProjectsPage } from "../src/pages/ProjectsPage";
 import { EventsPage } from "../src/pages/EventsPage";
+import { EventCommitteeTable } from "../src/components/events/EventCommitteeTable";
 import { useEvents } from "../src/hooks/useApi";
 import type { ApiEvent } from "../src/services/events.service";
 import { BlogManagementPage } from "../src/pages/admin/BlogManagementPage";
@@ -106,6 +107,7 @@ const savedEvent: ApiEvent = {
   description: "An event created by the committee",
   type: "workshop",
   date: "2099-06-15T10:00:00Z",
+  endDate: "2099-06-15T17:00:00Z",
   location: "Engineering faculty",
   registeredCount: 2,
   registrations: ["member-1", "member-2"],
@@ -197,6 +199,45 @@ it("renders saved upcoming and completed events with real registration counts", 
   expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
   expect(api.get).toHaveBeenCalledWith(expect.stringContaining("period=current"));
   expect(api.get).toHaveBeenCalledWith(expect.stringContaining("period=past"));
+  expect(
+    screen.getAllByText(new Date(savedEvent.endDate!).toLocaleString()).length,
+  ).toBeGreaterThan(0);
+  expect(screen.queryByRole("button", { name: "Hackathon" })).toBeNull();
+});
+
+it("loads a public committee table only when expanded", async () => {
+  vi.mocked(api.get).mockResolvedValue({
+    data: {
+      success: true,
+      data: { members: [{ name: "Alex Member", role: "Chair", team: "Operations" }] },
+    },
+  });
+  const { container } = render(<EventCommitteeTable eventId="saved-event" title="Workshop" />);
+  expect(api.get).not.toHaveBeenCalled();
+  const details = container.querySelector("details")!;
+  details.open = true;
+  fireEvent(details, new Event("toggle"));
+  const table = await screen.findByRole("table", { name: "Workshop organizing committee" });
+  expect(table.textContent).toContain("Alex Member");
+  expect(screen.getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual([
+    "Name",
+    "Role",
+    "Team",
+  ]);
+  expect(api.get).toHaveBeenCalledWith("/events/saved-event/organizers");
+});
+
+it("retries failed public committee loads and shows an empty state", async () => {
+  vi.mocked(api.get)
+    .mockRejectedValueOnce(new Error("Offline"))
+    .mockResolvedValue({ data: { success: true, data: { members: [] } } });
+  const { container } = render(<EventCommitteeTable eventId="saved-event" title="Workshop" />);
+  const details = container.querySelector("details")!;
+  details.open = true;
+  fireEvent(details, new Event("toggle"));
+  await screen.findByRole("alert");
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  await screen.findByText("Organizing committee will be announced soon.");
 });
 
 it("lists ongoing, cancelled, and past events whose status was never updated", async () => {

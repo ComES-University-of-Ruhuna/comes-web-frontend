@@ -18,6 +18,8 @@ interface Event {
   slug: string;
   type: "workshop" | "hackathon" | "seminar" | "competition" | "social" | "other";
   date: string; // ISO datetime string
+  endDate?: string | null;
+  image?: string;
   location: string;
   maxParticipants?: number;
   registeredCount: number;
@@ -27,8 +29,13 @@ interface Event {
   isFeatured: boolean;
 }
 
-const eventTypes = ["All", "workshop", "seminar", "competition", "hackathon", "social", "other"];
+const eventTypes = ["All", "competition", "workshop", "other"];
 const eventStatuses = ["All", "upcoming", "ongoing", "completed", "cancelled"];
+
+const localDate = (date: Date | null) =>
+  date
+    ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+    : "";
 
 export const EventEditor = ({
   event,
@@ -46,11 +53,15 @@ export const EventEditor = ({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const eventDate = event?.date ? new Date(event.date) : null;
+  const eventEndDate = event?.endDate ? new Date(event.endDate) : null;
   const [formData, setFormData] = useState<{
     title: string;
     type: Event["type"];
     date: string;
     time: string;
+    endDate: string;
+    endTime: string;
+    image: string;
     location: string;
     maxParticipants: number | "";
     description: string;
@@ -58,11 +69,19 @@ export const EventEditor = ({
     isFeatured: boolean;
   }>({
     title: event?.title || "",
-    type: event?.type || "workshop",
-    date: eventDate
-      ? `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, "0")}-${String(eventDate.getDate()).padStart(2, "0")}`
-      : "",
+    type:
+      event?.type === "hackathon"
+        ? "competition"
+        : event?.type === "seminar"
+          ? "workshop"
+          : event?.type === "social"
+            ? "other"
+            : event?.type || "workshop",
+    date: localDate(eventDate),
     time: eventDate ? eventDate.toTimeString().slice(0, 5) : "",
+    endDate: localDate(eventEndDate),
+    endTime: eventEndDate ? eventEndDate.toTimeString().slice(0, 5) : "",
+    image: event?.image || "",
     location: event?.location || "",
     maxParticipants: event ? (event.maxParticipants ?? "") : 50,
     description: event?.description || "",
@@ -75,11 +94,18 @@ export const EventEditor = ({
     setSaving(true);
     setSaveError(null);
     try {
-      const { date, time, maxParticipants, ...rest } = formData;
+      const { date, time, endDate, endTime, maxParticipants, ...rest } = formData;
       const combinedDate = new Date(`${date}T${time || "00:00"}`).toISOString();
+      const combinedEndDate =
+        endDate && endTime ? new Date(`${endDate}T${endTime}`).toISOString() : null;
+      if (combinedEndDate && combinedEndDate <= combinedDate) {
+        setSaveError("End time must be after the start time.");
+        return;
+      }
       await onSave({
         ...rest,
         date: combinedDate,
+        endDate: combinedEndDate,
         ...(maxParticipants === "" ? {} : { maxParticipants }),
       });
     } catch {
@@ -134,7 +160,7 @@ export const EventEditor = ({
               {saveError}
             </p>
           )}
-          <fieldset disabled={saving} className="space-y-6">
+          <fieldset disabled={saving} className="min-w-0 space-y-6">
             <div>
               <label
                 className={cn(
@@ -163,7 +189,7 @@ export const EventEditor = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
                   className={cn(
@@ -191,7 +217,7 @@ export const EventEditor = ({
                     .filter((t) => t !== "All")
                     .map((type) => (
                       <option key={type} value={type}>
-                        {type}
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
                       </option>
                     ))}
                 </select>
@@ -230,7 +256,7 @@ export const EventEditor = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
                   className={cn(
@@ -281,7 +307,64 @@ export const EventEditor = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {(["endDate", "endTime"] as const).map((field) => (
+                <label
+                  key={field}
+                  className={cn(
+                    "block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  {field === "endDate" ? "End Date" : "End Time"}
+                  <input
+                    type={field === "endDate" ? "date" : "time"}
+                    value={formData[field]}
+                    required={Boolean(formData.endDate || formData.endTime)}
+                    onChange={(change) =>
+                      setFormData({ ...formData, [field]: change.target.value })
+                    }
+                    className={cn(
+                      "mt-2 w-full min-w-0 rounded-xl border px-4 py-3",
+                      isDark
+                        ? "border-slate-700 bg-slate-800 text-white"
+                        : "border-gray-200 bg-gray-50 text-gray-900",
+                    )}
+                  />
+                </label>
+              ))}
+            </div>
+
+            <label
+              className={cn(
+                "block text-sm font-medium",
+                isDark ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              Event Image URL
+              <input
+                type="url"
+                value={formData.image}
+                maxLength={2000}
+                onChange={(change) => setFormData({ ...formData, image: change.target.value })}
+                placeholder="https://example.com/event.jpg"
+                className={cn(
+                  "mt-2 w-full rounded-xl border px-4 py-3",
+                  isDark
+                    ? "border-slate-700 bg-slate-800 text-white"
+                    : "border-gray-200 bg-gray-50 text-gray-900",
+                )}
+              />
+            </label>
+            {formData.image && (
+              <img
+                src={formData.image}
+                alt="Event image preview"
+                className="aspect-video w-full rounded-lg object-cover"
+              />
+            )}
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
                   className={cn(
@@ -367,7 +450,7 @@ export const EventEditor = ({
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4">
+            <div className="flex flex-wrap items-center justify-end gap-3 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
@@ -505,7 +588,7 @@ export const EventsManagementPage = () => {
             Events
           </h1>
           <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
-            Manage workshops, seminars, and competitions
+            Manage competitions, workshops, and other events
           </p>
         </div>
         <Button

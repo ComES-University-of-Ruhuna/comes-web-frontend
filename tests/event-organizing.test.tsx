@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { OrganizingWorkspace } from "../src/components/events/OrganizingWorkspace";
 import { OrganizingPage } from "../src/pages/student/OrganizingPage";
+import { EventEditor } from "../src/pages/admin/EventsManagementPage";
 import type { CommitteeAssignment, OrganizedEvent } from "../src/services/eventCommittee.service";
 import api from "../src/services/api";
 
@@ -103,6 +104,61 @@ const renderWorkspace = (mode: "admin" | "chair" = "admin") =>
       </Routes>
     </MemoryRouter>,
   );
+
+it("saves an event image and local end time with only the three supported categories", async () => {
+  const onSave = vi.fn().mockResolvedValue(undefined);
+  render(<EventEditor event={event} onSave={onSave} onClose={vi.fn()} />);
+  const types = screen.getByRole("combobox", { name: "Event Type" }) as HTMLSelectElement;
+  expect(Array.from(types.options).map((option) => option.text)).toEqual([
+    "Competition",
+    "Workshop",
+    "Other",
+  ]);
+  fireEvent.change(screen.getByLabelText("Event Image URL"), {
+    target: { value: "https://example.com/event.jpg" },
+  });
+  fireEvent.change(screen.getByLabelText("End Date"), { target: { value: "2099-01-02" } });
+  fireEvent.change(screen.getByLabelText("End Time"), { target: { value: "17:30" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await waitFor(() =>
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        image: "https://example.com/event.jpg",
+        endDate: new Date("2099-01-02T17:30").toISOString(),
+      }),
+    ),
+  );
+});
+
+it("rejects an end time before the start without discarding edits", async () => {
+  const onSave = vi.fn();
+  render(<EventEditor event={event} onSave={onSave} onClose={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("End Date"), { target: { value: "2098-01-01" } });
+  fireEvent.change(screen.getByLabelText("End Time"), { target: { value: "09:00" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await screen.findByText("End time must be after the start time.");
+  expect(onSave).not.toHaveBeenCalled();
+});
+
+it("preserves the existing image and allows clearing the end time", async () => {
+  const onSave = vi.fn().mockResolvedValue(undefined);
+  render(
+    <EventEditor
+      event={{ ...event, image: "https://example.com/saved.jpg", endDate: "2099-01-02T17:30:00Z" }}
+      onSave={onSave}
+      onClose={vi.fn()}
+    />,
+  );
+  expect((screen.getByLabelText("End Date") as HTMLInputElement).value).not.toBe("");
+  fireEvent.change(screen.getByLabelText("End Date"), { target: { value: "" } });
+  fireEvent.change(screen.getByLabelText("End Time"), { target: { value: "" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await waitFor(() =>
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ image: "https://example.com/saved.jpg", endDate: null }),
+    ),
+  );
+});
 
 it("searches registered members and saves a role, team, and explicit chair access", async () => {
   saved.organizingCommittee = [];

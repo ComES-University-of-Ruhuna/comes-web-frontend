@@ -23,16 +23,9 @@ import { CollectionPagination } from "@/components/ui/CollectionPagination";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import type { ApiEvent } from "@/services/events.service";
+import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
 
-const eventTypeOptions = [
-  "All",
-  "Workshop",
-  "Hackathon",
-  "Seminar",
-  "Competition",
-  "Social",
-  "Other",
-];
+const eventTypeOptions = ["All", "Competition", "Workshop", "Other"];
 
 // Event Card Component
 const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
@@ -50,7 +43,7 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
           hoverable
           padding="none"
           className={cn(
-            "flex h-full flex-col overflow-hidden",
+            "flex h-full min-w-0 flex-col overflow-hidden",
             isDark && "border-slate-700/50 bg-slate-800/50",
           )}
         >
@@ -88,6 +81,13 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                 <Clock className="h-3.5 w-3.5" />
                 {eventDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
+              {event.endDate && (
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  Ends{" "}
+                  <time dateTime={event.endDate}>{new Date(event.endDate).toLocaleString()}</time>
+                </span>
+              )}
             </div>
           </CardHeader>
 
@@ -194,6 +194,7 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                 </Button>
               </HoverScale>
             </div>
+            <EventCommitteeTable eventId={event._id} title={event.title} />
           </CardBody>
         </Card>
       </motion.div>
@@ -365,13 +366,22 @@ const PastEventsSection = () => {
                   <Card
                     padding="lg"
                     className={cn(
-                      "flex items-start gap-4",
+                      "flex min-w-0 flex-col items-start gap-4",
                       isDark && "border-slate-700/50 bg-slate-800/50",
                     )}
                   >
-                    <motion.div className="text-4xl">{event.icon}</motion.div>
-                    <div className="flex-1">
-                      <div className="mb-2 flex items-center gap-2">
+                    {event.image ? (
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        loading="lazy"
+                        className="aspect-video w-full rounded-lg object-cover"
+                      />
+                    ) : (
+                      <motion.div className="text-4xl">{event.icon}</motion.div>
+                    )}
+                    <div className="w-full min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
                         <h3
                           className={cn(
                             "text-lg font-bold",
@@ -394,7 +404,7 @@ const PastEventsSection = () => {
                       </p>
                       <div
                         className={cn(
-                          "flex items-center gap-4 text-sm",
+                          "flex flex-wrap items-center gap-4 text-sm",
                           isDark ? "text-gray-400" : "text-gray-600",
                         )}
                       >
@@ -402,11 +412,21 @@ const PastEventsSection = () => {
                           <Calendar className="h-3.5 w-3.5" />
                           {new Date(event.date).toLocaleDateString()}
                         </span>
+                        {event.endDate && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5 shrink-0" />
+                            Ends{" "}
+                            <time dateTime={event.endDate}>
+                              {new Date(event.endDate).toLocaleString()}
+                            </time>
+                          </span>
+                        )}
                         <span className="flex items-center gap-1">
                           <Users className="h-3.5 w-3.5" />
                           {event.registeredCount} registrations
                         </span>
                       </div>
+                      <EventCommitteeTable eventId={event._id} title={event.title} />
                     </div>
                   </Card>
                 </motion.div>

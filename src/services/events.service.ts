@@ -11,7 +11,7 @@ export interface ApiEvent {
   description: string;
   type: "workshop" | "hackathon" | "seminar" | "competition" | "social" | "other";
   date: string;
-  endDate?: string;
+  endDate?: string | null;
   location: string;
   maxParticipants?: number;
   registeredCount: number;
@@ -38,7 +38,22 @@ export interface EventFilters {
   sort?: string;
 }
 
+export interface PublicCommitteeMember {
+  name: string;
+  role: string;
+  team: string;
+}
+
 export const eventsService = {
+  getOrganizers: async (eventId: string): Promise<PublicCommitteeMember[]> => {
+    const response = await api.get<ApiResponse<{ members: PublicCommitteeMember[] }>>(
+      `/events/${eventId}/organizers`,
+    );
+    if (!response.data.success || !response.data.data)
+      throw new Error("Unable to load organizing committee.");
+    return response.data.data.members;
+  },
+
   // Get all events with optional filters
   getAll: async (filters?: EventFilters): Promise<ApiResponse<PaginatedData<ApiEvent>>> => {
     const params = new URLSearchParams();
