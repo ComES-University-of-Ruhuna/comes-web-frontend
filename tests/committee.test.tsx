@@ -103,6 +103,77 @@ describe("published committee", () => {
 });
 
 describe("committee editor", () => {
+  it("uploads a photo and saves its Cloudinary URL with the member", async () => {
+    const url = "https://res.cloudinary.com/comes/image/upload/portrait.png";
+    vi.mocked(api.post).mockResolvedValueOnce({ data: { data: { url } } });
+    vi.mocked(api.patch).mockResolvedValueOnce({
+      data: { data: { member: { ...member, avatar: url } } },
+    });
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: member.name });
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const photo = new File(["photo"], "portrait.png", { type: "image/png" });
+    fireEvent.change(screen.getByLabelText("Upload photo"), { target: { files: [photo] } });
+    expect(
+      (screen.getByRole("button", { name: "Update Member" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "Close member editor" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    await screen.findByText("Photo uploaded");
+    expect(api.post).toHaveBeenCalledWith(
+      "/team/avatar",
+      expect.any(FormData),
+      expect.objectContaining({ headers: { "Content-Type": "multipart/form-data" } }),
+    );
+    expect((vi.mocked(api.post).mock.calls[0][1] as FormData).get("image")).toBe(photo);
+    expect(screen.getByRole("img", { name: "Member photo preview" }).getAttribute("src")).toBe(url);
+    fireEvent.click(screen.getByRole("button", { name: "Update Member" }));
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledWith(
+        "/team/member-1",
+        expect.objectContaining({ avatar: url }),
+      ),
+    );
+  });
+
+  it("keeps the original photo after a failed upload and supports retry and removal", async () => {
+    vi.mocked(api.post)
+      .mockRejectedValueOnce(new Error("Offline"))
+      .mockResolvedValueOnce({
+        data: { data: { url: "https://res.cloudinary.com/comes/image/upload/new.png" } },
+      });
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: member.name });
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const input = screen.getByLabelText("Upload photo");
+    const photo = new File(["photo"], "portrait.png", { type: "image/png" });
+    fireEvent.change(input, { target: { files: [photo] } });
+    await screen.findByRole("alert");
+    expect(screen.getByRole("img", { name: "Member photo preview" }).getAttribute("src")).toBe(
+      member.avatar,
+    );
+    fireEvent.change(input, { target: { files: [photo] } });
+    await screen.findByText("Photo uploaded");
+    fireEvent.click(screen.getByRole("button", { name: "Remove photo" }));
+    expect((screen.getByLabelText("Avatar URL") as HTMLInputElement).value).toBe("");
+    expect(screen.queryByRole("img", { name: "Member photo preview" })).toBeNull();
+  });
+
+  it.each([
+    ["image/svg+xml", 10],
+    ["image/png", 3 * 1024 * 1024 + 1],
+  ])("rejects unsupported or oversized photos before uploading", async (type, size) => {
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: member.name });
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.change(screen.getByLabelText("Upload photo"), {
+      target: { files: [new File([new Uint8Array(size)], "photo", { type })] },
+    });
+    await screen.findByRole("alert");
+    expect(api.post).not.toHaveBeenCalled();
+  });
+
   it("filters the directory with department tabs and search", async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: {

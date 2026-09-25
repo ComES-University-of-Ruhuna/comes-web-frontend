@@ -86,6 +86,10 @@ const TeamEditor = ({
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const isEditing = !!member;
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [photoUploaded, setPhotoUploaded] = useState(false);
 
   const [formData, setFormData] = useState({
     name: member?.name || "",
@@ -109,6 +113,7 @@ const TeamEditor = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading || saving) return;
     await onSave({
       name: formData.name,
       role: formData.role,
@@ -130,6 +135,44 @@ const TeamEditor = ({
     });
   };
 
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || uploading || saving) return;
+    setUploadError(null);
+    setPhotoUploaded(false);
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setUploadError("Choose a JPEG, PNG, or WebP image.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      setUploadError("Image must be 3 MB or smaller.");
+      return;
+    }
+    setUploading(true);
+    setUploadProgress(0);
+    try {
+      const payload = new FormData();
+      payload.append("image", file);
+      const response = await api.post<{ data: { url: string } }>("/team/avatar", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 90000,
+        onUploadProgress: ({ loaded, total }) => {
+          if (total) setUploadProgress(Math.round((loaded / total) * 100));
+        },
+      });
+      setFormData((current) => ({ ...current, avatar: response.data.data.url }));
+      setPhotoUploaded(true);
+    } catch (error) {
+      setUploadError(
+        (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+          "Photo upload failed. Please try again.",
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const inputCn = cn(
     "w-full px-3 py-2.5 text-sm rounded-md border border-[var(--admin-border,var(--border-color))] bg-[var(--admin-surface,var(--bg-primary))] text-[var(--admin-text,var(--text-primary))] placeholder-gray-500 transition-colors",
     "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
@@ -142,7 +185,7 @@ const TeamEditor = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={() => {
-        if (!saving) onClose();
+        if (!saving && !uploading) onClose();
       }}
     >
       <motion.div
@@ -170,7 +213,7 @@ const TeamEditor = ({
           </h2>
           <button
             onClick={onClose}
-            disabled={saving}
+            disabled={saving || uploading}
             aria-label="Close member editor"
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
@@ -196,6 +239,7 @@ const TeamEditor = ({
               </label>
               <select
                 id="committee-template"
+                disabled={saving || uploading}
                 defaultValue=""
                 className={inputCn}
                 onChange={(event) => {
@@ -372,10 +416,81 @@ const TeamEditor = ({
                 type="url"
                 value={formData.avatar}
                 aria-label="Avatar URL"
-                onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
+                disabled={saving || uploading}
+                onChange={(e) => {
+                  setPhotoUploaded(false);
+                  setFormData({ ...formData, avatar: e.target.value });
+                }}
                 placeholder="https://example.com/photo.jpg"
                 className={inputCn}
               />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-start gap-4">
+            {formData.avatar && (
+              <div className="relative shrink-0">
+                <img
+                  src={formData.avatar}
+                  alt="Member photo preview"
+                  className="h-24 w-24 rounded-lg border border-gray-300 object-cover"
+                />
+                <button
+                  type="button"
+                  aria-label="Remove photo"
+                  title="Remove photo"
+                  disabled={saving || uploading}
+                  onClick={() => {
+                    setFormData((current) => ({ ...current, avatar: "" }));
+                    setPhotoUploaded(false);
+                  }}
+                  className="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded bg-white text-gray-900 shadow disabled:opacity-50"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <div className="min-w-0 flex-1 basis-48">
+              <label
+                htmlFor="team-avatar-upload"
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                Upload photo
+              </label>
+              <input
+                id="team-avatar-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={saving || uploading}
+                onChange={handlePhotoUpload}
+                className="block w-full min-w-0 text-sm file:mr-3 file:rounded-md file:border file:border-gray-300 file:px-3 file:py-2 disabled:opacity-50"
+              />
+              {uploading && (
+                <div role="status" className="mt-2 text-sm">
+                  <progress
+                    aria-label="Photo upload progress"
+                    value={uploadProgress}
+                    max={100}
+                    className="w-full"
+                  />
+                  {uploadProgress < 100
+                    ? `Uploading photo... ${uploadProgress}%`
+                    : "Processing photo..."}
+                </div>
+              )}
+              {uploadError && (
+                <p role="alert" className="mt-2 text-sm text-red-500">
+                  {uploadError}
+                </p>
+              )}
+              {photoUploaded && (
+                <p role="status" className="mt-2 text-sm text-emerald-600">
+                  Photo uploaded
+                </p>
+              )}
             </div>
           </div>
 
@@ -563,7 +678,7 @@ const TeamEditor = ({
           <button
             type="button"
             onClick={onClose}
-            disabled={saving}
+            disabled={saving || uploading}
             className="min-h-10 rounded-md border border-[var(--admin-border,var(--border-color))] px-3 text-sm font-medium text-[var(--admin-text,var(--text-primary))] disabled:opacity-50"
           >
             Cancel
@@ -571,7 +686,7 @@ const TeamEditor = ({
           <button
             form="team-member-form"
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="admin-primary-button disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
