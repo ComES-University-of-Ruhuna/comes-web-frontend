@@ -103,6 +103,64 @@ describe("published committee", () => {
 });
 
 describe("committee editor", () => {
+  it("offers the appointed executive positions in order and saves the selection", async () => {
+    vi.mocked(api.patch).mockResolvedValueOnce({ data: { data: { member } } });
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: member.name });
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const role = screen.getByRole("combobox", { name: "Role" });
+    expect(
+      within(role)
+        .getAllByRole("option")
+        .map((option) => option.textContent),
+    ).toEqual([
+      "Select a position",
+      "Senior Treasurer",
+      "Immediate Past President",
+      "President",
+      "President-Elect",
+      "Vice President",
+      "Secretary",
+      "Assistant Secretary",
+      "Main Organizer",
+      "Head of Marketing & Finance",
+      "Head of Public Relations",
+      "Head of Web & Creative Design",
+      "Subgroup Chair \u2013 Electronic & Embed",
+      "Subgroup Chair \u2013 Network & Security",
+      "Subgroup Chair \u2013 AI & Data Science",
+      "Subgroup Chair \u2013 Software Engineering",
+      "Board Member",
+    ]);
+    fireEvent.change(role, { target: { value: "Senior Treasurer" } });
+    fireEvent.click(screen.getByRole("button", { name: "Update Member" }));
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledWith(
+        "/team/member-1",
+        expect.objectContaining({ role: "Senior Treasurer", department: "executive" }),
+      ),
+    );
+  });
+
+  it("preserves legacy executive titles and keeps other departments' roles editable", async () => {
+    vi.mocked(api.get).mockResolvedValueOnce({
+      data: { data: { members: [{ ...member, role: "Legacy Coordinator" }] } },
+    });
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: member.name });
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect((screen.getByRole("combobox", { name: "Role" }) as HTMLSelectElement).value).toBe(
+      "Legacy Coordinator",
+    );
+    fireEvent.change(screen.getByRole("combobox", { name: "Department" }), {
+      target: { value: "technical" },
+    });
+    const role = screen.getByRole("textbox", { name: "Role" });
+    expect((role as HTMLInputElement).value).toBe("Legacy Coordinator");
+    fireEvent.change(role, { target: { value: "Technical Lead" } });
+    expect((role as HTMLInputElement).value).toBe("Technical Lead");
+  });
+
   it("uploads a photo and saves its Cloudinary URL with the member", async () => {
     const url = "https://res.cloudinary.com/comes/image/upload/portrait.png";
     vi.mocked(api.post).mockResolvedValueOnce({ data: { data: { url } } });

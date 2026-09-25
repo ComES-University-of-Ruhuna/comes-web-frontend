@@ -51,6 +51,25 @@ interface TeamMember {
   createdAt: string;
 }
 
+const executiveRoles = [
+  "Senior Treasurer",
+  "Immediate Past President",
+  "President",
+  "President-Elect",
+  "Vice President",
+  "Secretary",
+  "Assistant Secretary",
+  "Main Organizer",
+  "Head of Marketing & Finance",
+  "Head of Public Relations",
+  "Head of Web & Creative Design",
+  "Subgroup Chair \u2013 Electronic & Embed",
+  "Subgroup Chair \u2013 Network & Security",
+  "Subgroup Chair \u2013 AI & Data Science",
+  "Subgroup Chair \u2013 Software Engineering",
+  "Board Member",
+];
+
 const departments = [
   { value: "all", label: "All Departments" },
   { value: "executive", label: "Executive Committee" },
@@ -276,7 +295,7 @@ const TeamEditor = ({
             </div>
           )}
           {/* Name & Role */}
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4">
             <div>
               <label
                 htmlFor="team-member-name"
@@ -306,15 +325,42 @@ const TeamEditor = ({
               >
                 Role *
               </label>
-              <input
-                type="text"
-                value={formData.role}
-                aria-label="Role"
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                placeholder="President, Tech Lead..."
-                className={inputCn}
-                required
-              />
+              {formData.department === "executive" ? (
+                <>
+                  <select
+                    value={formData.role}
+                    aria-label="Role"
+                    onChange={(event) => setFormData({ ...formData, role: event.target.value })}
+                    className={cn(inputCn, "min-w-0")}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select a position
+                    </option>
+                    {formData.role && !executiveRoles.includes(formData.role) && (
+                      <option value={formData.role}>{formData.role}</option>
+                    )}
+                    {executiveRoles.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.role.length > 30 && (
+                    <p className="mt-2 text-sm break-words sm:hidden">{formData.role}</p>
+                  )}
+                </>
+              ) : (
+                <input
+                  type="text"
+                  value={formData.role}
+                  aria-label="Role"
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  placeholder="Tech Lead..."
+                  className={inputCn}
+                  required
+                />
+              )}
             </div>
           </div>
 

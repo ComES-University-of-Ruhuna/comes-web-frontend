@@ -12,6 +12,7 @@ import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
 import { Link } from "react-router";
 import { EventDescriptionEditor } from "@/components/events/EventDescriptionEditor";
+import { EventImageUpload } from "@/components/events/EventImageUpload";
 
 interface Event {
   _id: string;
@@ -44,15 +45,18 @@ export const EventEditor = ({
   event,
   onClose,
   onSave,
+  imageUploadEndpoint = "/events/image",
 }: {
   event?: Event | null;
   onClose: () => void;
   onSave: (data: Partial<Event>) => Promise<void>;
+  imageUploadEndpoint?: string;
 }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const isEditing = !!event;
   const [saving, setSaving] = useState(false);
+  const [imageBusy, setImageBusy] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const eventDate = event?.date ? new Date(event.date) : null;
@@ -98,6 +102,7 @@ export const EventEditor = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (imageBusy || saving) return;
     setSaving(true);
     setSaveError(null);
     try {
@@ -130,7 +135,7 @@ export const EventEditor = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       onClick={() => {
-        if (!saving) onClose();
+        if (!saving && !imageBusy) onClose();
       }}
     >
       <motion.div
@@ -154,7 +159,7 @@ export const EventEditor = ({
           </h2>
           <button
             onClick={onClose}
-            disabled={saving}
+            disabled={saving || imageBusy}
             aria-label="Close event editor"
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
@@ -406,6 +411,7 @@ export const EventEditor = ({
               <input
                 type="url"
                 value={formData.image}
+                disabled={imageBusy}
                 maxLength={2000}
                 onChange={(change) => setFormData({ ...formData, image: change.target.value })}
                 placeholder="https://example.com/event.jpg"
@@ -417,12 +423,30 @@ export const EventEditor = ({
                 )}
               />
             </label>
+            <EventImageUpload
+              endpoint={imageUploadEndpoint}
+              disabled={saving}
+              isDark={isDark}
+              onChange={(image) => setFormData((current) => ({ ...current, image }))}
+              onBusyChange={setImageBusy}
+            />
             {formData.image && (
-              <img
-                src={formData.image}
-                alt="Event image preview"
-                className="aspect-video w-full rounded-lg object-cover"
-              />
+              <div className="space-y-2">
+                <img
+                  src={formData.image}
+                  alt="Event image preview"
+                  className="max-h-80 w-full rounded-lg object-contain"
+                />
+                <button
+                  type="button"
+                  disabled={imageBusy}
+                  onClick={() => setFormData((current) => ({ ...current, image: "" }))}
+                  className="flex items-center gap-2 text-sm text-red-500 disabled:opacity-50"
+                >
+                  <X className="h-4 w-4" />
+                  Remove image
+                </button>
+              </div>
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -500,10 +524,15 @@ export const EventEditor = ({
             </div>
 
             <div className="flex flex-wrap items-center justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} disabled={imageBusy}>
                 Cancel
               </Button>
-              <Button type="submit" variant="primary" icon={<Save className="h-4 w-4" />}>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={imageBusy}
+                icon={<Save className="h-4 w-4" />}
+              >
                 {saving ? "Saving..." : isEditing ? "Update Event" : "Create Event"}
               </Button>
             </div>

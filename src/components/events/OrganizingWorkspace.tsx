@@ -500,6 +500,7 @@ export const OrganizingWorkspace = ({ mode }: { mode: OrganizingMode }) => {
       {editing && (
         <EventEditor
           event={event}
+          imageUploadEndpoint={admin ? "/events/image" : `/students/organized-events/${id}/image`}
           onClose={() => setEditing(false)}
           onSave={async (details) => {
             if (!admin) delete details.isFeatured;

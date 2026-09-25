@@ -7,9 +7,41 @@ import { OrganizingPage } from "../src/pages/student/OrganizingPage";
 import { EventEditor } from "../src/pages/admin/EventsManagementPage";
 import type { CommitteeAssignment, OrganizedEvent } from "../src/services/eventCommittee.service";
 import api from "../src/services/api";
+import * as imageTools from "../src/utils/cropImage";
+import type { Area } from "react-easy-crop";
+
+vi.mock("react-easy-crop", () => ({
+  default: ({
+    onCropAreaChange,
+    rotation,
+    zoom,
+    aspect,
+  }: {
+    onCropAreaChange: (percent: Area, pixels: Area) => void;
+    rotation: number;
+    zoom: number;
+    aspect: number;
+  }) => (
+    <button
+      type="button"
+      aria-label="Select crop area"
+      data-rotation={rotation}
+      data-zoom={zoom}
+      data-aspect={aspect}
+      onClick={() =>
+        onCropAreaChange(
+          { x: 0, y: 0, width: 100, height: 100 },
+          { x: 10, y: 20, width: 800, height: 450 },
+        )
+      }
+    >
+      Crop selection
+    </button>
+  ),
+}));
 
 vi.mock("../src/services/api", () => ({
-  default: { get: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },
+  default: { get: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn(), post: vi.fn() },
 }));
 vi.mock("@/store", () => ({ useThemeStore: () => ({ resolvedTheme: "light" }) }));
 vi.mock("@/components/layout", () => ({ Navbar: () => null, Footer: () => null }));
@@ -56,6 +88,13 @@ const response = () => ({ data: { success: true, data: { event: saved } } });
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubGlobal(
+    "URL",
+    class extends URL {
+      static createObjectURL = vi.fn(() => "blob:event-crop");
+      static revokeObjectURL = vi.fn();
+    },
+  );
   saved = structuredClone(event);
   vi.mocked(api.get).mockImplementation(async (url) =>
     String(url).includes("committee-members")
@@ -94,6 +133,144 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
+it.each(["/events/image", "/students/organized-events/event-1/image"])(
+  "crops and uploads to %s before saving the event",
+  async (endpoint) => {
+    const crop = vi
+      .spyOn(imageTools, "cropImage")
+      .mockResolvedValue(new Blob(["cropped"], { type: "image/jpeg" }));
+    const url = "https://res.cloudinary.com/comes/image/upload/event.jpg";
+    vi.mocked(api.post).mockResolvedValue({ data: { data: { url } } });
+    const save = vi.fn().mockResolvedValue(undefined);
+    render(
+      <EventEditor event={event} imageUploadEndpoint={endpoint} onSave={save} onClose={vi.fn()} />,
+    );
+    fireEvent.change(screen.getByLabelText("Upload event image"), {
+      target: { files: [new File(["photo"], "photo.png", { type: "image/png" })] },
+    });
+    expect(
+      (screen.getByRole("button", { name: "Update Event" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Rotate right" }));
+    fireEvent.change(screen.getByRole("slider", { name: "Zoom" }), { target: { value: "2" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Aspect ratio" }), {
+      target: { value: "1:1" },
+    });
+    const selection = screen.getByRole("button", { name: "Select crop area" });
+    expect(selection.dataset.rotation).toBe("90");
+    expect(selection.dataset.zoom).toBe("2");
+    expect(selection.dataset.aspect).toBe("1");
+    fireEvent.click(selection);
+    fireEvent.click(screen.getByRole("button", { name: "Crop & upload" }));
+    await screen.findByText("Image uploaded");
+    expect(crop).toHaveBeenCalledWith(
+      "blob:event-crop",
+      { x: 10, y: 20, width: 800, height: 450 },
+      90,
+    );
+    expect(api.post).toHaveBeenCalledWith(
+      endpoint,
+      expect.any(FormData),
+      expect.objectContaining({ headers: { "Content-Type": "multipart/form-data" } }),
+    );
+    expect((vi.mocked(api.post).mock.calls[0][1] as FormData).get("image")).toHaveProperty(
+      "type",
+      "image/jpeg",
+    );
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:event-crop");
+    const saveButton = screen.getByRole("button", { name: "Update Event" }) as HTMLButtonElement;
+    await waitFor(() => expect(saveButton.disabled).toBe(false));
+    fireEvent.click(saveButton);
+    await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ image: url })));
+  },
+);
+
+it("retains the original image on upload failure and allows reset and cancellation", async () => {
+  vi.spyOn(imageTools, "cropImage").mockResolvedValue(
+    new Blob(["cropped"], { type: "image/jpeg" }),
+  );
+  vi.mocked(api.post).mockRejectedValue(new Error("Offline"));
+  render(
+    <EventEditor
+      event={{ ...event, image: "https://example.com/original.jpg" }}
+      onSave={vi.fn()}
+      onClose={vi.fn()}
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("Upload event image"), {
+    target: { files: [new File(["photo"], "photo.png", { type: "image/png" })] },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Select crop area" }));
+  fireEvent.click(screen.getByRole("button", { name: "Crop & upload" }));
+  await screen.findByRole("alert");
+  expect(screen.getByAltText("Event image preview").getAttribute("src")).toBe(
+    "https://example.com/original.jpg",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Rotate right" }));
+  fireEvent.click(screen.getByRole("button", { name: "Reset crop" }));
+  expect(screen.getByRole("button", { name: "Select crop area" }).dataset.rotation).toBe("0");
+  fireEvent.click(screen.getByRole("button", { name: "Cancel crop" }));
+  expect((screen.getByRole("button", { name: "Update Event" }) as HTMLButtonElement).disabled).toBe(
+    false,
+  );
+  expect(URL.revokeObjectURL).toHaveBeenCalled();
+});
+
+it.each([
+  ["image/svg+xml", 10],
+  ["image/png", 3 * 1024 * 1024 + 1],
+])("rejects unsupported or oversized crop sources", (type, size) => {
+  render(<EventEditor event={event} onSave={vi.fn()} onClose={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("Upload event image"), {
+    target: { files: [new File([new Uint8Array(size)], "photo", { type })] },
+  });
+  expect(screen.getByRole("alert")).toBeTruthy();
+  expect(api.post).not.toHaveBeenCalled();
+  expect(URL.createObjectURL).not.toHaveBeenCalled();
+});
+
+it("exports a rotated and scaled crop as a bounded JPEG", async () => {
+  vi.stubGlobal(
+    "Image",
+    class {
+      naturalWidth = 4000;
+      naturalHeight = 2000;
+      src = "";
+      decode = () => Promise.resolve();
+    },
+  );
+  const context = {
+    fillRect: vi.fn(),
+    setTransform: vi.fn(),
+    translate: vi.fn(),
+    rotate: vi.fn(),
+    drawImage: vi.fn(),
+    fillStyle: "",
+  };
+  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
+    context as unknown as CanvasRenderingContext2D,
+  );
+  const dimensions: number[] = [];
+  const toBlob = vi.spyOn(HTMLCanvasElement.prototype, "toBlob").mockImplementation(function (
+    this: HTMLCanvasElement,
+    callback,
+  ) {
+    dimensions.push(this.width, this.height);
+    callback(new Blob(["crop"], { type: "image/jpeg" }));
+  });
+  const result = await imageTools.cropImage(
+    "blob:photo",
+    { x: 100, y: 200, width: 2000, height: 3000 },
+    90,
+  );
+  expect(dimensions).toEqual([1280, 1920]);
+  expect(context.rotate).toHaveBeenCalledWith(Math.PI / 2);
+  expect(context.setTransform).toHaveBeenCalledWith(0.64, 0, 0, 0.64, -64, -128);
+  expect(toBlob).toHaveBeenCalledWith(expect.any(Function), "image/jpeg", 0.9);
+  expect(result.type).toBe("image/jpeg");
 });
 
 const renderWorkspace = (mode: "admin" | "chair" = "admin") =>

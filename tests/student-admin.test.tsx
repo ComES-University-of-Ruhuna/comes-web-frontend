@@ -151,6 +151,9 @@ describe("student administrator token routing", () => {
     api.defaults.adapter = adapter;
     await api.get("/students/organized-events");
     await api.patch("/students/organized-events/event-1", { title: "Chair update" });
+    await api.post("/students/organized-events/event-1/image", new FormData(), {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     expect(
       adapter.mock.calls.every(([config]) => config.headers.Authorization === "Bearer chair-token"),
     ).toBe(true);
