@@ -4,25 +4,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  FileText,
-  Save,
-  X,
-  Image,
-  Bold,
-  Italic,
-  List,
-  Link as LinkIcon,
-} from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, Calendar, FileText, Save, X, Image } from "lucide-react";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
+import { useBlogPosts } from "@/hooks/useApi";
+import api from "@/services/api";
 
 interface BlogPost {
   id: string;
@@ -34,46 +22,11 @@ interface BlogPost {
   publishedAt: string;
   views: number;
   image: string;
+  content: string;
+  isFeatured: boolean;
 }
 
-// Mock data
-const mockPosts: BlogPost[] = [
-  {
-    id: "1",
-    title: "Getting Started with React 19",
-    excerpt: "Learn the new features and improvements in React 19...",
-    category: "Tech",
-    status: "published",
-    author: "John Doe",
-    publishedAt: "2026-01-28",
-    views: 1234,
-    image: "https://picsum.photos/seed/1/400/300",
-  },
-  {
-    id: "2",
-    title: "ComES Hackathon 2026 Announcement",
-    excerpt: "Join us for the biggest hackathon of the year...",
-    category: "Events",
-    status: "published",
-    author: "Jane Smith",
-    publishedAt: "2026-01-25",
-    views: 856,
-    image: "https://picsum.photos/seed/2/400/300",
-  },
-  {
-    id: "3",
-    title: "Introduction to Machine Learning",
-    excerpt: "A beginner-friendly guide to ML concepts...",
-    category: "Tech",
-    status: "draft",
-    author: "John Doe",
-    publishedAt: "",
-    views: 0,
-    image: "https://picsum.photos/seed/3/400/300",
-  },
-];
-
-const categories = ["All", "Tech", "Events", "News", "Tutorials", "Achievements"];
+const categories = ["All", "Tech", "Events", "News", "Tutorials", "Achievements", "Announcements"];
 const statuses = ["All", "published", "draft", "archived"];
 
 // Blog Editor Modal
@@ -84,7 +37,7 @@ const BlogEditor = ({
 }: {
   post?: BlogPost | null;
   onClose: () => void;
-  onSave: (data: Partial<BlogPost>) => void;
+  onSave: (data: Partial<BlogPost>) => Promise<void>;
 }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
@@ -93,15 +46,27 @@ const BlogEditor = ({
   const [formData, setFormData] = useState({
     title: post?.title || "",
     excerpt: post?.excerpt || "",
-    content: "",
+    content: post?.content || "",
     category: post?.category || "Tech",
     status: post?.status || "draft",
     image: post?.image || "",
+    isFeatured: post?.isFeatured || false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (isSaving) return;
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onSave(formData);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to save post");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -110,7 +75,7 @@ const BlogEditor = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={isSaving ? undefined : onClose}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -133,7 +98,7 @@ const BlogEditor = ({
             {isEditing ? "Edit Blog Post" : "Create New Blog Post"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={isSaving ? undefined : onClose}
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
             <X className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-500")} />
@@ -155,6 +120,9 @@ const BlogEditor = ({
             <input
               type="text"
               value={formData.title}
+              aria-label="Title"
+              minLength={3}
+              maxLength={200}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter post title..."
               className={cn(
@@ -210,6 +178,7 @@ const BlogEditor = ({
               </label>
               <select
                 value={formData.status}
+                aria-label="Status"
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as BlogPost["status"] })
                 }
@@ -301,33 +270,16 @@ const BlogEditor = ({
             >
               Content
             </label>
-            {/* Toolbar */}
-            <div
-              className={cn(
-                "flex items-center gap-1 rounded-t-xl border border-b-0 p-2",
-                isDark ? "border-slate-700 bg-slate-800" : "border-gray-200 bg-gray-50",
-              )}
-            >
-              {[Bold, Italic, List, LinkIcon, Image].map((Icon, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={cn(
-                    "rounded-lg p-2 transition-colors",
-                    isDark ? "text-gray-400 hover:bg-slate-700" : "text-gray-600 hover:bg-gray-200",
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </button>
-              ))}
-            </div>
             <textarea
+              aria-label="Content"
+              required
+              minLength={50}
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="Write your post content here... (Markdown supported)"
               rows={12}
               className={cn(
-                "w-full resize-none rounded-b-xl border border-t-0 px-4 py-3 font-mono text-sm transition-colors",
+                "w-full resize-none rounded-lg border px-4 py-3 font-mono text-sm transition-colors",
                 isDark
                   ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
                   : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
@@ -337,11 +289,29 @@ const BlogEditor = ({
           </div>
 
           {/* Actions */}
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.isFeatured}
+              onChange={(event) => setFormData({ ...formData, isFeatured: event.target.checked })}
+            />
+            Featured post
+          </label>
+          {saveError && (
+            <p role="alert" className="text-sm text-red-500">
+              {saveError}
+            </p>
+          )}
           <div className="flex items-center justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" icon={<Save className="h-4 w-4" />}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSaving}
+              icon={<Save className="h-4 w-4" />}
+            >
               {isEditing ? "Update Post" : "Create Post"}
             </Button>
           </div>
@@ -355,42 +325,64 @@ export const BlogManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const [posts, setPosts] = useState<BlogPost[]>(mockPosts);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
-    const matchesStatus = selectedStatus === "All" || post.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+  const [page, setPage] = useState(1);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const { data, isLoading, error, refetch, pagination } = useBlogPosts({
+    includeDrafts: true,
+    search: searchQuery || undefined,
+    category: selectedCategory === "All" ? undefined : selectedCategory,
+    status: selectedStatus === "All" ? undefined : (selectedStatus as BlogPost["status"]),
+    page,
+    limit: 12,
+    sort: "-createdAt",
   });
+  const posts: BlogPost[] = (data ?? []).map((post) => ({
+    ...post,
+    id: post._id,
+    image: post.coverImage || "",
+    content: post.content || "",
+    author: post.author?.name || "ComES",
+    publishedAt: post.publishedAt?.split("T")[0] || "",
+  }));
 
-  const handleSave = (data: Partial<BlogPost>) => {
-    if (editingPost) {
-      setPosts(posts.map((p) => (p.id === editingPost.id ? { ...p, ...data } : p)));
-    } else {
-      setPosts([
-        ...posts,
-        {
-          ...data,
-          id: Date.now().toString(),
-          views: 0,
-          author: "Admin",
-          publishedAt: new Date().toISOString().split("T")[0],
-        } as BlogPost,
-      ]);
-    }
+  const filteredPosts = isLoading || error ? [] : posts;
+
+  const handleSave = async (data: Partial<BlogPost>) => {
+    const payload = {
+      title: data.title,
+      excerpt: data.excerpt,
+      content: data.content,
+      category: data.category,
+      status: data.status,
+      coverImage: data.image,
+      isFeatured: data.isFeatured,
+    };
+    const response = editingPost
+      ? await api.patch(`/blog/${editingPost.id}`, payload)
+      : await api.post("/blog", payload);
+    if (!response.data.success) throw new Error(response.data.message || "Unable to save post");
     setEditingPost(null);
     setIsCreating(false);
+    await refetch();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this post?")) {
-      setPosts(posts.filter((p) => p.id !== id));
+      setActionError(null);
+      try {
+        const response = await api.delete(`/blog/${id}`);
+        if (!response.data.success)
+          throw new Error(response.data.message || "Unable to delete post");
+        if (posts.length === 1 && page > 1) setPage(page - 1);
+        else await refetch();
+      } catch (error) {
+        setActionError(error instanceof Error ? error.message : "Unable to delete post");
+      }
     }
   };
 
@@ -409,6 +401,22 @@ export const BlogManagementPage = () => {
 
   return (
     <div className="space-y-6">
+      {isLoading && <p role="status">Loading posts...</p>}
+      {(error || actionError) && (
+        <div role="alert" className="text-red-500">
+          {error || actionError}{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setActionError(null);
+              refetch();
+            }}
+            className="underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -448,7 +456,10 @@ export const BlogManagementPage = () => {
               type="text"
               placeholder="Search posts..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
               className={cn(
                 "w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors",
                 isDark
@@ -462,7 +473,10 @@ export const BlogManagementPage = () => {
           {/* Category Filter */}
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setPage(1);
+            }}
             className={cn(
               "rounded-xl border px-4 py-2.5 transition-colors",
               isDark
@@ -481,7 +495,10 @@ export const BlogManagementPage = () => {
           {/* Status Filter */}
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value);
+              setPage(1);
+            }}
             className={cn(
               "rounded-xl border px-4 py-2.5 capitalize transition-colors",
               isDark
@@ -571,11 +588,13 @@ export const BlogManagementPage = () => {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="h-12 w-12 rounded-lg object-cover"
-                      />
+                      {post.image && (
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="h-12 w-12 rounded-lg object-cover"
+                        />
+                      )}
                       <div>
                         <p className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
                           {post.title}
@@ -617,6 +636,7 @@ export const BlogManagementPage = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingPost(post)}
+                        aria-label={`Edit ${post.title}`}
                         className={cn(
                           "rounded-lg p-2 transition-colors",
                           isDark
@@ -628,6 +648,7 @@ export const BlogManagementPage = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(post.id)}
+                        aria-label={`Delete ${post.title}`}
                         className={cn(
                           "rounded-lg p-2 text-red-500 transition-colors",
                           isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
@@ -643,7 +664,7 @@ export const BlogManagementPage = () => {
           </table>
         </div>
 
-        {filteredPosts.length === 0 && (
+        {!isLoading && !error && filteredPosts.length === 0 && (
           <div className="p-12 text-center">
             <FileText
               className={cn("mx-auto mb-4 h-12 w-12", isDark ? "text-gray-600" : "text-gray-400")}
@@ -651,14 +672,17 @@ export const BlogManagementPage = () => {
             <p className={cn("text-lg font-medium", isDark ? "text-gray-400" : "text-gray-500")}>
               No posts found
             </p>
-            <p className={cn("mt-1 text-sm", isDark ? "text-gray-500" : "text-gray-400")}>
-              Try adjusting your search or filters
-            </p>
           </div>
         )}
       </div>
 
       {/* Editor Modal */}
+      <CollectionPagination
+        page={page}
+        pages={pagination?.pages ?? 0}
+        onChange={setPage}
+        disabled={isLoading}
+      />
       <AnimatePresence>
         {(isCreating || editingPost) && (
           <BlogEditor

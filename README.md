@@ -136,10 +136,8 @@ src/
 │   └── index.ts
 ├── constants/           # App constants and configuration
 ├── data/                # Static data (mock data for development)
-│   ├── blog.ts
 │   ├── events.ts
 │   ├── gallery.ts
-│   ├── projects.ts
 │   ├── team.ts
 │   └── testimonials.ts
 ├── hooks/               # Custom React hooks
@@ -312,6 +310,12 @@ git commit -m "feat(events): add event registration feature"
 git commit -m "fix(auth): resolve login redirect issue"
 git commit -m "docs: update README with deployment instructions"
 ```
+
+### Content Publishing
+
+Use `/admin/blog` to create Markdown articles and choose **Published** when ready. Draft and archived articles remain private. Use `/admin/projects` to save projects; in-progress and completed projects are public, while archived projects are hidden. The **Featured** checkbox controls featured placements. Both editors persist changes to the backend, including for authorized student admins.
+
+Public blog and project pages load only saved API records, with pagination and no sample-data fallback. Deploy this frontend with the matching backend changes before publishing new content. No sample articles or projects are automatically imported.
 
 ### Development Workflow
 

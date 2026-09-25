@@ -11,21 +11,22 @@ export interface ApiProject {
   description: string;
   shortDescription: string;
   category: string;
-  status: "planning" | "in-progress" | "completed" | "on-hold";
-  image: string;
+  status: "in-progress" | "completed" | "archived";
+  image?: string;
   images: string[];
   technologies: string[];
   team: Array<{
+    _id?: string;
     name: string;
-    role: string;
+    role?: string;
     avatar?: string;
   }>;
-  startDate: string;
+  teamMembers?: string[];
+  startDate?: string;
   endDate?: string;
   githubUrl?: string;
-  liveUrl?: string;
   demoUrl?: string;
-  featured: boolean;
+  isFeatured: boolean;
   likes: number;
   views: number;
   createdAt: string;
@@ -33,6 +34,8 @@ export interface ApiProject {
 }
 
 export interface ProjectFilters {
+  search?: string;
+  includeArchived?: boolean;
   category?: string;
   status?: string;
   featured?: boolean;

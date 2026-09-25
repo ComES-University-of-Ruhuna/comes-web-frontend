@@ -16,6 +16,7 @@ import { TeamPage } from "@/pages/TeamPage";
 import { ProjectsPage } from "@/pages/ProjectsPage";
 import { GalleryPage } from "@/pages/GalleryPage";
 import { BlogPage } from "@/pages/BlogPage";
+import { BlogPostPage } from "@/pages/BlogPostPage";
 import { ContactPage } from "@/pages/ContactPage";
 import { FAQPage } from "@/pages/FAQPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
@@ -138,6 +139,7 @@ const AnimatedRoutes = () => {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/maintenance" element={<UnderMaintenancePage />} />

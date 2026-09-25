@@ -17,10 +17,21 @@ import {
   HoverScale,
   NewsletterSection,
 } from "@/components/ui";
-import { blogPosts, getFeaturedPosts, blogCategories } from "@/data";
+import { useBlogPosts, useFeaturedBlogPosts } from "@/hooks/useApi";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import type { BlogPost } from "@/types";
+import type { ApiBlogPost as BlogPost } from "@/services/blog.service";
+
+const blogCategories = [
+  "All",
+  "News",
+  "Announcements",
+  "Tech",
+  "Events",
+  "Achievements",
+  "Tutorials",
+];
 
 // Blog Post Card
 const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) => {
@@ -39,13 +50,19 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
           )}
         >
           <div className="relative overflow-hidden">
-            <motion.img
-              src={post.image}
-              alt={post.title}
-              className="h-48 w-full object-cover"
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.3 }}
-            />
+            {post.coverImage ? (
+              <motion.img
+                src={post.coverImage}
+                alt={post.title}
+                className="h-48 w-full object-cover"
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : (
+              <div className="flex h-48 items-center justify-center bg-emerald-500/10">
+                <Newspaper className="h-12 w-12 text-emerald-500" />
+              </div>
+            )}
             <div className="absolute top-3 left-3">
               <Badge variant="secondary" size="sm">
                 {post.category}
@@ -62,7 +79,7 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
             >
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
@@ -76,7 +93,7 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
 
             <h3
               className={cn(
-                "mb-3 line-clamp-2 text-xl font-bold",
+                "mb-3 line-clamp-2 text-xl font-bold [overflow-wrap:anywhere]",
                 isDark ? "text-white" : "text-comesBlue",
               )}
             >
@@ -93,13 +110,15 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
 
             <div className="mt-auto flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="h-8 w-8 rounded-full object-cover ring-2 ring-white/20"
-                />
+                {post.author?.avatar && (
+                  <img
+                    src={post.author.avatar}
+                    alt={post.author.name}
+                    className="h-8 w-8 rounded-full object-cover ring-2 ring-white/20"
+                  />
+                )}
                 <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                  {post.author.name}
+                  {post.author?.name || "ComES"}
                 </span>
               </div>
               <Link
@@ -135,13 +154,19 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
           className={cn("overflow-hidden lg:flex", isDark && "border-slate-700/50 bg-slate-800/50")}
         >
           <div className="overflow-hidden lg:w-1/2">
-            <motion.img
-              src={post.image}
-              alt={post.title}
-              className="h-64 w-full object-cover lg:h-full"
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.5 }}
-            />
+            {post.coverImage ? (
+              <motion.img
+                src={post.coverImage}
+                alt={post.title}
+                className="h-64 w-full object-cover lg:h-full"
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+              />
+            ) : (
+              <div className="flex h-64 items-center justify-center bg-emerald-500/10 lg:h-full">
+                <Newspaper className="h-16 w-16 text-emerald-500" />
+              </div>
+            )}
           </div>
           <div
             className={cn("flex flex-col justify-center p-8 lg:w-1/2", isDark && "bg-slate-800/50")}
@@ -170,17 +195,20 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20"
-                />
+                {post.author?.avatar && (
+                  <img
+                    src={post.author.avatar}
+                    alt={post.author.name}
+                    className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20"
+                  />
+                )}
                 <div>
                   <div className={cn("font-medium", isDark ? "text-white" : "text-gray-800")}>
-                    {post.author.name}
+                    {post.author?.name || "ComES"}
                   </div>
                   <div className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-                    {new Date(post.publishedAt).toLocaleDateString()} • {post.readTime} min read
+                    {new Date(post.publishedAt || post.createdAt).toLocaleDateString()} •{" "}
+                    {post.readTime} min read
                   </div>
                 </div>
               </div>
@@ -259,7 +287,8 @@ const BlogHero = () => {
 
 // Featured Posts Section
 const FeaturedSection = () => {
-  const featuredPosts = getFeaturedPosts(1);
+  const { data, error } = useFeaturedBlogPosts();
+  const featuredPosts = error ? [] : (data ?? []).slice(0, 1);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
@@ -277,20 +306,19 @@ const FeaturedSection = () => {
 
 // All Posts Section
 const AllPostsSection = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const filteredPosts = blogPosts.filter((post) => {
-    const matchesCategory =
-      activeCategory === "all" || post.category.toLowerCase() === activeCategory;
-    const matchesSearch =
-      searchQuery === "" ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+  const { data, isLoading, error, refetch, pagination } = useBlogPosts({
+    category: activeCategory === "All" ? undefined : activeCategory,
+    search: searchQuery || undefined,
+    page,
+    limit: 9,
   });
+  const filteredPosts = data ?? [];
 
   return (
     <Section background={isDark ? "white" : "gray"}>
@@ -315,7 +343,11 @@ const AllPostsSection = () => {
             type="text"
             placeholder="Search articles..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Search articles"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
             className={cn(
               "w-full rounded-full border py-3 pr-4 pl-12 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
               isDark
@@ -329,51 +361,73 @@ const AllPostsSection = () => {
         <div className="flex flex-wrap gap-2">
           {blogCategories.map((category) => (
             <motion.button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              key={category}
+              onClick={() => {
+                setActiveCategory(category);
+                setPage(1);
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-medium transition-all",
-                activeCategory === category.id
+                activeCategory === category
                   ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30"
                   : isDark
                     ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
                     : "bg-white text-gray-600 hover:bg-gray-100",
               )}
             >
-              {category.label}
+              {category}
             </motion.button>
           ))}
         </div>
       </div>
 
       {/* Posts Grid */}
-      <AnimatePresence mode="wait">
-        {filteredPosts.length > 0 ? (
-          <motion.div
-            key={activeCategory + searchQuery}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredPosts.map((post, index) => (
-              <BlogPostCard key={post.id} post={post} index={index} />
-            ))}
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="py-12 text-center"
-          >
-            <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
-              No articles found.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isLoading ? (
+        <p role="status" className="py-12 text-center">
+          Loading articles...
+        </p>
+      ) : error ? (
+        <div role="alert" className="py-12 text-center">
+          <p>{error}</p>
+          <button type="button" onClick={refetch} className="mt-3 underline">
+            Retry
+          </button>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {filteredPosts.length > 0 ? (
+            <motion.div
+              key={activeCategory + searchQuery}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {filteredPosts.map((post, index) => (
+                <BlogPostCard key={post._id} post={post} index={index} />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-12 text-center"
+            >
+              <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
+                No articles found.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+      <CollectionPagination
+        page={page}
+        pages={pagination?.pages ?? 0}
+        onChange={setPage}
+        disabled={isLoading}
+      />
     </Section>
   );
 };

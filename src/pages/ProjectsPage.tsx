@@ -15,22 +15,23 @@ import {
   FadeInView,
   HoverScale,
 } from "@/components/ui";
-import { projects, getFeaturedProjects } from "@/data";
-import { PROJECT_CATEGORIES } from "@/constants";
+import { useProjects, useFeaturedProjects, useProjectCategories } from "@/hooks/useApi";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import type { Project } from "@/types";
+import type { ApiProject as Project } from "@/services/projects.service";
 
 // Project Card Component
 const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const teamMembers = project.teamMembers ?? project.team.map((member) => member.name);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Completed":
+      case "completed":
         return "success";
-      case "In Progress":
+      case "in-progress":
         return "info";
       case "Planning":
         return "warning";
@@ -50,7 +51,15 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
             isDark && "border-slate-700/50 bg-slate-800/50",
           )}
         >
-          <div className="flex-1 p-6">
+          {project.image && (
+            <img
+              src={project.image}
+              alt={project.title}
+              className="h-48 w-full object-cover"
+              loading="lazy"
+            />
+          )}
+          <div className="min-w-0 flex-1 p-6 [overflow-wrap:anywhere]">
             {/* Badges */}
             <div className="mb-4 flex items-center justify-between">
               <Badge
@@ -59,7 +68,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
                 }
                 size="sm"
               >
-                {project.status}
+                {project.status.replace("-", " ")}
               </Badge>
               <Badge variant="secondary" size="sm">
                 {project.category}
@@ -71,7 +80,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
               {project.title}
             </h3>
             <p className={cn("mb-4 line-clamp-3", isDark ? "text-gray-400" : "text-gray-600")}>
-              {project.shortDescription}
+              {project.shortDescription || project.description}
             </p>
 
             {/* Technologies */}
@@ -108,7 +117,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
             >
               <Users className="h-4 w-4" />
               <span className="font-medium">Team: </span>
-              {project.teamMembers.join(", ")}
+              {teamMembers.join(", ") || "ComES"}
             </div>
           </div>
 
@@ -132,10 +141,10 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
                 </a>
               </HoverScale>
             )}
-            {project.liveUrl && (
+            {project.demoUrl && (
               <HoverScale>
                 <a
-                  href={project.liveUrl}
+                  href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 text-white transition-opacity hover:opacity-90"
@@ -156,6 +165,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
 const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?: number }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const teamMembers = project.teamMembers ?? project.team.map((member) => member.name);
 
   return (
     <FadeInView direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.2}>
@@ -190,10 +200,10 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
                   </a>
                 </HoverScale>
               )}
-              {project.liveUrl && (
+              {project.demoUrl && (
                 <HoverScale>
                   <a
-                    href={project.liveUrl}
+                    href={project.demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 rounded-lg bg-amber-400 px-4 py-2 text-blue-900 transition-colors hover:bg-amber-300"
@@ -206,9 +216,17 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
             </div>
           </div>
           <div className={cn("p-8 lg:w-3/5", isDark && "bg-slate-800/50")}>
+            {project.image && (
+              <img
+                src={project.image}
+                alt={project.title}
+                className="mb-6 aspect-video w-full rounded-lg object-cover"
+                loading="lazy"
+              />
+            )}
             <div className="mb-4 flex items-center gap-3">
-              <Badge variant={project.status === "Completed" ? "success" : "info"} size="sm">
-                {project.status}
+              <Badge variant={project.status === "completed" ? "success" : "info"} size="sm">
+                {project.status.replace("-", " ")}
               </Badge>
               <span className={cn("text-sm", isDark ? "text-gray-300" : "text-gray-500")}>
                 {project.category}
@@ -248,7 +266,7 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
               Team Members
             </h4>
             <div className="flex flex-wrap gap-2">
-              {project.teamMembers.map((member) => (
+              {teamMembers.map((member) => (
                 <span
                   key={member}
                   className={cn(
@@ -328,9 +346,12 @@ const ProjectsHero = () => {
 
 // Featured Projects Section
 const FeaturedProjectsSection = () => {
-  const featuredProjects = getFeaturedProjects(2);
+  const { data, error } = useFeaturedProjects();
+  const featuredProjects = error ? [] : (data ?? []).slice(0, 2);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+
+  if (!featuredProjects.length) return null;
 
   return (
     <Section background={isDark ? "dark" : "white"}>
@@ -344,7 +365,7 @@ const FeaturedProjectsSection = () => {
 
       <div className="space-y-8">
         {featuredProjects.map((project, index) => (
-          <FeaturedProjectCard key={project.id} project={project} index={index} />
+          <FeaturedProjectCard key={project._id} project={project} index={index} />
         ))}
       </div>
     </Section>
@@ -354,11 +375,17 @@ const FeaturedProjectsSection = () => {
 // All Projects Section
 const AllProjectsSection = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [page, setPage] = useState(1);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const filteredProjects =
-    activeCategory === "All" ? projects : projects.filter((p) => p.category === activeCategory);
+  const { data, isLoading, error, refetch, pagination } = useProjects({
+    category: activeCategory === "All" ? undefined : activeCategory,
+    page,
+    limit: 9,
+  });
+  const { data: categories } = useProjectCategories();
+  const filteredProjects = data ?? [];
 
   return (
     <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
@@ -372,10 +399,13 @@ const AllProjectsSection = () => {
 
       {/* Category Filter */}
       <div className="mb-8 flex flex-wrap justify-center gap-2">
-        {PROJECT_CATEGORIES.map((category) => (
+        {["All", ...(categories ?? [])].map((category) => (
           <motion.button
             key={category}
-            onClick={() => setActiveCategory(category)}
+            onClick={() => {
+              setActiveCategory(category);
+              setPage(1);
+            }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={cn(
@@ -393,31 +423,50 @@ const AllProjectsSection = () => {
       </div>
 
       {/* Projects Grid */}
-      <AnimatePresence mode="wait">
-        {filteredProjects.length > 0 ? (
-          <motion.div
-            key={activeCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredProjects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
-            ))}
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="py-12 text-center"
-          >
-            <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
-              No projects in this category yet.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isLoading ? (
+        <p role="status" className="py-12 text-center">
+          Loading projects...
+        </p>
+      ) : error ? (
+        <div role="alert" className="py-12 text-center">
+          <p>{error}</p>
+          <button type="button" onClick={refetch} className="mt-3 underline">
+            Retry
+          </button>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {filteredProjects.length > 0 ? (
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {filteredProjects.map((project, index) => (
+                <ProjectCard key={project._id} project={project} index={index} />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-12 text-center"
+            >
+              <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
+                No projects in this category yet.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+      <CollectionPagination
+        page={page}
+        pages={pagination?.pages ?? 0}
+        onChange={setPage}
+        disabled={isLoading}
+      />
     </Section>
   );
 };

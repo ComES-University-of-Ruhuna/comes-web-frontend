@@ -19,6 +19,9 @@ import {
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
+import { useProjects } from "@/hooks/useApi";
+import api from "@/services/api";
 
 interface Project {
   id: string;
@@ -31,33 +34,8 @@ interface Project {
   github?: string;
   demo?: string;
   image: string;
+  isFeatured: boolean;
 }
-
-const mockProjects: Project[] = [
-  {
-    id: "1",
-    title: "Smart Campus App",
-    description: "A mobile app for campus navigation and services.",
-    category: "Mobile",
-    status: "in-progress",
-    team: ["Alice", "Bob", "Charlie"],
-    technologies: ["React Native", "Node.js", "MongoDB"],
-    github: "https://github.com/comes/smart-campus",
-    image: "https://picsum.photos/seed/p1/400/300",
-  },
-  {
-    id: "2",
-    title: "AI Study Assistant",
-    description: "AI-powered study assistant for students.",
-    category: "AI/ML",
-    status: "completed",
-    team: ["David", "Eve"],
-    technologies: ["Python", "TensorFlow", "Flask"],
-    github: "https://github.com/comes/ai-study",
-    demo: "https://ai-study.comes.edu",
-    image: "https://picsum.photos/seed/p2/400/300",
-  },
-];
 
 const categories = ["All", "Web", "Mobile", "AI/ML", "IoT", "Blockchain", "Game Dev"];
 const projectStatuses = ["All", "in-progress", "completed", "archived"];
@@ -69,7 +47,7 @@ const ProjectEditor = ({
 }: {
   project?: Project | null;
   onClose: () => void;
-  onSave: (data: Partial<Project>) => void;
+  onSave: (data: Partial<Project>) => Promise<void>;
 }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
@@ -85,21 +63,33 @@ const ProjectEditor = ({
     github: project?.github || "",
     demo: project?.demo || "",
     image: project?.image || "",
+    isFeatured: project?.isFeatured || false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      technologies: formData.technologies
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      team: formData.team
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-    });
+    if (isSaving) return;
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onSave({
+        ...formData,
+        technologies: formData.technologies
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        team: formData.team
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+      });
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to save project");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -108,7 +98,7 @@ const ProjectEditor = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={isSaving ? undefined : onClose}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -130,7 +120,7 @@ const ProjectEditor = ({
             {isEditing ? "Edit Project" : "Add New Project"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={isSaving ? undefined : onClose}
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
             <X className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-500")} />
@@ -150,6 +140,9 @@ const ProjectEditor = ({
             <input
               type="text"
               value={formData.title}
+              aria-label="Title"
+              minLength={3}
+              maxLength={200}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter project title..."
               className={cn(
@@ -204,6 +197,7 @@ const ProjectEditor = ({
               </label>
               <select
                 value={formData.status}
+                aria-label="Status"
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value as Project["status"] })
                 }
@@ -237,6 +231,8 @@ const ProjectEditor = ({
             </label>
             <textarea
               value={formData.description}
+              aria-label="Description"
+              minLength={10}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the project..."
               rows={3}
@@ -371,11 +367,29 @@ const ProjectEditor = ({
             />
           </div>
 
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.isFeatured}
+              onChange={(event) => setFormData({ ...formData, isFeatured: event.target.checked })}
+            />
+            Featured project
+          </label>
+          {saveError && (
+            <p role="alert" className="text-sm text-red-500">
+              {saveError}
+            </p>
+          )}
           <div className="flex items-center justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" icon={<Save className="h-4 w-4" />}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSaving}
+              icon={<Save className="h-4 w-4" />}
+            >
               {isEditing ? "Update Project" : "Add Project"}
             </Button>
           </div>
@@ -389,33 +403,67 @@ export const ProjectsManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || project.category === selectedCategory;
-    const matchesStatus = selectedStatus === "All" || project.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+  const [page, setPage] = useState(1);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const { data, isLoading, error, refetch, pagination } = useProjects({
+    includeArchived: true,
+    search: searchQuery || undefined,
+    category: selectedCategory === "All" ? undefined : selectedCategory,
+    status: selectedStatus === "All" ? undefined : (selectedStatus as Project["status"]),
+    page,
+    limit: 12,
   });
+  const projects: Project[] = (data ?? []).map((project) => ({
+    ...project,
+    id: project._id,
+    image: project.image || "",
+    team: project.teamMembers ?? project.team.map((member) => member.name),
+    github: project.githubUrl,
+    demo: project.demoUrl,
+  }));
 
-  const handleSave = (data: Partial<Project>) => {
-    if (editingProject) {
-      setProjects(projects.map((p) => (p.id === editingProject.id ? { ...p, ...data } : p)));
-    } else {
-      setProjects([...projects, { ...data, id: Date.now().toString() } as Project]);
-    }
+  const filteredProjects = isLoading || error ? [] : projects;
+
+  const handleSave = async (data: Partial<Project>) => {
+    const payload = {
+      title: data.title,
+      description: data.description,
+      shortDescription: data.description?.slice(0, 300),
+      category: data.category,
+      status: data.status,
+      technologies: data.technologies,
+      teamMembers: data.team,
+      githubUrl: data.github,
+      demoUrl: data.demo,
+      image: data.image,
+      isFeatured: data.isFeatured,
+    };
+    const response = editingProject
+      ? await api.patch(`/projects/${editingProject.id}`, payload)
+      : await api.post("/projects", payload);
+    if (!response.data.success) throw new Error(response.data.message || "Unable to save project");
     setEditingProject(null);
     setIsCreating(false);
+    await refetch();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
-      setProjects(projects.filter((p) => p.id !== id));
+      setActionError(null);
+      try {
+        const response = await api.delete(`/projects/${id}`);
+        if (!response.data.success)
+          throw new Error(response.data.message || "Unable to delete project");
+        if (projects.length === 1 && page > 1) setPage(page - 1);
+        else await refetch();
+      } catch (error) {
+        setActionError(error instanceof Error ? error.message : "Unable to delete project");
+      }
     }
   };
 
@@ -434,6 +482,22 @@ export const ProjectsManagementPage = () => {
 
   return (
     <div className="space-y-6">
+      {isLoading && <p role="status">Loading projects...</p>}
+      {(error || actionError) && (
+        <div role="alert" className="text-red-500">
+          {error || actionError}{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setActionError(null);
+              refetch();
+            }}
+            className="underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
@@ -470,7 +534,10 @@ export const ProjectsManagementPage = () => {
               type="text"
               placeholder="Search projects..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
               className={cn(
                 "w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors",
                 isDark
@@ -482,7 +549,10 @@ export const ProjectsManagementPage = () => {
           </div>
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setPage(1);
+            }}
             className={cn(
               "rounded-xl border px-4 py-2.5 transition-colors",
               isDark
@@ -499,7 +569,10 @@ export const ProjectsManagementPage = () => {
           </select>
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value);
+              setPage(1);
+            }}
             className={cn(
               "rounded-xl border px-4 py-2.5 transition-colors",
               isDark
@@ -531,7 +604,9 @@ export const ProjectsManagementPage = () => {
                 : "border-gray-200 bg-white hover:shadow-lg",
             )}
           >
-            <img src={project.image} alt={project.title} className="h-48 w-full object-cover" />
+            {project.image && (
+              <img src={project.image} alt={project.title} className="h-48 w-full object-cover" />
+            )}
             <div className="p-6">
               <div className="mb-3 flex items-start justify-between">
                 <Badge
@@ -632,6 +707,7 @@ export const ProjectsManagementPage = () => {
                 </Button>
                 <button
                   onClick={() => handleDelete(project.id)}
+                  aria-label={`Delete ${project.title}`}
                   className={cn(
                     "rounded-lg p-2 text-red-500 transition-colors",
                     isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
@@ -645,7 +721,7 @@ export const ProjectsManagementPage = () => {
         ))}
       </div>
 
-      {filteredProjects.length === 0 && (
+      {!isLoading && !error && filteredProjects.length === 0 && (
         <div
           className={cn(
             "rounded-2xl border p-12 text-center",
@@ -661,6 +737,12 @@ export const ProjectsManagementPage = () => {
         </div>
       )}
 
+      <CollectionPagination
+        page={page}
+        pages={pagination?.pages ?? 0}
+        onChange={setPage}
+        disabled={isLoading}
+      />
       <AnimatePresence>
         {(isCreating || editingProject) && (
           <ProjectEditor

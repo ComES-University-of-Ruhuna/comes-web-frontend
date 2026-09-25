@@ -15,13 +15,13 @@ export interface ApiBlogPost {
     name: string;
     avatar?: string;
     role?: string;
-  };
+  } | null;
   category: string;
   tags: string[];
-  image: string;
+  coverImage?: string;
   readTime: number;
   status: "draft" | "published" | "archived";
-  featured: boolean;
+  isFeatured: boolean;
   likes: number;
   views: number;
   publishedAt?: string;
@@ -30,6 +30,8 @@ export interface ApiBlogPost {
 }
 
 export interface BlogFilters {
+  search?: string;
+  includeDrafts?: boolean;
   category?: string;
   tag?: string;
   featured?: boolean;
@@ -68,8 +70,16 @@ export const blogService = {
 
   // Get categories
   getCategories: async (): Promise<ApiResponse<{ categories: string[] }>> => {
-    const response = await api.get<ApiResponse<{ categories: string[] }>>("/blog/categories");
-    return response.data;
+    const response =
+      await api.get<ApiResponse<{ categories: { name: string; count: number }[] }>>(
+        "/blog/categories",
+      );
+    return {
+      ...response.data,
+      data: response.data.data && {
+        categories: response.data.data.categories.map((category) => category.name),
+      },
+    };
   },
 
   // Get tags

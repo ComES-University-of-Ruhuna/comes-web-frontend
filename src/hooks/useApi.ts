@@ -2,7 +2,7 @@
 // ComES Website - API Hooks
 // ============================================
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   eventsService,
   projectsService,
@@ -147,7 +147,8 @@ export function useEventRegistration() {
 export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> & {
   pagination: { page: number; pages: number; total: number } | null;
 } {
-  const { category, status, featured, page, limit, sort } = filters ?? {};
+  const { category, status, featured, page, limit, sort, search, includeArchived } = filters ?? {};
+  const requestVersion = useRef(0);
   const [data, setData] = useState<ApiProject[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -158,10 +159,13 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
   const [error, setError] = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
+    const version = ++requestVersion.current;
     setIsLoading(true);
     setError(null);
     try {
       const response = await projectsService.getAll({
+        search,
+        includeArchived,
         category,
         status,
         featured,
@@ -169,6 +173,9 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
         limit,
         sort,
       });
+      if (version !== requestVersion.current) return;
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Failed to fetch projects");
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -178,14 +185,18 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
         });
       }
     } catch (err) {
+      if (version !== requestVersion.current) return;
       setError(err instanceof Error ? err.message : "Failed to fetch projects");
     } finally {
-      setIsLoading(false);
+      if (version === requestVersion.current) setIsLoading(false);
     }
-  }, [category, status, featured, page, limit, sort]);
+  }, [category, status, featured, page, limit, sort, search, includeArchived]);
 
   useEffect(() => {
     fetch();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [fetch]);
 
   return { data, isLoading, error, refetch: fetch, pagination };
@@ -250,7 +261,9 @@ export function useProjectCategories(): AsyncState<string[]> {
 export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> & {
   pagination: { page: number; pages: number; total: number } | null;
 } {
-  const { category, tag, featured, status, page, limit, sort } = filters ?? {};
+  const { category, tag, featured, status, page, limit, sort, search, includeDrafts } =
+    filters ?? {};
+  const requestVersion = useRef(0);
   const [data, setData] = useState<ApiBlogPost[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -261,10 +274,13 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
   const [error, setError] = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
+    const version = ++requestVersion.current;
     setIsLoading(true);
     setError(null);
     try {
       const response = await blogService.getAll({
+        search,
+        includeDrafts,
         category,
         tag,
         featured,
@@ -273,6 +289,9 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
         limit,
         sort,
       });
+      if (version !== requestVersion.current) return;
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Failed to fetch blog posts");
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -282,14 +301,18 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
         });
       }
     } catch (err) {
+      if (version !== requestVersion.current) return;
       setError(err instanceof Error ? err.message : "Failed to fetch blog posts");
     } finally {
-      setIsLoading(false);
+      if (version === requestVersion.current) setIsLoading(false);
     }
-  }, [category, tag, featured, status, page, limit, sort]);
+  }, [category, tag, featured, status, page, limit, sort, search, includeDrafts]);
 
   useEffect(() => {
     fetch();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [fetch]);
 
   return { data, isLoading, error, refetch: fetch, pagination };
