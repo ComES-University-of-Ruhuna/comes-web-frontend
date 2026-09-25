@@ -32,6 +32,7 @@ export interface EventFilters {
   status?: string;
   featured?: boolean;
   upcoming?: boolean;
+  period?: "current" | "past";
   page?: number;
   limit?: number;
   sort?: string;

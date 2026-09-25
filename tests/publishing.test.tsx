@@ -148,7 +148,7 @@ beforeEach(() => {
     const path = String(url);
     const pagination = { page: 1, pages: 1, total: 1, limit: 12 };
     if (path.startsWith("/events?")) {
-      const events = path.includes("status=completed") ? completedEvents : upcomingEvents;
+      const events = path.includes("period=past") ? completedEvents : upcomingEvents;
       return {
         data: {
           success: true,
@@ -195,8 +195,35 @@ it("renders saved upcoming and completed events with real registration counts", 
     "/student/events",
   );
   expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
-  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("upcoming=true"));
-  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("status=completed"));
+  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("period=current"));
+  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("period=past"));
+});
+
+it("lists ongoing, cancelled, and past events whose status was never updated", async () => {
+  upcomingEvents = [
+    {
+      ...savedEvent,
+      title: "Multi-day workshop",
+      date: "2020-01-01",
+      endDate: "2099-01-01",
+      status: "ongoing",
+    },
+    { ...savedEvent, _id: "cancelled-event", title: "Cancelled workshop", status: "cancelled" },
+  ];
+  completedEvents = [{ ...savedEvent, title: "Previous workshop", date: "2020-01-01" }];
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { name: "Multi-day workshop" });
+  await screen.findByRole("heading", { name: "Previous workshop" });
+  await screen.findByRole("heading", { name: "Cancelled workshop" });
+  expect(screen.getByText("ongoing")).toBeTruthy();
+  expect(screen.queryByRole("link", { name: "View Registration" })).toBeNull();
+  expect(
+    (screen.getByRole("button", { name: "Event Cancelled" }) as HTMLButtonElement).disabled,
+  ).toBe(true);
 });
 
 it("keeps empty upcoming and past event collections empty", async () => {
@@ -207,7 +234,7 @@ it("keeps empty upcoming and past event collections empty", async () => {
       <EventsPage />
     </MemoryRouter>,
   );
-  await screen.findByText("No upcoming events scheduled at the moment.");
+  await screen.findByText("No upcoming or ongoing events at the moment.");
   await screen.findByText("No past events available yet.");
   expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
   expect(screen.queryByText("Annual Hackathon 2025")).toBeNull();
@@ -234,10 +261,10 @@ it("paginates events and resets the page when the category changes", async () =>
     data: {
       success: true,
       data: {
-        events: String(url).includes("status=completed") ? [] : [savedEvent],
+        events: String(url).includes("period=past") ? [] : [savedEvent],
         pagination: {
           page: Number(new URLSearchParams(String(url).split("?")[1]).get("page")),
-          pages: String(url).includes("status=completed") ? 0 : 2,
+          pages: String(url).includes("period=past") ? 0 : 2,
           total: 10,
           limit: 9,
         },

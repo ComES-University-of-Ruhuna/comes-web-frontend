@@ -35,7 +35,7 @@ interface AsyncState<T> {
 export function useEvents(
   filters?: EventFilters,
 ): AsyncState<ApiEvent[]> & { pagination: { page: number; pages: number; total: number } | null } {
-  const { type, status, featured, upcoming, page, limit, sort } = filters ?? {};
+  const { type, status, featured, upcoming, period, page, limit, sort } = filters ?? {};
   const [data, setData] = useState<ApiEvent[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -56,6 +56,7 @@ export function useEvents(
         status,
         featured,
         upcoming,
+        period,
         page,
         limit,
         sort,
@@ -77,7 +78,7 @@ export function useEvents(
     } finally {
       if (version === requestVersion.current) setIsLoading(false);
     }
-  }, [type, status, featured, upcoming, page, limit, sort]);
+  }, [type, status, featured, upcoming, period, page, limit, sort]);
 
   useEffect(() => {
     fetch();

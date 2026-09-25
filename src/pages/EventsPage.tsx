@@ -40,7 +40,8 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
   const isDark = resolvedTheme === "dark";
   const eventDate = new Date(event.date);
   const isFull = Boolean(event.maxParticipants && event.registeredCount >= event.maxParticipants);
-  const registrationOpen = event.isRegistrationOpen && eventDate > new Date() && !isFull;
+  const registrationOpen =
+    event.status === "upcoming" && event.isRegistrationOpen && eventDate > new Date() && !isFull;
 
   return (
     <FadeInView direction="up" delay={index * 0.1}>
@@ -72,6 +73,11 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                 {event.type}
               </Badge>
             </div>
+            {(event.status === "ongoing" || event.status === "cancelled") && (
+              <Badge variant="secondary" size="sm" className="mb-2 capitalize">
+                {event.status}
+              </Badge>
+            )}
             <h3 className="mb-2 text-xl font-bold">{event.title}</h3>
             <div className="flex flex-wrap items-center gap-4 text-sm opacity-90">
               <span className="flex items-center gap-1">
@@ -178,11 +184,13 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                   disabled={!registrationOpen}
                   icon={<Ticket className="h-4 w-4" />}
                 >
-                  {isFull
-                    ? "Registration Full"
-                    : registrationOpen
-                      ? "View Registration"
-                      : "Registration Closed"}
+                  {event.status === "cancelled"
+                    ? "Event Cancelled"
+                    : isFull
+                      ? "Registration Full"
+                      : registrationOpen
+                        ? "View Registration"
+                        : "Registration Closed"}
                 </Button>
               </HoverScale>
             </div>
@@ -238,7 +246,7 @@ const UpcomingEventsSection = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const { data, isLoading, error, refetch, pagination } = useEvents({
-    upcoming: true,
+    period: "current",
     type: filter === "All" ? undefined : filter.toLowerCase(),
     page,
     limit: 9,
@@ -250,7 +258,7 @@ const UpcomingEventsSection = () => {
     <Section background={isDark ? "dark" : "white"}>
       <FadeInView>
         <SectionHeader
-          title="Upcoming Events"
+          title="Upcoming & Ongoing Events"
           subtitle="Don't miss out on these exciting opportunities to learn and connect."
           light={isDark}
         />
@@ -299,7 +307,7 @@ const UpcomingEventsSection = () => {
               >
                 <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
                   {filter === "All"
-                    ? "No upcoming events scheduled at the moment."
+                    ? "No upcoming or ongoing events at the moment."
                     : `No ${filter.toLowerCase()} events scheduled at the moment.`}
                 </p>
               </motion.div>
@@ -318,7 +326,7 @@ const PastEventsSection = () => {
   const isDark = resolvedTheme === "dark";
   const [page, setPage] = useState(1);
   const { data, isLoading, error, refetch, pagination } = useEvents({
-    status: "completed",
+    period: "past",
     page,
     limit: 6,
     sort: "-date",
@@ -375,6 +383,11 @@ const PastEventsSection = () => {
                         <Badge variant="secondary" size="sm">
                           {event.type}
                         </Badge>
+                        {event.status === "cancelled" && (
+                          <Badge variant="secondary" size="sm">
+                            Cancelled
+                          </Badge>
+                        )}
                       </div>
                       <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                         {event.description}
