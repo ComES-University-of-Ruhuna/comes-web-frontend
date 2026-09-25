@@ -2,7 +2,8 @@
 // ComES Website - Admin Contacts Page
 // ============================================
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -10,99 +11,132 @@ import {
   Trash2,
   MessageSquare,
   Archive,
-  Clock,
   X,
   Reply,
-  Star,
+  RefreshCw,
 } from "lucide-react";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
+import { contactService, type ContactSubmission } from "@/services/contact.service";
 
-interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: "new" | "read" | "replied" | "archived";
-  createdAt: string;
-  starred: boolean;
-}
-
-const mockMessages: ContactMessage[] = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    email: "sarah@example.com",
-    subject: "Inquiry about membership",
-    message:
-      "Hi, I am a first-year computer science student and I would like to join ComES. Can you please provide more information about how to become a member and what activities you organize?",
-    status: "new",
-    createdAt: "2026-01-28T10:30:00",
-    starred: false,
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    email: "michael.chen@example.com",
-    subject: "Partnership proposal",
-    message:
-      "Hello, I represent TechCorp and we are interested in sponsoring your upcoming hackathon. Please let me know who I should contact to discuss this further.",
-    status: "read",
-    createdAt: "2026-01-27T14:15:00",
-    starred: true,
-  },
-  {
-    id: "3",
-    name: "Emily Davis",
-    email: "emily.d@example.com",
-    subject: "Workshop feedback",
-    message:
-      "I attended your AI workshop last week and it was amazing! Thank you for organizing such a great event. Looking forward to more workshops in the future.",
-    status: "replied",
-    createdAt: "2026-01-25T09:00:00",
-    starred: false,
-  },
-];
-
-const statusFilters = ["All", "new", "read", "replied", "archived"];
+const statusFilters = ["new", "read", "replied", "archived"] as const;
+const errorMessage = (error: unknown) =>
+  (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+  (error instanceof Error ? error.message : "Unable to update contact messages.");
 
 export const ContactsPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const [messages, setMessages] = useState<ContactMessage[]>(mockMessages);
+  const [messages, setMessages] = useState<ContactSubmission[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All");
-  const [viewingMessage, setViewingMessage] = useState<ContactMessage | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<ContactSubmission["status"] | "">("");
+  const [viewingMessage, setViewingMessage] = useState<ContactSubmission | null>(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, pages: 0 });
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const viewingId = viewingMessage?._id;
 
-  const filteredMessages = messages.filter((msg) => {
-    const matchesSearch =
-      msg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      msg.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === "All" || msg.status === selectedStatus;
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setLoadError(null);
+    void contactService
+      .list({
+        page,
+        limit: 20,
+        search: searchQuery.trim() || undefined,
+        status: selectedStatus || undefined,
+      })
+      .then((response) => {
+        if (!active) return;
+        if (!response.success || !response.data)
+          throw new Error(response.message || "Unable to load messages.");
+        const { contacts, pagination: next } = response.data;
+        if (page > Math.max(1, next.pages)) {
+          setPage(Math.max(1, next.pages));
+          return;
+        }
+        setMessages(contacts);
+        setPagination(next);
+      })
+      .catch((error) => {
+        if (active) setLoadError(errorMessage(error));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [page, searchQuery, selectedStatus, revision]);
 
-  const handleStatusChange = (id: string, status: ContactMessage["status"]) => {
-    setMessages(messages.map((m) => (m.id === id ? { ...m, status } : m)));
-    if (viewingMessage?.id === id) {
-      setViewingMessage({ ...viewingMessage, status });
+  useEffect(() => {
+    if (!viewingId || !dialogRef.current) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    dialog.showModal();
+    return () => {
+      dialog.close();
+      if (opener?.isConnected) opener.focus();
+    };
+  }, [viewingId]);
+
+  const handleOpen = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    setActionError(null);
+    try {
+      const response = await contactService.get(id);
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Unable to open message.");
+      setViewingMessage(response.data.contact);
+      setRevision((value) => value + 1);
+    } catch (error) {
+      setActionError(errorMessage(error));
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleToggleStar = (id: string) => {
-    setMessages(messages.map((m) => (m.id === id ? { ...m, starred: !m.starred } : m)));
+  const handleStatusChange = async (id: string, status: ContactSubmission["status"]) => {
+    if (busy) return;
+    setBusy(true);
+    setActionError(null);
+    try {
+      const response = await contactService.updateStatus(id, status);
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Unable to update message.");
+      const updated = response.data.contact;
+      setViewingMessage((current) => (current?._id === id ? updated : current));
+      setRevision((value) => value + 1);
+    } catch (error) {
+      setActionError(errorMessage(error));
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this message?")) {
-      setMessages(messages.filter((m) => m.id !== id));
-      if (viewingMessage?.id === id) {
-        setViewingMessage(null);
-      }
+  const handleDelete = async (id: string) => {
+    if (busy || !confirm("Are you sure you want to delete this message?")) return;
+    setBusy(true);
+    setActionError(null);
+    try {
+      const response = await contactService.remove(id);
+      if (!response.success) throw new Error(response.message || "Unable to delete message.");
+      setViewingMessage((current) => (current?._id === id ? null : current));
+      setRevision((value) => value + 1);
+    } catch (error) {
+      setActionError(errorMessage(error));
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -131,66 +165,39 @@ export const ContactsPage = () => {
     });
   };
 
-  const stats = {
-    total: messages.length,
-    new: messages.filter((m) => m.status === "new").length,
-    starred: messages.filter((m) => m.starred).length,
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-          Contact Messages
-        </h1>
-        <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
-          Manage inquiries and feedback from visitors
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            Contact Messages
+          </h1>
+          <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
+            {loading
+              ? "Loading..."
+              : loadError
+                ? "Inbox unavailable"
+                : `${pagination.total} ${pagination.total === 1 ? "message" : "messages"}`}
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="Refresh messages"
+          title="Refresh messages"
+          disabled={loading || busy}
+          onClick={() => setRevision((value) => value + 1)}
+          className="shrink-0 rounded-lg border p-2 disabled:opacity-50"
+        >
+          <RefreshCw className="h-5 w-5" />
+        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {[
-          { label: "Total Messages", value: stats.total, icon: MessageSquare, color: "blue" },
-          { label: "New Messages", value: stats.new, icon: Clock, color: "green" },
-          { label: "Starred", value: stats.starred, icon: Star, color: "yellow" },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div
-            key={label}
-            className={cn(
-              "rounded-2xl border p-4",
-              isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={cn(
-                  "rounded-xl p-3",
-                  color === "blue" && (isDark ? "bg-blue-500/20" : "bg-blue-100"),
-                  color === "green" && (isDark ? "bg-green-500/20" : "bg-green-100"),
-                  color === "yellow" && (isDark ? "bg-yellow-500/20" : "bg-yellow-100"),
-                )}
-              >
-                <Icon
-                  className={cn(
-                    "h-5 w-5",
-                    color === "blue" && "text-blue-500",
-                    color === "green" && "text-green-500",
-                    color === "yellow" && "text-yellow-500",
-                  )}
-                />
-              </div>
-              <div>
-                <p className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-                  {value}
-                </p>
-                <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>{label}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {actionError && !viewingMessage && (
+        <p role="alert" className="text-sm text-red-500">
+          {actionError}
+        </p>
+      )}
 
       {/* Filters */}
       <div
@@ -209,9 +216,13 @@ export const ContactsPage = () => {
             />
             <input
               type="text"
+              aria-label="Search messages"
               placeholder="Search messages..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
               className={cn(
                 "w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors",
                 isDark
@@ -222,8 +233,12 @@ export const ContactsPage = () => {
             />
           </div>
           <select
+            aria-label="Filter by status"
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value as typeof selectedStatus);
+              setPage(1);
+            }}
             className={cn(
               "rounded-xl border px-4 py-2.5 capitalize transition-colors",
               isDark
@@ -232,9 +247,10 @@ export const ContactsPage = () => {
               "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
             )}
           >
+            <option value="">All Status</option>
             {statusFilters.map((status) => (
               <option key={status} value={status} className="capitalize">
-                {status === "All" ? "All Status" : status}
+                {status}
               </option>
             ))}
           </select>
@@ -248,47 +264,43 @@ export const ContactsPage = () => {
           isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
         )}
       >
-        {filteredMessages.length > 0 ? (
+        {loading ? (
+          <p role="status" className="p-8 text-center">
+            Loading messages...
+          </p>
+        ) : loadError ? (
+          <div role="alert" className="space-y-3 p-8 text-center">
+            <p>{loadError}</p>
+            <Button
+              onClick={() => setRevision((value) => value + 1)}
+              icon={<RefreshCw className="h-4 w-4" />}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : messages.length > 0 ? (
           <div className={cn("divide-y", isDark ? "divide-slate-800" : "divide-gray-100")}>
-            {filteredMessages.map((message) => (
+            {messages.map((message) => (
               <motion.div
-                key={message.id}
+                key={message._id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className={cn(
-                  "flex cursor-pointer items-start gap-4 p-4 transition-colors",
+                  "flex flex-col items-start gap-4 p-4 transition-colors sm:flex-row",
                   message.status === "new" && (isDark ? "bg-blue-500/5" : "bg-blue-50/50"),
                   isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50",
                 )}
-                onClick={() => {
-                  setViewingMessage(message);
-                  if (message.status === "new") {
-                    handleStatusChange(message.id, "read");
-                  }
-                }}
               >
-                {/* Star */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleStar(message.id);
-                  }}
-                  className="mt-1"
-                >
-                  <Star
-                    className={cn(
-                      "h-5 w-5 transition-colors",
-                      message.starred
-                        ? "fill-yellow-500 text-yellow-500"
-                        : isDark
-                          ? "text-gray-600 hover:text-gray-400"
-                          : "text-gray-300 hover:text-gray-400",
-                    )}
-                  />
-                </button>
-
                 {/* Content */}
-                <div className="min-w-0 flex-1">
+                <button
+                  type="button"
+                  disabled={busy}
+                  aria-label={`Open message: ${message.subject}`}
+                  onClick={() => {
+                    void handleOpen(message._id);
+                  }}
+                  className="w-full min-w-0 flex-1 text-left disabled:opacity-50"
+                >
                   <div className="mb-1 flex items-center gap-2">
                     <span
                       className={cn(
@@ -339,10 +351,10 @@ export const ContactsPage = () => {
                   >
                     {message.message}
                   </p>
-                </div>
+                </button>
 
                 {/* Date & Actions */}
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:flex-col sm:items-end">
                   <span
                     className={cn(
                       "text-xs whitespace-nowrap",
@@ -353,9 +365,13 @@ export const ContactsPage = () => {
                   </span>
                   <div className="flex items-center gap-1">
                     <button
+                      type="button"
+                      aria-label={`Archive message: ${message.subject}`}
+                      title="Archive message"
+                      disabled={busy || message.status === "archived"}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleStatusChange(message.id, "archived");
+                        void handleStatusChange(message._id, "archived");
                       }}
                       className={cn(
                         "rounded-lg p-1.5 transition-colors",
@@ -367,9 +383,13 @@ export const ContactsPage = () => {
                       <Archive className="h-4 w-4" />
                     </button>
                     <button
+                      type="button"
+                      aria-label={`Delete message: ${message.subject}`}
+                      title="Delete message"
+                      disabled={busy}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDelete(message.id);
+                        void handleDelete(message._id);
                       }}
                       className={cn(
                         "rounded-lg p-1.5 text-red-500 transition-colors",
@@ -394,15 +414,28 @@ export const ContactsPage = () => {
           </div>
         )}
       </div>
+      {!loadError && (
+        <CollectionPagination
+          page={page}
+          pages={pagination.pages}
+          onChange={setPage}
+          disabled={loading || busy}
+        />
+      )}
 
       {/* Message Viewer Modal */}
       {viewingMessage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-          onClick={() => setViewingMessage(null)}
+        <dialog
+          ref={dialogRef}
+          aria-labelledby="contact-message-title"
+          onCancel={() => setViewingMessage(null)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setViewingMessage(null);
+          }}
+          className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-lg border-0 p-0 backdrop:bg-black/50"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setViewingMessage(null);
+          }}
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
@@ -422,7 +455,10 @@ export const ContactsPage = () => {
               )}
             >
               <div className="flex items-center gap-3">
-                <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+                <h2
+                  id="contact-message-title"
+                  className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}
+                >
                   Message Details
                 </h2>
                 <Badge
@@ -438,6 +474,9 @@ export const ContactsPage = () => {
                 </Badge>
               </div>
               <button
+                type="button"
+                aria-label="Close message"
+                title="Close message"
                 onClick={() => setViewingMessage(null)}
                 className={cn(
                   "rounded-lg p-2",
@@ -449,8 +488,13 @@ export const ContactsPage = () => {
             </div>
 
             {/* Content */}
-            <div className="space-y-4 p-6">
-              <div className="flex items-center justify-between">
+            <div className="space-y-4 p-6 break-words">
+              {actionError && (
+                <p role="alert" className="text-sm text-red-500">
+                  {actionError}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p
                     className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}
@@ -487,40 +531,75 @@ export const ContactsPage = () => {
                   </p>
                 </div>
               </div>
+              <label
+                className={cn(
+                  "flex flex-wrap items-center gap-3 text-sm",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                Message status
+                <select
+                  value={viewingMessage.status}
+                  disabled={busy}
+                  onChange={(event) => {
+                    void handleStatusChange(
+                      viewingMessage._id,
+                      event.target.value as ContactSubmission["status"],
+                    );
+                  }}
+                  className={cn(
+                    "rounded border p-2 capitalize",
+                    isDark ? "border-slate-700 bg-slate-800" : "border-gray-300 bg-white",
+                  )}
+                >
+                  {statusFilters.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             {/* Actions */}
             <div
               className={cn(
-                "flex items-center justify-between border-t p-6",
+                "flex flex-wrap items-center justify-between gap-3 border-t p-6",
                 isDark ? "border-slate-800" : "border-gray-200",
               )}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleStatusChange(viewingMessage.id, "archived")}
+                  disabled={busy || viewingMessage.status === "archived"}
+                  onClick={() => {
+                    void handleStatusChange(viewingMessage._id, "archived");
+                  }}
                 >
                   <Archive className="mr-1 h-4 w-4" /> Archive
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleDelete(viewingMessage.id)}
+                  disabled={busy}
+                  onClick={() => {
+                    void handleDelete(viewingMessage._id);
+                  }}
                   className="text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                 >
                   <Trash2 className="mr-1 h-4 w-4" /> Delete
                 </Button>
               </div>
-              <a href={`mailto:${viewingMessage.email}?subject=Re: ${viewingMessage.subject}`}>
-                <Button variant="primary" icon={<Reply className="h-4 w-4" />}>
-                  Reply
-                </Button>
+              <a
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                href={`mailto:${encodeURIComponent(viewingMessage.email)}?subject=${encodeURIComponent(`Re: ${viewingMessage.subject}`)}`}
+              >
+                <Reply className="h-4 w-4" /> Reply by email
               </a>
             </div>
           </motion.div>
-        </motion.div>
+        </dialog>
       )}
     </div>
   );

@@ -23,10 +23,42 @@ export interface ContactSubmission {
   createdAt: string;
 }
 
+export interface ContactList {
+  contacts: ContactSubmission[];
+  pagination: { page: number; limit: number; total: number; pages: number };
+}
+
 export const contactService = {
   // Submit contact form
-  submit: async (data: ContactFormData): Promise<ApiResponse<{ contact: ContactSubmission }>> => {
-    const response = await api.post<ApiResponse<{ contact: ContactSubmission }>>("/contact", data);
+  submit: async (data: ContactFormData): Promise<ApiResponse<{ id: string }>> => {
+    const response = await api.post<ApiResponse<{ id: string }>>("/contact", data);
+    return response.data;
+  },
+  list: async (params: {
+    page: number;
+    limit: number;
+    search?: string;
+    status?: ContactSubmission["status"];
+  }): Promise<ApiResponse<ContactList>> => {
+    const response = await api.get<ApiResponse<ContactList>>("/contact", { params });
+    return response.data;
+  },
+  get: async (id: string): Promise<ApiResponse<{ contact: ContactSubmission }>> => {
+    const response = await api.get<ApiResponse<{ contact: ContactSubmission }>>(`/contact/${id}`);
+    return response.data;
+  },
+  updateStatus: async (
+    id: string,
+    status: ContactSubmission["status"],
+  ): Promise<ApiResponse<{ contact: ContactSubmission }>> => {
+    const response = await api.patch<ApiResponse<{ contact: ContactSubmission }>>(
+      `/contact/${id}`,
+      { status },
+    );
+    return response.data;
+  },
+  remove: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await api.delete<ApiResponse<null>>(`/contact/${id}`);
     return response.data;
   },
 };
