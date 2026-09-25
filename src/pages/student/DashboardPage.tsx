@@ -18,6 +18,7 @@ import {
   Sparkles,
   Users,
   UserPlus,
+  RefreshCw,
 } from "lucide-react";
 import { useStudentStore } from "@/store/studentStore";
 import { useThemeStore } from "@/store";
@@ -25,6 +26,8 @@ import { cn } from "@/utils";
 import { Button, Badge, CreateTeamModal } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
 import { DashboardSwitch } from "@/components/ui/DashboardSwitch";
+import { useEvents } from "@/hooks/useApi";
+import type { ApiEvent } from "@/services/events.service";
 
 // Quick Stats Card
 const StatCard = ({
@@ -56,14 +59,9 @@ const StatCard = ({
 );
 
 // Upcoming Events Card
-const UpcomingEventCard = ({
-  event,
-  isDark,
-}: {
-  event: { title: string; date: string; type: string };
-  isDark: boolean;
-}) => (
-  <div
+const UpcomingEventCard = ({ event, isDark }: { event: ApiEvent; isDark: boolean }) => (
+  <Link
+    to={`/events/${event.slug}`}
     className={cn(
       "flex items-center gap-4 rounded-xl p-4 transition-all",
       isDark ? "bg-slate-800/50 hover:bg-slate-800" : "bg-gray-50 hover:bg-gray-100",
@@ -78,15 +76,17 @@ const UpcomingEventCard = ({
       <Calendar className={cn("h-5 w-5", isDark ? "text-blue-400" : "text-blue-600")} />
     </div>
     <div className="min-w-0 flex-1">
-      <p className={cn("truncate font-medium", isDark ? "text-white" : "text-gray-900")}>
+      <p className={cn("font-medium break-words", isDark ? "text-white" : "text-gray-900")}>
         {event.title}
       </p>
-      <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>{event.date}</p>
+      <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
+        <time dateTime={event.date}>{new Date(event.date).toLocaleString()}</time>
+      </p>
     </div>
-    <Badge variant="secondary" className="shrink-0">
+    <Badge variant="secondary" className="shrink-0 capitalize">
       {event.type}
     </Badge>
-  </div>
+  </Link>
 );
 
 export const StudentDashboardPage = () => {
@@ -95,12 +95,12 @@ export const StudentDashboardPage = () => {
   const isDark = resolvedTheme === "dark";
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
-  // Mock data - replace with real data later
-  const upcomingEvents = [
-    { title: "Web Development Workshop", date: "Feb 5, 2026 - 2:00 PM", type: "Workshop" },
-    { title: "AI/ML Seminar", date: "Feb 10, 2026 - 10:00 AM", type: "Seminar" },
-    { title: "Hackathon 2026", date: "Feb 15, 2026 - 9:00 AM", type: "Competition" },
-  ];
+  const {
+    data: upcomingEvents,
+    isLoading: eventsLoading,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useEvents({ upcoming: true, limit: 3, sort: "date" });
 
   const quickLinks = [
     { icon: Users, label: "Organizing", href: "/student/organizing", color: "bg-teal-600" },
@@ -280,13 +280,10 @@ export const StudentDashboardPage = () => {
                 </motion.div>
 
                 {/* Upcoming Events */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
+                <section aria-labelledby="student-upcoming-events-title">
                   <div className="mb-4 flex items-center justify-between">
                     <h2
+                      id="student-upcoming-events-title"
                       className={cn(
                         "text-xl font-semibold",
                         isDark ? "text-white" : "text-gray-900",
@@ -311,12 +308,36 @@ export const StudentDashboardPage = () => {
                       className="divide-y"
                       style={{ borderColor: isDark ? "#334155" : "#e5e7eb" }}
                     >
-                      {upcomingEvents.map((event, index) => (
-                        <UpcomingEventCard key={index} event={event} isDark={isDark} />
-                      ))}
+                      {eventsLoading ? (
+                        <p role="status" className="p-6 text-center text-sm">
+                          Loading upcoming events...
+                        </p>
+                      ) : eventsError ? (
+                        <div role="alert" className="p-6 text-center text-sm">
+                          <p>Unable to load upcoming events.</p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void refetchEvents();
+                            }}
+                            className="mx-auto mt-3 flex items-center gap-2 rounded border border-current/20 px-3 py-2"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                            Retry events
+                          </button>
+                        </div>
+                      ) : upcomingEvents?.length ? (
+                        upcomingEvents.map((event) => (
+                          <UpcomingEventCard key={event._id} event={event} isDark={isDark} />
+                        ))
+                      ) : (
+                        <p role="status" className="p-6 text-center text-sm">
+                          No upcoming events at the moment.
+                        </p>
+                      )}
                     </div>
                   </div>
-                </motion.div>
+                </section>
               </div>
 
               {/* Sidebar */}

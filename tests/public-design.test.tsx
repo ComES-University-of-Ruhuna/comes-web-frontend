@@ -69,6 +69,19 @@ it("keeps the homepage identity, membership action, and subgroup links", () => {
   expect(screen.getByRole("img").getAttribute("src")).toBe("/banner.jpg");
 });
 
+it("keeps only the logo in the accessible navbar home link", () => {
+  render(
+    <MemoryRouter>
+      <Navbar />
+    </MemoryRouter>,
+  );
+  const home = screen.getByRole("link", { name: "ComES home" });
+  expect(home.getAttribute("href")).toBe("/");
+  expect(home.textContent?.trim()).toBe("");
+  expect(within(home).getByRole("img", { name: "ComES Logo" })).toBeTruthy();
+  expect(screen.queryByText("UNIVERSITY OF RUHUNA")).toBeNull();
+});
+
 it("exposes active navigation and expandable menus", () => {
   render(
     <MemoryRouter initialEntries={["/blog"]}>

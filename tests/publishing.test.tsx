@@ -7,6 +7,7 @@ import {
   renderHook,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -15,6 +16,7 @@ import { BlogPostPage } from "../src/pages/BlogPostPage";
 import { ProjectsPage } from "../src/pages/ProjectsPage";
 import { EventsPage } from "../src/pages/EventsPage";
 import { HomePage } from "../src/pages/HomePage";
+import { StudentDashboardPage } from "../src/pages/student/DashboardPage";
 import { EventDetailsPage } from "../src/pages/EventDetailsPage";
 import { EventCommitteeTable } from "../src/components/events/EventCommitteeTable";
 import { useEvents } from "../src/hooks/useApi";
@@ -37,6 +39,11 @@ vi.mock("../src/services/api", () => ({
   default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
 }));
 vi.mock("@/store", () => ({ useThemeStore: () => ({ resolvedTheme: "light" }) }));
+vi.mock("@/store/studentStore", () => ({
+  useStudentStore: () => ({ student: { name: "Example Student" } }),
+}));
+vi.mock("@/components/layout", () => ({ Navbar: () => null, Footer: () => null }));
+vi.mock("@/components/ui/DashboardSwitch", () => ({ DashboardSwitch: () => null }));
 vi.mock("@/components/ui", () => {
   const Wrapper = ({ children }: { children: ReactNode }) => <div>{children}</div>;
   return {
@@ -52,6 +59,7 @@ vi.mock("@/components/ui", () => {
     Badge: Wrapper,
     SectionHeader: ({ title }: { title: string }) => <h2>{title}</h2>,
     NewsletterSection: () => null,
+    CreateTeamModal: () => null,
     Button: ({
       children,
       onClick,
@@ -194,6 +202,52 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+});
+
+it("loads real upcoming student-dashboard events with dates and detail links", async () => {
+  upcomingEvents = [{ ...savedEvent, isFeatured: false }];
+  render(
+    <MemoryRouter>
+      <StudentDashboardPage />
+    </MemoryRouter>,
+  );
+  const section = within(screen.getByRole("region", { name: "Upcoming Events" }));
+  expect(section.getByText("Loading upcoming events...")).toBeTruthy();
+  const link = await section.findByRole("link", { name: new RegExp(savedEvent.title) });
+  expect(link.getAttribute("href")).toBe(`/events/${savedEvent.slug}`);
+  expect(section.getByText(new Date(savedEvent.date).toLocaleString())).toBeTruthy();
+  expect(link.querySelector("time")?.getAttribute("datetime")).toBe(savedEvent.date);
+  expect(api.get).toHaveBeenCalledWith("/events?upcoming=true&limit=3&sort=date");
+  for (const title of ["Web Development Workshop", "AI/ML Seminar", "Hackathon 2026"])
+    expect(screen.queryByText(title)).toBeNull();
+});
+
+it("shows an empty student-dashboard event list without sample events", async () => {
+  upcomingEvents = [];
+  render(
+    <MemoryRouter>
+      <StudentDashboardPage />
+    </MemoryRouter>,
+  );
+  const section = within(screen.getByRole("region", { name: "Upcoming Events" }));
+  await section.findByText("No upcoming events at the moment.");
+  expect(section.getAllByRole("link")).toHaveLength(1);
+  expect(section.queryByText("Web Development Workshop")).toBeNull();
+});
+
+it("retries failed student-dashboard event loads without substituting sample data", async () => {
+  vi.mocked(api.get).mockRejectedValueOnce(new Error("Unavailable"));
+  render(
+    <MemoryRouter>
+      <StudentDashboardPage />
+    </MemoryRouter>,
+  );
+  const section = within(screen.getByRole("region", { name: "Upcoming Events" }));
+  await section.findByText("Unable to load upcoming events.");
+  expect(section.queryByText("No upcoming events at the moment.")).toBeNull();
+  fireEvent.click(section.getByRole("button", { name: "Retry events" }));
+  await section.findByText(savedEvent.title);
+  expect(section.queryByRole("alert")).toBeNull();
 });
 
 it("shows non-featured upcoming and ongoing homepage events in a centered visible row", async () => {

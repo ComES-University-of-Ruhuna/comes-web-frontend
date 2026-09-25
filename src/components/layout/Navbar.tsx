@@ -352,7 +352,7 @@ export const Navbar = () => {
       <nav aria-label="Main navigation" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4 md:h-20 xl:gap-6">
           {/* Logo */}
-          <Link to="/" aria-label="ComES home" className="group flex shrink-0 items-center gap-2">
+          <Link to="/" aria-label="ComES home" className="group flex shrink-0 items-center">
             <motion.img
               src={logoSrc}
               alt="ComES Logo"
@@ -360,12 +360,6 @@ export const Navbar = () => {
               whileTap={{ scale: 0.95 }}
               className="h-12 w-12 object-contain sm:h-14 sm:w-14"
             />
-            <span className="text-lg font-bold text-[var(--site-heading)]">
-              ComES
-              <span className="hidden text-[10px] font-medium text-[var(--site-muted)] sm:block">
-                UNIVERSITY OF RUHUNA
-              </span>
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
