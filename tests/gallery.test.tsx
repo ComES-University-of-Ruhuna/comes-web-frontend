@@ -1,9 +1,13 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { GalleryPage } from "../src/pages/GalleryPage";
 import GalleryManagementPage from "../src/pages/admin/GalleryManagementPage";
-import { galleryService, type GalleryPhoto } from "../src/services/gallery.service";
+import {
+  galleryService,
+  type GalleryPhoto,
+  type GalleryData,
+} from "../src/services/gallery.service";
 import api from "../src/services/api";
 
 vi.hoisted(() => {
@@ -34,8 +38,26 @@ const photograph: GalleryPhoto = {
   createdAt: "2026-02-02",
 };
 let photos: GalleryPhoto[];
+let intersections: (() => void)[];
 beforeEach(() => {
   vi.resetAllMocks();
+  intersections = [];
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      constructor(callback: IntersectionObserverCallback) {
+        intersections.push(() =>
+          callback(
+            [{ isIntersecting: true } as IntersectionObserverEntry],
+            this as unknown as IntersectionObserver,
+          ),
+        );
+      }
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
   photos = [
     { ...photograph },
     { ...photograph, _id: "photo-2", title: "Workshop team", event: null },
@@ -74,9 +96,18 @@ beforeEach(() => {
         (!parsed.searchParams.get("event") ||
           photo.event?._id === parsed.searchParams.get("event")),
     );
+    const page = Number(parsed.searchParams.get("page")) || 1;
     return {
       data: {
-        data: { images, pagination: { page: 1, pages: 1, total: images.length, limit: 24 } },
+        data: {
+          images: images.slice((page - 1) * 24, page * 24),
+          pagination: {
+            page,
+            pages: Math.ceil(images.length / 24),
+            total: images.length,
+            limit: 24,
+          },
+        },
       },
     };
   });
@@ -103,7 +134,152 @@ beforeEach(() => {
     return { data: undefined };
   });
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
+
+const populatePhotos = (count: number) => {
+  photos = Array.from({ length: count }, (_, index) => ({
+    ...photograph,
+    _id: `photo-${index + 1}`,
+    title: `Photo ${index + 1}`,
+  }));
+};
+
+it("appends scroll batches once, keeps existing photo nodes, and stops at the end", async () => {
+  populatePhotos(50);
+  render(
+    <MemoryRouter>
+      <GalleryPage />
+    </MemoryRouter>,
+  );
+  const first = await screen.findByRole("button", { name: "View photo: Photo 1" });
+  const firstBatch = first.closest("figure")!.parentElement;
+  expect(screen.queryByRole("button", { name: "View photo: Photo 25" })).toBeNull();
+  expect(screen.getByAltText("Photo 4").getAttribute("loading")).toBe("lazy");
+  expect(screen.queryByRole("navigation", { name: "Pagination" })).toBeNull();
+  const intersect = intersections.at(-1)!;
+  act(() => {
+    intersect();
+    intersect();
+  });
+  await screen.findByRole("button", { name: "View photo: Photo 48" });
+  expect(screen.getByRole("button", { name: "View photo: Photo 1" })).toBe(first);
+  expect(first.closest("figure")!.parentElement).toBe(firstBatch);
+  expect(
+    screen.getByRole("button", { name: "View photo: Photo 25" }).closest("figure")!.parentElement,
+  ).not.toBe(firstBatch);
+  expect(
+    vi.mocked(api.get).mock.calls.filter(([url]) => String(url).includes("page=2")),
+  ).toHaveLength(1);
+  expect(vi.mocked(api.get).mock.calls.filter(([url]) => url === "/gallery/albums")).toHaveLength(
+    1,
+  );
+  await waitFor(() =>
+    expect(
+      (screen.getByRole("button", { name: "Load more photos" }) as HTMLButtonElement).disabled,
+    ).toBe(false),
+  );
+  act(() => intersections.at(-1)!());
+  await screen.findByText("All photographs loaded.");
+  expect(screen.getAllByRole("button", { name: /^View photo:/ })).toHaveLength(50);
+  expect(screen.queryByRole("button", { name: "Load more photos" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "View photo: Photo 25" }));
+  expect(within(screen.getByRole("dialog")).getByText("25 / 50")).toBeTruthy();
+});
+
+it("keeps previous photos on a loading error and retries the same batch without duplicates", async () => {
+  populatePhotos(26);
+  const original = vi.mocked(api.get).getMockImplementation()!;
+  let fail = true;
+  vi.mocked(api.get).mockImplementation(async (url, config) => {
+    if (String(url).includes("page=2")) {
+      if (fail) {
+        fail = false;
+        throw new Error("Unavailable");
+      }
+      return {
+        data: {
+          data: {
+            images: [photos[23], photos[24], photos[25]],
+            pagination: { page: 2, pages: 2, total: 26, limit: 24 },
+          },
+        },
+      };
+    }
+    return original(url, config);
+  });
+  render(
+    <MemoryRouter>
+      <GalleryPage />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("button", { name: "View photo: Photo 24" });
+  act(() => intersections.at(-1)!());
+  await screen.findByText("Unable to load more photographs.");
+  expect(screen.getAllByRole("button", { name: /^View photo:/ })).toHaveLength(24);
+  act(() => intersections.at(-1)!());
+  expect(
+    vi.mocked(api.get).mock.calls.filter(([url]) => String(url).includes("page=2")),
+  ).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Retry loading" }));
+  await screen.findByText("All photographs loaded.");
+  expect(screen.getAllByRole("button", { name: /^View photo:/ })).toHaveLength(26);
+  expect(
+    vi.mocked(api.get).mock.calls.filter(([url]) => String(url).includes("page=2")),
+  ).toHaveLength(2);
+});
+
+it("resets batches on event changes and ignores an old pending response", async () => {
+  populatePhotos(26);
+  photos = photos.map((photo, index) => ({ ...photo, event: index < 24 ? null : event }));
+  const original = vi.mocked(api.get).getMockImplementation()!;
+  let resolvePage: ((response: { data: { data: GalleryData } }) => void) | undefined;
+  vi.mocked(api.get).mockImplementation((url, config) =>
+    String(url).includes("page=2")
+      ? new Promise((resolve) => {
+          resolvePage = resolve;
+        })
+      : original(url, config),
+  );
+  render(
+    <MemoryRouter>
+      <GalleryPage />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("button", { name: "View photo: Photo 24" });
+  act(() => intersections.at(-1)!());
+  await waitFor(() => expect(resolvePage).toBeDefined());
+  fireEvent.change(screen.getByLabelText("Event"), { target: { value: event._id } });
+  await screen.findByText("2 photographs");
+  await act(async () =>
+    resolvePage!({
+      data: {
+        data: {
+          images: [{ ...photograph, _id: "stale", title: "Stale photo" }],
+          pagination: { page: 2, pages: 2, total: 26, limit: 24 },
+        },
+      },
+    }),
+  );
+  expect(screen.getAllByRole("button", { name: /^View photo:/ })).toHaveLength(2);
+  expect(screen.queryByRole("button", { name: "View photo: Stale photo" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "View photo: Photo 1" })).toBeNull();
+});
+
+it("offers manual loading when IntersectionObserver is unavailable", async () => {
+  vi.stubGlobal("IntersectionObserver", undefined);
+  populatePhotos(25);
+  render(
+    <MemoryRouter>
+      <GalleryPage />
+    </MemoryRouter>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Load more photos" }));
+  await screen.findByRole("button", { name: "View photo: Photo 25" });
+  expect(screen.getAllByRole("button", { name: /^View photo:/ })).toHaveLength(25);
+});
 
 it("renders persisted photographs, real totals, and a null-event archive", async () => {
   render(

@@ -34,7 +34,7 @@ The ComES Website serves as the digital platform for the Computer Engineering So
 
 ### Event Gallery
 
-`/gallery` is an API-backed photo archive with event filters, pagination, and a full-screen keyboard-accessible viewer. Only published photographs are public; no sample photos are substituted when the gallery is empty or unavailable.
+`/gallery` is an API-backed photo archive with event filters, scroll-to-load batches, lazy-loaded images, and a full-screen keyboard-accessible viewer. Photos are appended on the same page as visitors approach the bottom, with a manual load/retry control as a fallback. Only published photographs are public; no sample photos are substituted when the gallery is empty or unavailable.
 
 In **Admin > Gallery**, select an event, add up to 20 JPEG/PNG/WebP photos (maximum 3 MiB each), edit their titles/captions, and choose **Save photos**. Uncheck **Publish photos** for drafts. Individual photos can be edited, published/unpublished, or removed with confirmation. Uploads preserve the original framing and run sequentially; partial failures can be retried without repeating completed uploads. Keep the page open until the queue finishes.
 
