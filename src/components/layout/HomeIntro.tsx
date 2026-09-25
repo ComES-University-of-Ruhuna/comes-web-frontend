@@ -13,8 +13,8 @@ export const HomeIntro = () => (
   <>
     <section className="site-home-hero">
       <img
-        src="/engineering-board.jpg"
-        alt="Electronic components on a circuit board"
+        src="/banner.jpg"
+        alt="ComES homepage banner"
         fetchPriority="high"
         className="site-home-photo"
       />

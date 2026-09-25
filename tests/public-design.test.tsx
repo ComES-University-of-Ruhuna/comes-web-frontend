@@ -66,7 +66,7 @@ it("keeps the homepage identity, membership action, and subgroup links", () => {
   expect(
     screen.getByRole("navigation", { name: "Engineering subgroups" }).querySelectorAll("a").length,
   ).toBe(4);
-  expect(screen.getByRole("img").getAttribute("src")).toBe("/engineering-board.jpg");
+  expect(screen.getByRole("img").getAttribute("src")).toBe("/banner.jpg");
 });
 
 it("exposes active navigation and expandable menus", () => {
