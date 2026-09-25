@@ -4,6 +4,7 @@ import { HomeIntro } from "@/components/layout/HomeIntro";
 // ============================================
 
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import {
   ArrowRight,
   Users,
@@ -192,7 +193,11 @@ const EventsPreviewSection = () => {
                           {event.type}
                         </Badge>
                       </div>
-                      <h3 className="mb-2 text-xl font-bold">{event.title}</h3>
+                      <h3 className="mb-2 text-xl font-bold">
+                        <Link to={`/events/${event.slug}`} className="hover:underline">
+                          {event.title}
+                        </Link>
+                      </h3>
                       <div className="flex items-center gap-4 text-sm opacity-90">
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
@@ -231,8 +236,14 @@ const EventsPreviewSection = () => {
                         />
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="w-full" href="/events">
-                      Register Now
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      href={`/events/${event.slug}`}
+                      icon={<ArrowRight className="h-4 w-4" />}
+                    >
+                      View Details
                     </Button>
                   </div>
                 </Card>

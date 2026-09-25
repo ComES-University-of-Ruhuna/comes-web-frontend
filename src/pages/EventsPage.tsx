@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState } from "react";
+import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, MapPin, ArrowRight, Sparkles, Users, Ticket } from "lucide-react";
 import {
@@ -28,7 +29,7 @@ import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
 const eventTypeOptions = ["All", "Competition", "Workshop", "Other"];
 
 // Event Card Component
-const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
+const EventCard = ({ event }: { event: ApiEvent }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const eventDate = new Date(event.date);
@@ -37,7 +38,7 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
     event.status === "upcoming" && event.isRegistrationOpen && eventDate > new Date() && !isFull;
 
   return (
-    <FadeInView direction="up" delay={index * 0.1}>
+    <div>
       <motion.div>
         <Card
           hoverable
@@ -48,12 +49,14 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
           )}
         >
           {event.image && (
-            <img
-              src={event.image}
-              alt={event.title}
-              loading="lazy"
-              className="aspect-video w-full object-cover"
-            />
+            <Link to={`/events/${event.slug}`} aria-label={`View ${event.title}`}>
+              <img
+                src={event.image}
+                alt={event.title}
+                loading="lazy"
+                className="aspect-video w-full object-cover"
+              />
+            </Link>
           )}
           <CardHeader>
             <div className="mb-4 flex items-center justify-between">
@@ -71,7 +74,11 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                 {event.status}
               </Badge>
             )}
-            <h3 className="mb-2 text-xl font-bold">{event.title}</h3>
+            <h3 className="mb-2 text-xl font-bold">
+              <Link to={`/events/${event.slug}`} className="hover:underline">
+                {event.title}
+              </Link>
+            </h3>
             <div className="flex flex-wrap items-center gap-4 text-sm opacity-90">
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
@@ -194,11 +201,17 @@ const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
                 </Button>
               </HoverScale>
             </div>
+            <Link
+              to={`/events/${event.slug}`}
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:underline"
+            >
+              View Details <ArrowRight className="h-4 w-4" />
+            </Link>
             <EventCommitteeTable eventId={event._id} title={event.title} />
           </CardBody>
         </Card>
       </motion.div>
-    </FadeInView>
+    </div>
   );
 };
 
@@ -257,13 +270,13 @@ const UpcomingEventsSection = () => {
 
   return (
     <Section background={isDark ? "dark" : "white"}>
-      <FadeInView>
+      <div>
         <SectionHeader
           title="Upcoming & Ongoing Events"
           subtitle="Don't miss out on these exciting opportunities to learn and connect."
           light={isDark}
         />
-      </FadeInView>
+      </div>
 
       <FilterTabs
         options={eventTypeOptions}
@@ -291,21 +304,17 @@ const UpcomingEventsSection = () => {
             {filteredEvents.length > 0 ? (
               <motion.div
                 key={filter}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
               >
-                {filteredEvents.map((event, index) => (
-                  <EventCard key={event._id} event={event} index={index} />
+                {filteredEvents.map((event) => (
+                  <EventCard key={event._id} event={event} />
                 ))}
               </motion.div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="py-12 text-center"
-              >
+              <motion.div initial={false} animate={{ opacity: 1 }} className="py-12 text-center">
                 <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
                   {filter === "All"
                     ? "No upcoming or ongoing events at the moment."
@@ -336,13 +345,13 @@ const PastEventsSection = () => {
 
   return (
     <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
-      <FadeInView>
+      <div>
         <SectionHeader
           title="Past Events"
           subtitle="A look back at our previous events and achievements."
           light={false}
         />
-      </FadeInView>
+      </div>
 
       {isLoading ? (
         <p role="status" className="py-12 text-center">
@@ -360,8 +369,8 @@ const PastEventsSection = () => {
       ) : (
         <>
           <div className="grid gap-6 md:grid-cols-2">
-            {pastEvents.map((event, index) => (
-              <FadeInView key={event._id} direction="left" delay={index * 0.1}>
+            {pastEvents.map((event) => (
+              <div key={event._id}>
                 <motion.div>
                   <Card
                     padding="lg"
@@ -371,12 +380,18 @@ const PastEventsSection = () => {
                     )}
                   >
                     {event.image ? (
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        loading="lazy"
-                        className="aspect-video w-full rounded-lg object-cover"
-                      />
+                      <Link
+                        to={`/events/${event.slug}`}
+                        aria-label={`View ${event.title}`}
+                        className="block w-full"
+                      >
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          loading="lazy"
+                          className="aspect-video w-full rounded-lg object-cover"
+                        />
+                      </Link>
                     ) : (
                       <motion.div className="text-4xl">{event.icon}</motion.div>
                     )}
@@ -388,7 +403,9 @@ const PastEventsSection = () => {
                             isDark ? "text-white" : "text-comesBlue",
                           )}
                         >
-                          {event.title}
+                          <Link to={`/events/${event.slug}`} className="hover:underline">
+                            {event.title}
+                          </Link>
                         </h3>
                         <Badge variant="secondary" size="sm">
                           {event.type}
@@ -426,11 +443,17 @@ const PastEventsSection = () => {
                           {event.registeredCount} registrations
                         </span>
                       </div>
+                      <Link
+                        to={`/events/${event.slug}`}
+                        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:underline"
+                      >
+                        View Details <ArrowRight className="h-4 w-4" />
+                      </Link>
                       <EventCommitteeTable eventId={event._id} title={event.title} />
                     </div>
                   </Card>
                 </motion.div>
-              </FadeInView>
+              </div>
             ))}
           </div>
           <CollectionPagination page={page} pages={pagination?.pages ?? 0} onChange={setPage} />

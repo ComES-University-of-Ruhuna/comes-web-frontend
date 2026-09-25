@@ -12,6 +12,7 @@ import { initializeTheme, initializeCookies, useAuthStore, useStudentStore } fro
 import { HomePage } from "@/pages/HomePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { EventsPage } from "@/pages/EventsPage";
+import { EventDetailsPage } from "@/pages/EventDetailsPage";
 import { TeamPage } from "@/pages/TeamPage";
 import { ProjectsPage } from "@/pages/ProjectsPage";
 import { GalleryPage } from "@/pages/GalleryPage";
@@ -140,6 +141,7 @@ const AnimatedRoutes = () => {
             <Route path="/subgroups/embedded-electronics" element={<EmbeddedElectronicsPage />} />
             <Route path="/subgroups/network-security" element={<NetworkSecurityPage />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:slug" element={<EventDetailsPage />} />
             <Route path="/team" element={<TeamPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />

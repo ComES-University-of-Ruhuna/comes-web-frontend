@@ -61,7 +61,9 @@ const EventCard = ({
       {/* Image */}
       {event.image && (
         <div className="relative mb-4 h-40 overflow-hidden rounded-xl">
-          <img src={event.image} alt={event.title} className="h-full w-full object-cover" />
+          <Link to={`/events/${event.slug}`} aria-label={`View ${event.title}`}>
+            <img src={event.image} alt={event.title} className="h-full w-full object-cover" />
+          </Link>
           {event.isFeatured && (
             <div className="absolute top-2 right-2">
               <Badge variant="primary" className="gap-1">
@@ -80,7 +82,9 @@ const EventCard = ({
             {event.type}
           </Badge>
           <h3 className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
-            {event.title}
+            <Link to={`/events/${event.slug}`} className="hover:underline">
+              {event.title}
+            </Link>
           </h3>
         </div>
       </div>
@@ -223,6 +227,12 @@ const EventCard = ({
         )}
       </div>
       <div className={isDark ? "text-gray-300" : "text-gray-700"}>
+        <Link
+          to={`/events/${event.slug}`}
+          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:underline"
+        >
+          View Details <ChevronRight className="h-4 w-4" />
+        </Link>
         <EventCommitteeTable eventId={event._id} title={event.title} />
       </div>
     </motion.div>

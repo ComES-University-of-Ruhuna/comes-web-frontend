@@ -2,8 +2,16 @@ import { useEffect, useState } from "react";
 import { RotateCw, Users } from "lucide-react";
 import { eventsService, type PublicCommitteeMember } from "@/services/events.service";
 
-export const EventCommitteeTable = ({ eventId, title }: { eventId: string; title: string }) => {
-  const [open, setOpen] = useState(false);
+export const EventCommitteeTable = ({
+  eventId,
+  title,
+  defaultOpen = false,
+}: {
+  eventId: string;
+  title: string;
+  defaultOpen?: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
   const [members, setMembers] = useState<PublicCommitteeMember[] | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -28,6 +36,7 @@ export const EventCommitteeTable = ({ eventId, title }: { eventId: string; title
 
   return (
     <details
+      open={open}
       className="mt-4 min-w-0 border-t border-current/15 pt-3"
       onToggle={(event) => setOpen(event.currentTarget.open)}
     >

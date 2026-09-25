@@ -14,6 +14,7 @@ import { BlogPage } from "../src/pages/BlogPage";
 import { BlogPostPage } from "../src/pages/BlogPostPage";
 import { ProjectsPage } from "../src/pages/ProjectsPage";
 import { EventsPage } from "../src/pages/EventsPage";
+import { EventDetailsPage } from "../src/pages/EventDetailsPage";
 import { EventCommitteeTable } from "../src/components/events/EventCommitteeTable";
 import { useEvents } from "../src/hooks/useApi";
 import type { ApiEvent } from "../src/services/events.service";
@@ -40,7 +41,9 @@ vi.mock("@/components/ui", () => {
   return {
     Section: Wrapper,
     PageTransition: Wrapper,
-    FadeInView: Wrapper,
+    FadeInView: ({ children }: { children: ReactNode }) => (
+      <div style={{ opacity: 0 }}>{children}</div>
+    ),
     HoverScale: Wrapper,
     Card: Wrapper,
     CardHeader: Wrapper,
@@ -141,6 +144,7 @@ beforeEach(() => {
       ...savedEvent,
       _id: "completed-event",
       title: "Saved completed event",
+      slug: "saved-completed-event",
       date: "2026-01-01",
       status: "completed",
       isRegistrationOpen: false,
@@ -149,6 +153,14 @@ beforeEach(() => {
   vi.mocked(api.get).mockImplementation(async (url) => {
     const path = String(url);
     const pagination = { page: 1, pages: 1, total: 1, limit: 12 };
+    if (path.startsWith("/events/slug/"))
+      return {
+        data: {
+          success: true,
+          data: { event: path.endsWith("saved-completed-event") ? completedEvents[0] : savedEvent },
+        },
+      };
+    if (path.endsWith("/organizers")) return { data: { success: true, data: { members: [] } } };
     if (path.startsWith("/events?")) {
       const events = path.includes("period=past") ? completedEvents : upcomingEvents;
       return {
@@ -203,6 +215,104 @@ it("renders saved upcoming and completed events with real registration counts", 
     screen.getAllByText(new Date(savedEvent.endDate!).toLocaleString()).length,
   ).toBeGreaterThan(0);
   expect(screen.queryByRole("button", { name: "Hackathon" })).toBeNull();
+});
+
+it("keeps fetched event cards visible when scroll reveal callbacks never fire", async () => {
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  for (const title of [savedEvent.title, "Saved completed event"]) {
+    const heading = await screen.findByRole("heading", { name: title });
+    for (let element: HTMLElement | null = heading; element; element = element.parentElement) {
+      expect(element.style.opacity, `${title} must not depend on a hidden ancestor`).not.toBe("0");
+    }
+  }
+});
+
+it("navigates from a completed event card to its full details and back", async () => {
+  render(
+    <MemoryRouter initialEntries={["/events"]}>
+      <Routes>
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  const link = await screen.findByRole("link", { name: "Saved completed event" });
+  expect(link.getAttribute("href")).toBe("/events/saved-completed-event");
+  expect(screen.getByRole("link", { name: savedEvent.title }).getAttribute("href")).toBe(
+    `/events/${savedEvent.slug}`,
+  );
+  fireEvent.click(link);
+  await screen.findByRole("heading", { level: 1, name: "Saved completed event" });
+  fireEvent.click(screen.getByRole("link", { name: "All events" }));
+  await screen.findByRole("heading", { name: "Past Events" });
+});
+
+it("retries a failed event detail request", async () => {
+  vi.mocked(api.get).mockRejectedValueOnce(new Error("Offline"));
+  render(
+    <MemoryRouter initialEntries={["/events/saved-community-event"]}>
+      <Routes>
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findByRole("alert");
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  await screen.findByRole("heading", { level: 1, name: savedEvent.title });
+  expect(screen.getByRole("link", { name: "View Registration" }).getAttribute("href")).toBe(
+    "/student/events",
+  );
+});
+
+it("opens public event details with the complete description and expanded committee", async () => {
+  vi.mocked(api.get).mockImplementation(async (url) => ({
+    data: {
+      success: true,
+      data: String(url).endsWith("/organizers")
+        ? { members: [{ name: "Alex Member", role: "Chair", team: "Operations" }] }
+        : {
+            event: {
+              ...savedEvent,
+              status: "completed",
+              description: "Full event description\nIncluding the complete event programme.",
+            },
+          },
+    },
+  }));
+  render(
+    <MemoryRouter initialEntries={["/events/saved-community-event"]}>
+      <Routes>
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { level: 1, name: savedEvent.title });
+  expect(screen.getByText(/Including the complete event programme/)).toBeTruthy();
+  await screen.findByRole("table", { name: `${savedEvent.title} organizing committee` });
+  expect(screen.getByRole("img", { name: savedEvent.title }).getAttribute("src")).toBe(
+    savedEvent.image,
+  );
+  expect(screen.getByText("Registration Closed")).toBeTruthy();
+  expect(api.get).toHaveBeenCalledWith("/events/slug/saved-community-event");
+  expect(screen.getByRole("link", { name: "All events" }).getAttribute("href")).toBe("/events");
+});
+
+it("shows a missing-event state and lets visitors return to the listing", async () => {
+  vi.mocked(api.get).mockRejectedValue({ isAxiosError: true, response: { status: 404 } });
+  render(
+    <MemoryRouter initialEntries={["/events/missing"]}>
+      <Routes>
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { name: "Event not found" });
+  expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
+  expect(screen.getByRole("link", { name: "All events" })).toBeTruthy();
 });
 
 it("loads a public committee table only when expanded", async () => {
