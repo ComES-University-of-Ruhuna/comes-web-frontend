@@ -2,7 +2,7 @@
 // ComES Website - Admin Members Management Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -35,7 +35,7 @@ interface Student {
   linkedin?: string;
   website?: string;
   isEmailVerified: boolean;
-  registeredEvents?: any[];
+  registeredEvents?: (string | { _id: string })[];
   createdAt: string;
 }
 
@@ -410,7 +410,6 @@ const NotificationModal = ({
 
 export const MembersManagementPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
@@ -427,15 +426,12 @@ export const MembersManagementPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  useEffect(() => {
-    fetchStudents();
+  const showToast = useCallback((type: "success" | "error", message: string) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3000);
   }, []);
 
-  useEffect(() => {
-    filterStudentsData();
-  }, [searchQuery, students, filterVerified]);
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/students");
@@ -451,9 +447,13 @@ export const MembersManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
-  const filterStudentsData = () => {
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
+
+  const filteredStudents = (() => {
     let filtered = students;
 
     // Filter by verification status
@@ -475,8 +475,8 @@ export const MembersManagementPage = () => {
       );
     }
 
-    setFilteredStudents(filtered);
-  };
+    return filtered;
+  })();
 
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (!confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
@@ -521,11 +521,6 @@ export const MembersManagementPage = () => {
       showToast("error", "Failed to send broadcast notification");
       console.error("Error sending broadcast notification:", error);
     }
-  };
-
-  const showToast = (type: "success" | "error", message: string) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 3000);
   };
 
   const exportToCSV = () => {
@@ -721,7 +716,7 @@ export const MembersManagementPage = () => {
           <div className="flex gap-2">
             <select
               value={filterVerified}
-              onChange={(e) => setFilterVerified(e.target.value as any)}
+              onChange={(event) => setFilterVerified(event.target.value as typeof filterVerified)}
               className={cn(
                 "rounded-lg border px-4 py-2 transition-colors",
                 isDark

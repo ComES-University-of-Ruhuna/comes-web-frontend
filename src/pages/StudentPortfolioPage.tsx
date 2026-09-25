@@ -3,6 +3,7 @@
 // ============================================
 
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -68,8 +69,11 @@ export const StudentPortfolioPage = () => {
         setError("");
         const response = await api.get(`/students/portfolio/${username}`);
         setStudent(response.data.data.student);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load student portfolio");
+      } catch (err) {
+        setError(
+          (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) ||
+            "Failed to load student portfolio",
+        );
       } finally {
         setLoading(false);
       }

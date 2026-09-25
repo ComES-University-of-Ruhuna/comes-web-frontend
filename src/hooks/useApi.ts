@@ -35,6 +35,7 @@ interface AsyncState<T> {
 export function useEvents(
   filters?: EventFilters,
 ): AsyncState<ApiEvent[]> & { pagination: { page: number; pages: number; total: number } | null } {
+  const { type, status, featured, upcoming, page, limit, sort } = filters ?? {};
   const [data, setData] = useState<ApiEvent[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -48,7 +49,15 @@ export function useEvents(
     setIsLoading(true);
     setError(null);
     try {
-      const response = await eventsService.getAll(filters);
+      const response = await eventsService.getAll({
+        type,
+        status,
+        featured,
+        upcoming,
+        page,
+        limit,
+        sort,
+      });
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -62,7 +71,7 @@ export function useEvents(
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [type, status, featured, upcoming, page, limit, sort]);
 
   useEffect(() => {
     fetch();
@@ -138,6 +147,7 @@ export function useEventRegistration() {
 export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> & {
   pagination: { page: number; pages: number; total: number } | null;
 } {
+  const { category, status, featured, page, limit, sort } = filters ?? {};
   const [data, setData] = useState<ApiProject[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -151,7 +161,14 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
     setIsLoading(true);
     setError(null);
     try {
-      const response = await projectsService.getAll(filters);
+      const response = await projectsService.getAll({
+        category,
+        status,
+        featured,
+        page,
+        limit,
+        sort,
+      });
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -165,7 +182,7 @@ export function useProjects(filters?: ProjectFilters): AsyncState<ApiProject[]> 
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [category, status, featured, page, limit, sort]);
 
   useEffect(() => {
     fetch();
@@ -233,6 +250,7 @@ export function useProjectCategories(): AsyncState<string[]> {
 export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> & {
   pagination: { page: number; pages: number; total: number } | null;
 } {
+  const { category, tag, featured, status, page, limit, sort } = filters ?? {};
   const [data, setData] = useState<ApiBlogPost[] | null>(null);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -246,7 +264,15 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
     setIsLoading(true);
     setError(null);
     try {
-      const response = await blogService.getAll(filters);
+      const response = await blogService.getAll({
+        category,
+        tag,
+        featured,
+        status,
+        page,
+        limit,
+        sort,
+      });
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -260,7 +286,7 @@ export function useBlogPosts(filters?: BlogFilters): AsyncState<ApiBlogPost[]> &
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [category, tag, featured, status, page, limit, sort]);
 
   useEffect(() => {
     fetch();
@@ -299,6 +325,7 @@ export function useFeaturedBlogPosts(): AsyncState<ApiBlogPost[]> {
 // ==================== Team Hooks ====================
 
 export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[]> {
+  const { department, isActive, batch } = filters ?? {};
   const [data, setData] = useState<ApiTeamMember[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -307,7 +334,7 @@ export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[
     setIsLoading(true);
     setError(null);
     try {
-      const response = await teamService.getAll(filters);
+      const response = await teamService.getAll({ department, isActive, batch });
       if (response.data) {
         setData(response.data.members);
       }
@@ -316,7 +343,7 @@ export function useTeamMembers(filters?: TeamFilters): AsyncState<ApiTeamMember[
     } finally {
       setIsLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [department, isActive, batch]);
 
   useEffect(() => {
     fetch();

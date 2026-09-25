@@ -186,7 +186,7 @@ src/
 
 ### Prerequisites
 
-- **Node.js** >= 18.0.0
+- **Node.js** 20+ (use an LTS release; required by React Router and Vitest)
 - **npm** >= 9.0.0 or **yarn** >= 1.22.0
 
 ### Installation
@@ -229,6 +229,7 @@ src/
 | `npm run dev` | Start development server with HMR |
 | `npm run build` | Type-check and build for production |
 | `npm run preview` | Preview production build locally |
+| `npm test` | Run collection and quiz timer regression tests |
 | `npm run lint` | Run ESLint with auto-fix |
 | `npm run format:check` | Check code formatting |
 | `npm run format:write` | Format code with Prettier |
@@ -277,7 +278,7 @@ npm run build
 ### Docker
 
 ```dockerfile
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci

@@ -2,7 +2,10 @@
 // ComES Website - Admin Dashboard Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import type { AxiosResponse } from "axios";
+import type { LucideIcon } from "lucide-react";
+import type { ApiResponse, ApiEvent, ContactSubmission, Student, ApiTeamMember } from "@/services";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -163,7 +166,7 @@ const RecentActivity = ({ type, title, time }: RecentActivityItem) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const typeConfig: Record<string, { icon: any; color: string }> = {
+  const typeConfig: Record<RecentActivityItem["type"], { icon: LucideIcon; color: string }> = {
     event: { icon: Calendar, color: "bg-blue-500/10 text-blue-500" },
     blog: { icon: FileText, color: "bg-green-500/10 text-green-500" },
     contact: { icon: Mail, color: "bg-amber-500/10 text-amber-500" },
@@ -213,6 +216,17 @@ interface DashboardStats {
   contacts: number;
 }
 
+interface DashboardData {
+  [key: string]: unknown;
+  pagination?: { total: number };
+  total?: number;
+  events?: ApiEvent[];
+  contacts?: ContactSubmission[];
+  messages?: ContactSubmission[];
+  students?: Student[];
+  members?: ApiTeamMember[];
+}
+
 export const DashboardPage = () => {
   const { resolvedTheme } = useThemeStore();
   const { user } = useAuthStore();
@@ -229,51 +243,51 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const fetchDashboardData = useCallback(async () => {
+    const formatTimeAgo = (dateStr: string): string => {
+      if (!dateStr) return "Recently";
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
 
-  const formatTimeAgo = (dateStr: string): string => {
-    if (!dateStr) return "Recently";
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+      if (diffMins < 1) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+      return date.toLocaleDateString();
+    };
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-    return date.toLocaleDateString();
-  };
-
-  const fetchDashboardData = async () => {
     setLoading(true);
     try {
       const [eventsRes, projectsRes, blogRes, newsletterRes, membersRes, teamRes, contactsRes] =
         await Promise.allSettled([
-          api.get("/events"),
-          api.get("/projects"),
-          api.get("/blog"),
-          api.get("/newsletter/subscribers"),
-          api.get("/students"),
-          api.get("/team"),
-          api.get("/contact"),
+          api.get<ApiResponse<DashboardData>>("/events"),
+          api.get<ApiResponse<DashboardData>>("/projects"),
+          api.get<ApiResponse<DashboardData>>("/blog"),
+          api.get<ApiResponse<DashboardData>>("/newsletter/subscribers"),
+          api.get<ApiResponse<DashboardData>>("/students"),
+          api.get<ApiResponse<DashboardData>>("/team"),
+          api.get<ApiResponse<DashboardData>>("/contact"),
         ]);
 
-      const getCount = (res: PromiseSettledResult<any>, ...paths: string[]) => {
+      const getCount = (
+        res: PromiseSettledResult<AxiosResponse<ApiResponse<DashboardData>>>,
+        ...paths: string[]
+      ) => {
         if (res.status !== "fulfilled") return 0;
         const data = res.value?.data?.data;
         if (!data) return 0;
+        if (typeof data.pagination?.total === "number") return data.pagination.total;
+        if (typeof data.total === "number") return data.total;
         for (const path of paths) {
-          if (data[path] !== undefined) {
-            return Array.isArray(data[path]) ? data[path].length : data[path];
-          }
+          const value = data[path];
+          if (Array.isArray(value)) return value.length;
+          if (typeof value === "number") return value;
         }
-        if (data.total !== undefined) return data.total;
         return 0;
       };
 
@@ -293,11 +307,11 @@ export const DashboardPage = () => {
       if (eventsRes.status === "fulfilled") {
         const events = eventsRes.value?.data?.data?.events;
         if (Array.isArray(events)) {
-          events.slice(0, 2).forEach((e: any) => {
+          events.slice(0, 2).forEach((event) => {
             activities.push({
               type: "event",
-              title: e.title || "New event",
-              time: formatTimeAgo(e.createdAt || e.date),
+              title: event.title || "New event",
+              time: formatTimeAgo(event.createdAt || event.date),
             });
           });
         }
@@ -307,11 +321,11 @@ export const DashboardPage = () => {
         const contacts =
           contactsRes.value?.data?.data?.contacts || contactsRes.value?.data?.data?.messages;
         if (Array.isArray(contacts)) {
-          contacts.slice(0, 2).forEach((c: any) => {
+          contacts.slice(0, 2).forEach((contact) => {
             activities.push({
               type: "contact",
-              title: `Message from ${c.name || "Anonymous"}${c.subject ? ": " + c.subject : ""}`,
-              time: formatTimeAgo(c.createdAt),
+              title: `Message from ${contact.name || "Anonymous"}${contact.subject ? ": " + contact.subject : ""}`,
+              time: formatTimeAgo(contact.createdAt),
             });
           });
         }
@@ -320,11 +334,11 @@ export const DashboardPage = () => {
       if (membersRes.status === "fulfilled") {
         const students = membersRes.value?.data?.data?.students;
         if (Array.isArray(students)) {
-          students.slice(0, 2).forEach((s: any) => {
+          students.slice(0, 2).forEach((student) => {
             activities.push({
               type: "member",
-              title: `New member: ${s.name}`,
-              time: formatTimeAgo(s.createdAt),
+              title: `New member: ${student.name}`,
+              time: formatTimeAgo(student.createdAt),
             });
           });
         }
@@ -333,11 +347,11 @@ export const DashboardPage = () => {
       if (teamRes.status === "fulfilled") {
         const members = teamRes.value?.data?.data?.members;
         if (Array.isArray(members)) {
-          members.slice(0, 1).forEach((m: any) => {
+          members.slice(0, 1).forEach((member) => {
             activities.push({
               type: "team",
-              title: `Team: ${m.name} - ${m.role}`,
-              time: formatTimeAgo(m.createdAt),
+              title: `Team: ${member.name} - ${member.role}`,
+              time: formatTimeAgo(member.createdAt),
             });
           });
         }
@@ -349,7 +363,11 @@ export const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const statCards = [
     {

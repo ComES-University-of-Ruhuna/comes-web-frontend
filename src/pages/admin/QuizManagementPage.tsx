@@ -102,7 +102,11 @@ const QuizFormModal = ({
     setQuestions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const updateQuestion = (index: number, field: keyof QuestionFormData, value: any) => {
+  const updateQuestion = <Field extends keyof QuestionFormData>(
+    index: number,
+    field: Field,
+    value: QuestionFormData[Field],
+  ) => {
     setQuestions((prev) => prev.map((q, i) => (i === index ? { ...q, [field]: value } : q)));
   };
 

@@ -2,58 +2,103 @@
 // ComES Website - Main App Component
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router";
 import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
 import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { initializeTheme, initializeCookies, useAuthStore, useStudentStore } from "@/store";
+import { HomePage } from "@/pages/HomePage";
+import { AboutPage } from "@/pages/AboutPage";
+import { EventsPage } from "@/pages/EventsPage";
+import { TeamPage } from "@/pages/TeamPage";
+import { ProjectsPage } from "@/pages/ProjectsPage";
+import { GalleryPage } from "@/pages/GalleryPage";
+import { BlogPage } from "@/pages/BlogPage";
+import { ContactPage } from "@/pages/ContactPage";
+import { FAQPage } from "@/pages/FAQPage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
+import { UnderMaintenancePage } from "@/pages/UnderMaintenancePage";
+import { StudentRegisterPage } from "@/pages/StudentRegisterPage";
+import { StudentLoginPage } from "@/pages/StudentLoginPage";
+import { StudentPortfolioPage } from "@/pages/StudentPortfolioPage";
 import {
-  HomePage,
-  AboutPage,
-  EventsPage,
-  TeamPage,
-  ProjectsPage,
-  GalleryPage,
-  BlogPage,
-  ContactPage,
-  FAQPage,
-  NotFoundPage,
-  UnderMaintenancePage,
-  StudentRegisterPage,
-  StudentLoginPage,
-  StudentPortfolioPage,
-  StudentDashboardPage,
-  StudentProfilePage,
-  StudentEventsPage,
-  StudentSettingsPage,
-  StudentTeamsPage,
-  StudentQuizzesPage,
-  StudentQuizTakePage,
-  StudentCertificatesPage,
-  StudentResourcesPage,
   SoftwareEngineeringPage,
   AIDataSciencePage,
   EmbeddedElectronicsPage,
   NetworkSecurityPage,
-} from "@/pages";
-import {
-  AdminLayout,
-  LoginPage as AdminLoginPage,
-  DashboardPage,
-  BlogManagementPage,
-  EventsManagementPage,
-  ProjectsManagementPage,
-  TeamManagementPage,
-  ContactsPage as AdminContactsPage,
-  NewsletterPage,
-  SettingsPage,
-  AnalyticsPage,
-  MembersManagementPage,
-  NotificationsPage,
-  QuizManagementPage,
-} from "@/pages/admin";
+} from "@/pages/subgroups";
+
+const StudentDashboardPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentDashboardPage })),
+);
+const StudentProfilePage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentProfilePage })),
+);
+const StudentEventsPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentEventsPage })),
+);
+const StudentSettingsPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentSettingsPage })),
+);
+const StudentTeamsPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentTeamsPage })),
+);
+const StudentQuizzesPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentQuizzesPage })),
+);
+const StudentQuizTakePage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentQuizTakePage })),
+);
+const StudentCertificatesPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentCertificatesPage })),
+);
+const StudentResourcesPage = lazy(() =>
+  import("@/pages/student").then((pages) => ({ default: pages.StudentResourcesPage })),
+);
+const AdminLayout = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.AdminLayout })),
+);
+const AdminLoginPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.LoginPage })),
+);
+const DashboardPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.DashboardPage })),
+);
+const BlogManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.BlogManagementPage })),
+);
+const EventsManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.EventsManagementPage })),
+);
+const ProjectsManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.ProjectsManagementPage })),
+);
+const TeamManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.TeamManagementPage })),
+);
+const AdminContactsPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.ContactsPage })),
+);
+const NewsletterPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.NewsletterPage })),
+);
+const SettingsPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.SettingsPage })),
+);
+const AnalyticsPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.AnalyticsPage })),
+);
+const MembersManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.MembersManagementPage })),
+);
+const NotificationsPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.NotificationsPage })),
+);
+const QuizManagementPage = lazy(() =>
+  import("@/pages/admin").then((pages) => ({ default: pages.QuizManagementPage })),
+);
 
 // Initialize theme and cookies on app load
 initializeTheme();
@@ -181,7 +226,7 @@ function App() {
       checkAuth();
     }
     checkStudentAuth();
-  }, []);
+  }, [checkAuth, checkStudentAuth]);
 
   const handleLoadingComplete = () => {
     sessionStorage.setItem("comes-visited", "true");
@@ -197,7 +242,15 @@ function App() {
       {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
       {showApp && (
         <BrowserRouter>
-          <AnimatedRoutes />
+          <Suspense
+            fallback={
+              <div role="status" className="flex min-h-screen items-center justify-center">
+                Loading...
+              </div>
+            }
+          >
+            <AnimatedRoutes />
+          </Suspense>
         </BrowserRouter>
       )}
     </>

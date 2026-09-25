@@ -50,8 +50,16 @@ export const projectsService = {
         if (value !== undefined) params.append(key, String(value));
       });
     }
-    const response = await api.get<ApiResponse<PaginatedData<ApiProject>>>(`/projects?${params}`);
-    return response.data;
+    const response = await api.get<
+      ApiResponse<{ projects: ApiProject[]; pagination: PaginatedData<ApiProject>["pagination"] }>
+    >(`/projects?${params}`);
+    return {
+      ...response.data,
+      data: response.data.data && {
+        items: response.data.data.projects,
+        pagination: response.data.data.pagination,
+      },
+    };
   },
 
   // Get featured projects

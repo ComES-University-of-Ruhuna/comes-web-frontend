@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState, useEffect } from "react";
+import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import {
   User,
@@ -84,7 +85,9 @@ export const ProfilePage = () => {
     }
   }, [student]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -124,8 +127,10 @@ export const ProfilePage = () => {
       } else {
         setError(response.message || "Failed to update profile");
       }
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || "Failed to update profile";
+    } catch (err) {
+      const errorMessage =
+        (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) ||
+        (err instanceof Error ? err.message : "Failed to update profile");
       setError(errorMessage);
       console.error("Profile update error:", err);
     } finally {
@@ -163,8 +168,11 @@ export const ProfilePage = () => {
       } else {
         setPasswordError(response.message || "Failed to change password");
       }
-    } catch (err: any) {
-      setPasswordError(err.response?.data?.message || err.message || "Failed to change password");
+    } catch (err) {
+      setPasswordError(
+        (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) ||
+          (err instanceof Error ? err.message : "Failed to change password"),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -601,7 +609,7 @@ export const ProfilePage = () => {
                   <textarea
                     name="bio"
                     value={formData.bio}
-                    onChange={handleChange as any}
+                    onChange={handleChange}
                     disabled={!isEditing}
                     rows={3}
                     maxLength={500}

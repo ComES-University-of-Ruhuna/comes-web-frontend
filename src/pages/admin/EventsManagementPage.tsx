@@ -2,7 +2,7 @@
 // ComES Website - Admin Events Management Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api";
 import { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -351,16 +351,12 @@ export const EventsManagementPage = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const showToast = (type: "success" | "error", message: string) => {
+  const showToast = useCallback((type: "success" | "error", message: string) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 3000);
-  };
+  }, []);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/events?limit=100&sort=-date");
@@ -374,7 +370,11 @@ export const EventsManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());

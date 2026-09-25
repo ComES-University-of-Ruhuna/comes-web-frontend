@@ -47,8 +47,16 @@ export const eventsService = {
         if (value !== undefined) params.append(key, String(value));
       });
     }
-    const response = await api.get<ApiResponse<PaginatedData<ApiEvent>>>(`/events?${params}`);
-    return response.data;
+    const response = await api.get<
+      ApiResponse<{ events: ApiEvent[]; pagination: PaginatedData<ApiEvent>["pagination"] }>
+    >(`/events?${params}`);
+    return {
+      ...response.data,
+      data: response.data.data && {
+        items: response.data.data.events,
+        pagination: response.data.data.pagination,
+      },
+    };
   },
 
   // Get featured events

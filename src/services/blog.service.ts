@@ -48,8 +48,16 @@ export const blogService = {
         if (value !== undefined) params.append(key, String(value));
       });
     }
-    const response = await api.get<ApiResponse<PaginatedData<ApiBlogPost>>>(`/blog?${params}`);
-    return response.data;
+    const response = await api.get<
+      ApiResponse<{ posts: ApiBlogPost[]; pagination: PaginatedData<ApiBlogPost>["pagination"] }>
+    >(`/blog?${params}`);
+    return {
+      ...response.data,
+      data: response.data.data && {
+        items: response.data.data.posts,
+        pagination: response.data.data.pagination,
+      },
+    };
   },
 
   // Get featured posts

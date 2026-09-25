@@ -2,7 +2,7 @@
 // ComES Website - Admin Analytics Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -99,7 +99,7 @@ interface ProgressBarProps {
 const ProgressBar = ({ label, value, total, color }: ProgressBarProps) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
-  const percentage = (value / total) * 100;
+  const percentage = total > 0 ? (value / total) * 100 : 0;
 
   return (
     <div className="mb-4">
@@ -134,7 +134,7 @@ interface BarChartProps {
 const SimpleBarChart = ({ data, maxValue }: BarChartProps) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
-  const max = maxValue || Math.max(...data.map((d) => d.value));
+  const max = Math.max(1, maxValue ?? 0, ...data.map((item) => item.value));
 
   return (
     <div className="flex h-32 items-end gap-1">
@@ -162,7 +162,7 @@ export const AnalyticsPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     try {
       const today = new Date();
@@ -193,11 +193,11 @@ export const AnalyticsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [dateRange]);
+  }, [fetchAnalytics]);
 
   const getDeviceIcon = (device: string) => {
     switch (device.toLowerCase()) {

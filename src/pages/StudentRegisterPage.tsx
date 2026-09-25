@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -175,11 +176,15 @@ export const StudentRegisterPage = () => {
       } else {
         toast.error(data.message || "Registration failed");
       }
-    } catch (error: any) {
+    } catch (error) {
       // Handle API error response
+      const errorData = isAxiosError<{ message?: string; errors?: FormErrors }>(error)
+        ? error.response?.data
+        : undefined;
       const errorMessage =
-        error.response?.data?.message || error.message || "Registration failed. Please try again.";
-      const validationErrors = error.response?.data?.errors;
+        errorData?.message ||
+        (error instanceof Error ? error.message : "Registration failed. Please try again.");
+      const validationErrors = errorData?.errors;
 
       // Show main error message
       toast.error(errorMessage);

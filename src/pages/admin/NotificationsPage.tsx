@@ -2,7 +2,7 @@
 // ComES Website - Admin Notifications Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -92,20 +92,14 @@ export const NotificationsPage = () => {
   const [totalStudents, setTotalStudents] = useState(0);
   const [activeSubscribers, setActiveSubscribers] = useState(0);
 
-  const showToast = (type: "success" | "error", msg: string) => {
+  const showToast = useCallback((type: "success" | "error", msg: string) => {
     setToast({ type, message: msg });
     setTimeout(() => setToast(null), 4000);
-  };
+  }, []);
 
   useEffect(() => {
     fetchStats();
   }, []);
-
-  useEffect(() => {
-    if (activeTab === "individual") {
-      fetchStudents();
-    }
-  }, [activeTab]);
 
   const fetchStats = async () => {
     try {
@@ -120,7 +114,7 @@ export const NotificationsPage = () => {
     }
   };
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       setLoadingStudents(true);
       const response = await api.get("/students");
@@ -130,7 +124,13 @@ export const NotificationsPage = () => {
     } finally {
       setLoadingStudents(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    if (activeTab === "individual") {
+      fetchStudents();
+    }
+  }, [activeTab, fetchStudents]);
 
   const filteredStudents = students.filter((s) => {
     if (!studentSearch.trim()) return true;

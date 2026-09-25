@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router";
 import {
@@ -53,8 +54,11 @@ export const SettingsPage = () => {
       await studentService.deleteAccount();
       logout();
       navigate("/");
-    } catch (err: any) {
-      setDeleteError(err.response?.data?.message || "Failed to delete account. Please try again.");
+    } catch (err) {
+      setDeleteError(
+        (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) ||
+          "Failed to delete account. Please try again.",
+      );
       setIsDeleting(false);
     }
   };
