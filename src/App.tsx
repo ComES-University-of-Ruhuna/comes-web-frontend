@@ -2,11 +2,11 @@
 // ComES Website - Main App Component
 // ============================================
 
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from "react-router";
 import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
-import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
+import { CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { initializeTheme, initializeCookies, useAuthStore, useStudentStore } from "@/store";
 import { HomePage } from "@/pages/HomePage";
@@ -229,19 +229,8 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [showApp, setShowApp] = useState(false);
   const { checkAuth } = useAuthStore();
   const checkStudentAuth = useStudentStore((state) => state.checkAuth);
-
-  useEffect(() => {
-    // Check if user has already visited (skip loading on subsequent visits)
-    const hasVisited = sessionStorage.getItem("comes-visited");
-    if (hasVisited) {
-      setIsLoading(false);
-      setShowApp(true);
-    }
-  }, []);
 
   // Proactively validate/refresh the admin session on every app load
   useEffect(() => {
@@ -251,31 +240,22 @@ function App() {
     checkStudentAuth();
   }, [checkAuth, checkStudentAuth]);
 
-  const handleLoadingComplete = () => {
-    sessionStorage.setItem("comes-visited", "true");
-    setIsLoading(false);
-    setTimeout(() => setShowApp(true), 100);
-  };
-
   return (
     <>
       <CustomCursor />
       <CookieConsent />
       <ToastContainer />
-      {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
-      {showApp && (
-        <BrowserRouter>
-          <Suspense
-            fallback={
-              <div role="status" className="flex min-h-screen items-center justify-center">
-                Loading...
-              </div>
-            }
-          >
-            <AnimatedRoutes />
-          </Suspense>
-        </BrowserRouter>
-      )}
+      <BrowserRouter>
+        <Suspense
+          fallback={
+            <div role="status" className="flex min-h-screen items-center justify-center">
+              Loading...
+            </div>
+          }
+        >
+          <AnimatedRoutes />
+        </Suspense>
+      </BrowserRouter>
     </>
   );
 }

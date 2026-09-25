@@ -9,7 +9,6 @@ export { Card, CardHeader, CardBody, CardFooter } from "./Card";
 export { Section, SectionHeader } from "./Section";
 export { Badge } from "./Badge";
 export { Input, Textarea, Select } from "./Input";
-export { LoadingScreen } from "./LoadingScreen";
 export { ModernRobot } from "./ModernRobot";
 export { NewsletterSection } from "./NewsletterSection";
 export {
