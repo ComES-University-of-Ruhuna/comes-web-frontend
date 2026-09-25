@@ -16,6 +16,7 @@ import {
   Zap,
   TrendingUp,
   Clock3,
+  RefreshCw,
 } from "lucide-react";
 import {
   Button,
@@ -27,7 +28,7 @@ import {
   FadeInView,
   HoverScale,
 } from "@/components/ui";
-import { useFeaturedEvents, useFeaturedProjects } from "@/hooks/useApi";
+import { useEvents, useFeaturedProjects } from "@/hooks/useApi";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 
@@ -156,115 +157,140 @@ const AboutPreviewSection = () => {
 const EventsPreviewSection = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
-  const { data } = useFeaturedEvents();
-  const featuredEvents = (data ?? []).slice(0, 3);
+  const upcoming = useEvents({ period: "current", status: "upcoming", limit: 3, sort: "date" });
+  const ongoing = useEvents({ period: "current", status: "ongoing", limit: 3, sort: "date" });
+  const currentEvents = [...(ongoing.data ?? []), ...(upcoming.data ?? [])].slice(0, 3);
+  const isLoading = upcoming.isLoading || ongoing.isLoading;
+  const error = upcoming.error || ongoing.error;
 
   return (
     <Section
       background={isDark ? "dark" : "white"}
       className={isDark ? "bg-slate-950" : "text-comesBlue"}
     >
-      <FadeInView>
-        <SectionHeader
-          title="Upcoming Events"
-          subtitle="Join us for exciting events that foster learning, innovation, and community building."
-          light={isDark}
-        />
-      </FadeInView>
+      <SectionHeader
+        title="Upcoming & Ongoing Events"
+        subtitle="Join us for exciting events that foster learning, innovation, and community building."
+        light={isDark}
+      />
 
-      {featuredEvents.length ? (
-        <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featuredEvents.map((event, index) => (
-            <FadeInView key={event._id} direction="up" delay={index * 0.1}>
-              <motion.div>
-                <Card
-                  hoverable
-                  padding="none"
-                  className={cn("flex h-full flex-col", isDark && "border-slate-700 bg-slate-800")}
-                >
-                  <div className="site-accent-panel relative overflow-hidden from-blue-500 to-cyan-500 p-6 text-white">
-                    <div className="relative z-10">
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="text-4xl">{event.icon || ""}</span>
-                        <Badge
-                          variant="secondary"
-                          size="sm"
-                          className="border-white/30 bg-white/20 text-white"
-                        >
-                          {event.type}
-                        </Badge>
-                      </div>
-                      <h3 className="mb-2 text-xl font-bold">
-                        <Link to={`/events/${event.slug}`} className="hover:underline">
-                          {event.title}
-                        </Link>
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm opacity-90">
-                        <span className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {new Date(event.date).toLocaleDateString()}
-                        </span>
-                      </div>
+      {isLoading ? (
+        <p role="status" className="mb-12 py-8 text-center">
+          Loading events...
+        </p>
+      ) : error ? (
+        <div role="alert" className="mb-12 py-8 text-center">
+          <p>Unable to load upcoming and ongoing events.</p>
+          <button
+            type="button"
+            onClick={() => {
+              void upcoming.refetch();
+              void ongoing.refetch();
+            }}
+            className="mx-auto mt-4 flex items-center gap-2 rounded border border-current/20 px-4 py-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry events
+          </button>
+        </div>
+      ) : currentEvents.length ? (
+        <ul
+          aria-label="Upcoming and ongoing events"
+          className="mb-12 flex list-none flex-wrap justify-center gap-6 p-0"
+        >
+          {currentEvents.map((event) => (
+            <li
+              key={event._id}
+              className="flex w-full max-w-sm min-w-0 md:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)]"
+            >
+              <Card
+                hoverable
+                padding="none"
+                className={cn(
+                  "flex h-full w-full min-w-0 flex-col",
+                  isDark && "border-slate-700 bg-slate-800",
+                )}
+              >
+                <div className="site-accent-panel relative overflow-hidden from-blue-500 to-cyan-500 p-6 text-white">
+                  <div className="relative z-10">
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="text-4xl">{event.icon || ""}</span>
+                      <Badge
+                        variant="secondary"
+                        size="sm"
+                        className="border-white/30 bg-white/20 text-white"
+                      >
+                        {event.type}
+                      </Badge>
+                    </div>
+                    <p className="mb-2 text-xs font-semibold">
+                      {event.status === "ongoing" ? "Ongoing" : "Upcoming"}
+                    </p>
+                    <h3 className="mb-2 text-xl font-bold break-words">
+                      <Link to={`/events/${event.slug}`} className="hover:underline">
+                        {event.title}
+                      </Link>
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm opacity-90">
+                      <span className="flex items-center gap-1">
+                        <Calendar size={14} />
+                        {new Date(event.date).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex flex-1 flex-col p-6">
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <div
+                    className={cn("mb-4 line-clamp-2", isDark ? "text-gray-400" : "text-gray-600")}
+                  >
+                    <EventDescription preview>{event.description}</EventDescription>
+                  </div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                      {event.registeredCount}
+                      {event.maxParticipants ? `/${event.maxParticipants}` : ""} registered
+                    </span>
                     <div
                       className={cn(
-                        "mb-4 line-clamp-2",
-                        isDark ? "text-gray-400" : "text-gray-600",
+                        "h-2 w-24 rounded-full",
+                        isDark ? "bg-slate-700" : "bg-gray-200",
                       )}
                     >
-                      <EventDescription preview>{event.description}</EventDescription>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{
+                          width: `${event.maxParticipants ? Math.min((event.registeredCount / event.maxParticipants) * 100, 100) : 0}%`,
+                        }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="site-accent-panel h-2 rounded-full from-blue-500 to-cyan-500"
+                      />
                     </div>
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        {event.registeredCount}
-                        {event.maxParticipants ? `/${event.maxParticipants}` : ""} registered
-                      </span>
-                      <div
-                        className={cn(
-                          "h-2 w-24 rounded-full",
-                          isDark ? "bg-slate-700" : "bg-gray-200",
-                        )}
-                      >
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{
-                            width: `${event.maxParticipants ? Math.min((event.registeredCount / event.maxParticipants) * 100, 100) : 0}%`,
-                          }}
-                          transition={{ duration: 1, delay: 0.5 }}
-                          className="site-accent-panel h-2 rounded-full from-blue-500 to-cyan-500"
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      href={`/events/${event.slug}`}
-                      icon={<ArrowRight className="h-4 w-4" />}
-                    >
-                      View Details
-                    </Button>
                   </div>
-                </Card>
-              </motion.div>
-            </FadeInView>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    href={`/events/${event.slug}`}
+                    icon={<ArrowRight className="h-4 w-4" />}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              </Card>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <div className="mb-12">
-          <PendingContent />
-        </div>
+        <p className="mb-12 py-8 text-center">No upcoming or ongoing events at the moment.</p>
       )}
 
-      <FadeInView className="text-center">
+      <div className="text-center">
         <HoverScale>
           <Button href="/events" icon={<ArrowRight className="h-4 w-4" />}>
             View All Events
           </Button>
         </HoverScale>
-      </FadeInView>
+      </div>
     </Section>
   );
 };

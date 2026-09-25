@@ -14,6 +14,7 @@ import { BlogPage } from "../src/pages/BlogPage";
 import { BlogPostPage } from "../src/pages/BlogPostPage";
 import { ProjectsPage } from "../src/pages/ProjectsPage";
 import { EventsPage } from "../src/pages/EventsPage";
+import { HomePage } from "../src/pages/HomePage";
 import { EventDetailsPage } from "../src/pages/EventDetailsPage";
 import { EventCommitteeTable } from "../src/components/events/EventCommitteeTable";
 import { useEvents } from "../src/hooks/useApi";
@@ -162,7 +163,10 @@ beforeEach(() => {
       };
     if (path.endsWith("/organizers")) return { data: { success: true, data: { members: [] } } };
     if (path.startsWith("/events?")) {
-      const events = path.includes("period=past") ? completedEvents : upcomingEvents;
+      const status = new URL(path, "http://test").searchParams.get("status");
+      const events = (path.includes("period=past") ? completedEvents : upcomingEvents).filter(
+        (event) => !status || event.status === status,
+      );
       return {
         data: {
           success: true,
@@ -190,6 +194,75 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+});
+
+it("shows non-featured upcoming and ongoing homepage events in a centered visible row", async () => {
+  upcomingEvents = [
+    { ...savedEvent, isFeatured: false },
+    {
+      ...savedEvent,
+      _id: "ongoing-event",
+      slug: "ongoing-event",
+      title: "Ongoing workshop",
+      status: "ongoing",
+      isFeatured: false,
+    },
+    {
+      ...savedEvent,
+      _id: "cancelled-event",
+      title: "Cancelled workshop",
+      status: "cancelled",
+      isFeatured: true,
+    },
+  ];
+  render(
+    <MemoryRouter>
+      <HomePage />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("Loading events...")).toBeTruthy();
+  const list = await screen.findByRole("list", { name: "Upcoming and ongoing events" });
+  expect(screen.getByRole("heading", { name: "Ongoing workshop" })).toBeTruthy();
+  expect(screen.getByRole("heading", { name: savedEvent.title })).toBeTruthy();
+  expect(screen.queryByRole("heading", { name: "Cancelled workshop" })).toBeNull();
+  expect(list.classList.contains("justify-center")).toBe(true);
+  expect(list.querySelectorAll("li")).toHaveLength(2);
+  expect(list.querySelector("h3")?.textContent).toBe("Ongoing workshop");
+  let ancestor: HTMLElement | null = list;
+  while (ancestor) {
+    expect(ancestor.style.opacity).not.toBe("0");
+    ancestor = ancestor.parentElement;
+  }
+  expect(api.get).toHaveBeenCalledWith(
+    expect.stringMatching(/status=upcoming.*period=current.*limit=3.*sort=date/),
+  );
+  expect(api.get).toHaveBeenCalledWith(
+    expect.stringMatching(/status=ongoing.*period=current.*limit=3.*sort=date/),
+  );
+  expect(api.get).not.toHaveBeenCalledWith("/events/featured");
+});
+
+it("keeps a single homepage event centered and distinguishes empty and failed loads", async () => {
+  const { unmount } = render(
+    <MemoryRouter>
+      <HomePage />
+    </MemoryRouter>,
+  );
+  const list = await screen.findByRole("list", { name: "Upcoming and ongoing events" });
+  expect(list.querySelectorAll("li")).toHaveLength(1);
+  expect(list.classList.contains("justify-center")).toBe(true);
+  unmount();
+  upcomingEvents = [];
+  vi.mocked(api.get).mockRejectedValueOnce(new Error("Unavailable"));
+  render(
+    <MemoryRouter>
+      <HomePage />
+    </MemoryRouter>,
+  );
+  await screen.findByText("Unable to load upcoming and ongoing events.");
+  expect(screen.queryByText("No upcoming or ongoing events at the moment.")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Retry events" }));
+  expect(await screen.findByText("No upcoming or ongoing events at the moment.")).toBeTruthy();
 });
 
 it("renders saved upcoming and completed events with real registration counts", async () => {
