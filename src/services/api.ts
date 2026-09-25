@@ -27,7 +27,7 @@ export const setStudentAdminAccess = (enabled: boolean) => {
 type AuthRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean; _studentAuth?: boolean };
 
 const requiresStudentToken = (url: string, method?: string): boolean =>
-  /^\/students\/(me(?:\?|$)|my-|events\/|organized-events(?:\/|\?|$)|change-password(?:\?|$)|search(?:\?|$))/.test(
+  /^\/students\/(me(?:\/|\?|$)|my-|events\/|organized-events(?:\/|\?|$)|change-password(?:\?|$)|search(?:\?|$))/.test(
     url,
   ) ||
   (/^\/quizzes\/[^/]+\/attempt(?:\?|$)/.test(url) && method === "post");

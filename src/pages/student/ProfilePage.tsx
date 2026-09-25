@@ -2,7 +2,7 @@
 // ComES Website - Student Profile Page
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import {
@@ -16,6 +16,8 @@ import {
   CheckCircle,
   ArrowLeft,
   Lock,
+  RefreshCw,
+  LoaderCircle,
 } from "lucide-react";
 import { Link } from "react-router";
 import { useStudentStore } from "@/store/studentStore";
@@ -58,6 +60,13 @@ export const ProfilePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoProgress, setPhotoProgress] = useState(0);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoSuccess, setPhotoSuccess] = useState(false);
+  const busy = isLoading || photoUploading;
 
   // Password change state
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -70,7 +79,7 @@ export const ProfilePage = () => {
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    if (student) {
+    if (student && !isEditing) {
       setFormData({
         name: student.name || "",
         email: student.email || "",
@@ -83,7 +92,40 @@ export const ProfilePage = () => {
         website: student.website || "",
       });
     }
-  }, [student]);
+  }, [student, isEditing]);
+
+  const handlePhotoUpload = async (file: File) => {
+    if (busy || !student) return;
+    setPhotoError(null);
+    setPhotoSuccess(false);
+    setPhotoFile(null);
+    if (
+      !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+      !file.size ||
+      file.size > 3 * 1024 * 1024
+    ) {
+      setPhotoError("Choose a JPEG, PNG, or WebP image up to 3 MB.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoUploading(true);
+    setPhotoProgress(0);
+    try {
+      const response = await studentService.uploadAvatar(file, setPhotoProgress);
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Unable to update profile photo.");
+      updateStudent(response.data.student);
+      setPhotoFile(null);
+      setPhotoSuccess(true);
+    } catch (failure) {
+      setPhotoError(
+        (isAxiosError<{ message?: string }>(failure) && failure.response?.data?.message) ||
+          (failure instanceof Error ? failure.message : "Unable to update profile photo."),
+      );
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -99,6 +141,7 @@ export const ProfilePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     setIsLoading(true);
     setError(null);
     setSuccess(null);
@@ -140,6 +183,7 @@ export const ProfilePage = () => {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     setPasswordError(null);
     setPasswordSuccess(null);
 
@@ -238,16 +282,37 @@ export const ProfilePage = () => {
                       getInitials(student?.name || "S")
                     )}
                   </div>
+                  <input
+                    ref={photoInput}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                    aria-label="Choose profile photo"
+                    disabled={busy || !student}
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      event.currentTarget.value = "";
+                      if (file) void handlePhotoUpload(file);
+                    }}
+                  />
                   <button
+                    type="button"
+                    onClick={() => photoInput.current?.click()}
+                    disabled={busy || !student}
+                    aria-label="Change profile photo"
                     className={cn(
-                      "absolute right-0 bottom-0 rounded-full p-2 opacity-0 transition-all group-hover:opacity-100",
+                      "absolute right-0 bottom-0 flex h-10 w-10 items-center justify-center rounded-full transition-all disabled:opacity-50",
                       isDark
                         ? "bg-slate-800 text-white hover:bg-slate-700"
                         : "bg-white text-gray-700 shadow-lg hover:bg-gray-50",
                     )}
-                    title="Change avatar (coming soon)"
+                    title="Change profile photo"
                   >
-                    <Camera className="h-4 w-4" />
+                    {photoUploading ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
 
@@ -274,10 +339,11 @@ export const ProfilePage = () => {
                 </div>
 
                 {/* Edit Button */}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                   {student?.username && (
                     <Link
                       to={`/portfolio/${student.username}`}
+                      className="shrink-0"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -298,6 +364,35 @@ export const ProfilePage = () => {
                 </div>
               </div>
             </motion.div>
+
+            {photoUploading && (
+              <p role="status" className="mb-6 text-sm">
+                Uploading profile photo... {photoProgress}%
+              </p>
+            )}
+            {photoSuccess && (
+              <p role="status" className="mb-6 text-sm text-green-600">
+                Profile photo updated.
+              </p>
+            )}
+            {photoError && (
+              <div role="alert" className="mb-6 space-y-3 text-sm text-red-600">
+                <p>{photoError}</p>
+                {photoFile && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      void handlePhotoUpload(photoFile);
+                    }}
+                    className="flex items-center gap-2 rounded border border-current/20 px-3 py-2 disabled:opacity-50"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Retry photo upload
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* Success/Error Messages */}
             {success && (
@@ -650,7 +745,7 @@ export const ProfilePage = () => {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={isLoading} className="gap-2">
+                    <Button type="submit" disabled={busy} className="gap-2">
                       {isLoading ? (
                         <>
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -783,7 +878,7 @@ export const ProfilePage = () => {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button type="submit" disabled={busy}>
                       {isLoading ? "Updating..." : "Update Password"}
                     </Button>
                   </div>

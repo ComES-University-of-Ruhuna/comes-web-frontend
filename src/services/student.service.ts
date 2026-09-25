@@ -162,6 +162,26 @@ export const studentService = {
     return response.data;
   },
 
+  uploadAvatar: async (
+    file: File,
+    onProgress: (percent: number) => void,
+  ): Promise<ApiResponse<{ student: Student }>> => {
+    const data = new FormData();
+    data.append("image", file);
+    const response = await api.post<ApiResponse<{ student: Student }>>(
+      "/students/me/avatar",
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 90000,
+        onUploadProgress: ({ loaded, total }) => {
+          if (total) onProgress(Math.round((loaded / total) * 100));
+        },
+      },
+    );
+    return response.data;
+  },
+
   // Verify student email
   verifyEmail: async (token: string): Promise<ApiResponse<null>> => {
     const response = await api.get<ApiResponse<null>>(`/students/verify-email/${token}`);
