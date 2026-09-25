@@ -29,68 +29,12 @@ import {
   FadeInView,
   HoverScale,
 } from "@/components/ui";
-import { STATISTICS, SITE_CONFIG } from "@/constants";
+import { STATISTICS } from "@/constants";
 import { achievements } from "@/data";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 
 // Hero Section
-const AboutHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={cn(isDark && "bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950")}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Decorative elements */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-10 -left-10 h-20 w-20 rounded-full border border-dashed border-blue-300/30"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute -right-10 -bottom-10 h-16 w-16 rounded-full border border-dashed border-amber-300/30"
-        />
-
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", bounce: 0.4 }}
-          className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-        >
-          <Target className="h-10 w-10 text-white" />
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className={cn(
-            "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-            isDark ? "text-white" : "text-comesBlue",
-          )}
-        >
-          About ComES
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}
-        >
-          Empowering the next generation of computer engineers through innovation, collaboration,
-          and excellence since {SITE_CONFIG.foundedYear}.
-        </motion.p>
-      </div>
-    </Section>
-  );
-};
 
 // University & Faculty Section
 const UniversityFacultySection = () => {
@@ -143,14 +87,14 @@ const UniversityFacultySection = () => {
         <FadeInView direction="right">
           <div
             className={cn(
-              "h-full rounded-2xl border p-8",
+              "h-full rounded-lg border p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
-                : "border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50",
+                : "site-accent-panel border-blue-100 from-blue-50 to-cyan-50",
             )}
           >
             <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 p-3">
+              <div className="site-accent-panel rounded-lg from-blue-500 to-cyan-500 p-3">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
               <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -182,14 +126,14 @@ const UniversityFacultySection = () => {
         <FadeInView direction="left">
           <div
             className={cn(
-              "h-full rounded-2xl border p-8",
+              "h-full rounded-lg border p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
-                : "border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50",
+                : "site-accent-panel border-amber-100 from-amber-50 to-orange-50",
             )}
           >
             <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-3">
+              <div className="site-accent-panel rounded-lg from-amber-500 to-orange-500 p-3">
                 <Building2 className="h-6 w-6 text-white" />
               </div>
               <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -241,14 +185,13 @@ const UniversityFacultySection = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {degrees.map((degree, index) => (
           <FadeInView key={degree.title} direction="up" delay={index * 0.1}>
-            <motion.div whileHover={{ y: -8, scale: 1.02 }}>
+            <motion.div>
               <Card
                 hoverable
                 padding="lg"
                 className={cn("h-full", isDark && "border-slate-700/50 bg-slate-800/50")}
               >
                 <motion.div
-                  whileHover={{ rotate: 10, scale: 1.1 }}
                   className={`h-14 w-14 bg-gradient-to-br ${degree.gradient} mb-4 flex items-center justify-center rounded-2xl text-white shadow-lg`}
                 >
                   {degree.icon}
@@ -308,7 +251,7 @@ const MissionVisionSection = () => {
         <div className="space-y-8">
           <FadeInView direction="right">
             <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 p-2">
+              <div className="site-accent-panel rounded-lg from-blue-500 to-cyan-500 p-2">
                 <Target className="h-5 w-5 text-white" />
               </div>
               <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -327,7 +270,7 @@ const MissionVisionSection = () => {
 
           <FadeInView direction="right" delay={0.1}>
             <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-2">
+              <div className="site-accent-panel rounded-lg from-amber-500 to-orange-500 p-2">
                 <Eye className="h-5 w-5 text-white" />
               </div>
               <h2 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -348,10 +291,10 @@ const MissionVisionSection = () => {
         <FadeInView direction="left">
           <div
             className={cn(
-              "rounded-2xl border p-8",
+              "rounded-lg border p-8",
               isDark
                 ? "border-slate-700/50 bg-slate-800/50"
-                : "border-gray-100 bg-gradient-to-br from-white to-gray-50 shadow-xl",
+                : "site-accent-panel border-gray-100 from-white to-gray-50 shadow-xl",
             )}
           >
             <div className="grid grid-cols-2 gap-6">
@@ -361,11 +304,9 @@ const MissionVisionSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
                   className="text-center"
                 >
                   <motion.div
-                    whileHover={{ rotate: 10 }}
                     className={`h-16 w-16 bg-gradient-to-br ${item.gradient} mx-auto mb-4 flex items-center justify-center rounded-2xl text-white shadow-lg`}
                   >
                     {item.icon}
@@ -445,15 +386,13 @@ const WhatWeDoSection = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity, index) => (
           <FadeInView key={index} direction="up" delay={index * 0.1}>
-            <motion.div whileHover={{ y: -10, scale: 1.02 }}>
+            <motion.div>
               <Card
                 hoverable
                 padding="lg"
                 className={cn(isDark && "border-slate-700/50 bg-slate-800/50")}
               >
-                <motion.div className="mb-4 text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                  {activity.icon}
-                </motion.div>
+                <motion.div className="mb-4 text-4xl">{activity.icon}</motion.div>
                 <h3
                   className={cn("mb-3 text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}
                 >
@@ -485,13 +424,12 @@ const StatisticsSection = () => {
         />
       </FadeInView>
 
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+      <div className="mx-auto grid max-w-2xl grid-cols-2 gap-6">
         {STATISTICS.map((stat, index) => (
           <FadeInView key={stat.id} direction="up" delay={index * 0.1}>
             <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
               className={cn(
-                "rounded-2xl border p-6 text-center backdrop-blur-sm",
+                "rounded-lg border p-6 text-center backdrop-blur-sm",
                 isDark ? "border-slate-700/50 bg-slate-800/50" : "border-white/10 bg-white/10",
               )}
             >
@@ -537,7 +475,7 @@ const AchievementsSection = () => {
             direction={index % 2 === 0 ? "left" : "right"}
             delay={index * 0.1}
           >
-            <motion.div whileHover={{ x: 10 }}>
+            <motion.div>
               <Card
                 hoverable
                 padding="lg"
@@ -546,9 +484,7 @@ const AchievementsSection = () => {
                   isDark && "border-slate-700/50 bg-slate-800/50",
                 )}
               >
-                <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                  {achievement.icon}
-                </motion.div>
+                <motion.div className="text-4xl">{achievement.icon}</motion.div>
                 <div>
                   <h3
                     className={cn(
@@ -587,36 +523,30 @@ const HistorySection = () => {
 
   const timeline = [
     {
-      year: "2015",
+      year: "2026",
       title: "Foundation",
       description:
         "ComES was established as the official student society for Computer Engineering students.",
     },
     {
-      year: "2017",
-      title: "First Hackathon",
-      description: "Organized our first 24-hour hackathon with 50+ participants.",
+      year: "May - July 2026",
+      title: "AgenTrix 2026",
+      description: "Organized AgenTrix 2026, an inter-university Agentic AI hackathon.",
     },
     {
-      year: "2019",
-      title: "Industry Partnerships",
-      description:
-        "Established partnerships with leading tech companies for internships and mentorship.",
+      year: "2026",
+      title: "Workshops",
+      description: "Hosted workshops for our community.",
     },
     {
-      year: "2021",
-      title: "Virtual Expansion",
-      description: "Successfully transitioned to virtual events and workshops during the pandemic.",
+      year: "2026",
+      title: "Industry Collaborations",
+      description: "Established successful industry collaborations.",
     },
     {
-      year: "2023",
-      title: "500+ Members",
-      description: "Reached a milestone of over 500 active members.",
-    },
-    {
-      year: "2025",
-      title: "National Recognition",
-      description: "Won the National Coding Championship and Best Student Organization Award.",
+      year: "September 2026",
+      title: "CareerXpo 3.0",
+      description: "Collaborated on CareerXpo 3.0.",
     },
   ];
 
@@ -625,7 +555,7 @@ const HistorySection = () => {
       <FadeInView>
         <SectionHeader
           title="Our Journey"
-          subtitle="A decade of growth, learning, and achievement."
+          subtitle="Growing and learning together since 2026."
           light={isDark}
         />
       </FadeInView>
@@ -642,7 +572,7 @@ const HistorySection = () => {
         <div className="space-y-4">
           {timeline.map((item, index) => (
             <FadeInView
-              key={item.year}
+              key={item.title}
               direction={index % 2 === 0 ? "right" : "left"}
               delay={index * 0.1}
             >
@@ -655,7 +585,7 @@ const HistorySection = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
-                  className="absolute left-4 z-10 h-4 w-4 -translate-x-1/2 transform rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30 md:left-1/2"
+                  className="site-accent-panel absolute left-4 z-10 h-4 w-4 -translate-x-1/2 transform rounded-full from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30 md:left-1/2"
                 />
 
                 {/* Content */}
@@ -664,7 +594,7 @@ const HistorySection = () => {
                     index % 2 === 0 ? "md:pr-8 md:text-right" : "md:pl-8"
                   }`}
                 >
-                  <motion.div whileHover={{ scale: 1.02 }}>
+                  <motion.div>
                     <Card
                       padding="md"
                       className={cn(isDark && "border-slate-700/50 bg-slate-800/50")}
@@ -711,7 +641,7 @@ const CTASection = () => {
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
+            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
           >
             <Rocket className="h-8 w-8 text-white" />
           </motion.div>
@@ -750,7 +680,6 @@ const CTASection = () => {
 export const AboutPage = () => {
   return (
     <PageTransition>
-      <AboutHero />
       <UniversityFacultySection />
       <MissionVisionSection />
       <WhatWeDoSection />

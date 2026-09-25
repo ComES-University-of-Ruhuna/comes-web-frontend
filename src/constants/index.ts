@@ -31,8 +31,15 @@ export const SITE_CONFIG = {
 
 // Navigation Links
 export const NAV_LINKS: NavLink[] = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
+  {
+    label: "Society",
+    path: "/about",
+    children: [
+      { label: "About ComES", path: "/about" },
+      { label: "Committee & Team", path: "/team" },
+      { label: "FAQ", path: "/faq" },
+    ],
+  },
   {
     label: "Subgroups",
     path: "/subgroups",
@@ -45,9 +52,14 @@ export const NAV_LINKS: NavLink[] = [
   },
   { label: "Events", path: "/events" },
   { label: "Projects", path: "/projects" },
-  { label: "Team", path: "/team" },
-  { label: "Gallery", path: "/gallery" },
-  { label: "Blog", path: "/blog" },
+  {
+    label: "Updates",
+    path: "/blog",
+    children: [
+      { label: "Blog & News", path: "/blog" },
+      { label: "Gallery", path: "/gallery" },
+    ],
+  },
   { label: "Contact", path: "/contact" },
 ];
 
@@ -135,9 +147,7 @@ export const COLORS = {
 // Statistics
 export const STATISTICS = [
   { id: "1", label: "Members", value: 700, suffix: "+", icon: "users" },
-  { id: "2", label: "Events", value: 50, suffix: "+", icon: "calendar" },
-  { id: "3", label: "Projects", value: 25, suffix: "+", icon: "code" },
-  { id: "4", label: "Years", value: 5, suffix: "+", icon: "award" },
+  { id: "2", label: "Events", value: 5, suffix: "+", icon: "calendar" },
 ];
 
 // Contact Subjects

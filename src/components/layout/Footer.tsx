@@ -14,9 +14,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  Heart,
   ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 import { SITE_CONFIG, FOOTER_LINKS, SOCIAL_LINKS } from "@/constants";
 import { useThemeStore } from "@/store";
@@ -45,28 +43,12 @@ export const Footer = () => {
   return (
     <footer
       className={cn(
-        "relative overflow-hidden transition-colors duration-300",
+        "site-footer relative overflow-hidden transition-colors duration-300",
         isDark
           ? "bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white"
           : "from-comesBlue bg-gradient-to-br via-blue-800 to-blue-900 text-white",
       )}
     >
-      {/* Background decorations */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className={cn(
-            "absolute top-0 left-1/4 h-96 w-96 rounded-full blur-3xl",
-            isDark ? "bg-blue-500/5" : "bg-blue-400/10",
-          )}
-        />
-        <div
-          className={cn(
-            "absolute right-1/4 bottom-0 h-80 w-80 rounded-full blur-3xl",
-            isDark ? "bg-cyan-500/5" : "bg-cyan-400/10",
-          )}
-        />
-      </div>
-
       {/* Main Footer */}
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
@@ -77,8 +59,9 @@ export const Footer = () => {
                 src={LogoWhite}
                 alt="ComES Logo"
                 whileHover={{ scale: 1.05 }}
-                className="h-48 w-auto object-contain drop-shadow-lg transition-all"
+                className="h-24 w-24 object-contain"
               />
+              <span className="text-2xl font-bold">ComES</span>
             </Link>
             <p className={cn("mb-6 leading-relaxed", isDark ? "text-gray-400" : "text-blue-100")}>
               {SITE_CONFIG.description}
@@ -110,10 +93,7 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <FadeInView direction="up" delay={0.1}>
-            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              Quick Links
-            </h4>
+            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">Quick Links</h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.quickLinks.map((link) => (
                 <li key={link.path}>
@@ -134,10 +114,7 @@ export const Footer = () => {
 
           {/* Resources */}
           <FadeInView direction="up" delay={0.2}>
-            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              Resources
-            </h4>
+            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">Resources</h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.resources.map((link) => (
                 <li key={link.path}>
@@ -158,10 +135,7 @@ export const Footer = () => {
 
           {/* Contact Info */}
           <FadeInView direction="up" delay={0.3}>
-            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              Contact Info
-            </h4>
+            <h4 className="mb-6 flex items-center gap-2 text-lg font-semibold">Contact Info</h4>
             <ul className="space-y-4">
               <li>
                 <a
@@ -218,8 +192,7 @@ export const Footer = () => {
                 isDark ? "text-gray-500" : "text-blue-100",
               )}
             >
-              &copy; {currentYear} {SITE_CONFIG.name}. Made with{" "}
-              <Heart className="inline h-4 w-4 animate-pulse text-red-400" /> by ComES Team
+              &copy; {currentYear} {SITE_CONFIG.name}. University of Ruhuna.
             </p>
             <div className="flex gap-6 text-sm">
               <Link

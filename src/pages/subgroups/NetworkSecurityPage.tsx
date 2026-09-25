@@ -2,7 +2,6 @@
 // ComES Website - Network and Security Subgroup Page
 // ============================================
 
-import { motion } from "framer-motion";
 import { Shield, Network, Lock, Eye, Server, Bug } from "lucide-react";
 import { Section, SectionHeader, Card, PageTransition, FadeInView } from "@/components/ui";
 import { useThemeStore } from "@/store";
@@ -38,43 +37,6 @@ const NetworkSecurityPage = () => {
   return (
     <PageTransition>
       {/* Hero Section */}
-      <Section
-        background="gradient"
-        padding="xl"
-        className={cn(isDark && "bg-gradient-to-br from-slate-950 via-red-950 to-slate-950")}
-      >
-        <div className="mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.4 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/30"
-          >
-            <Shield className="h-10 w-10 text-white" />
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Network and Security
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}
-          >
-            Defending the digital frontier. Our Network and Security subgroup focuses on building
-            resilient systems and protecting against cyber threats.
-          </motion.p>
-        </div>
-      </Section>
 
       {/* Focus Areas */}
       <Section padding="lg">
@@ -88,7 +50,7 @@ const NetworkSecurityPage = () => {
             <FadeInView key={area.title} delay={index * 0.1}>
               <Card hoverable padding="lg" className="h-full">
                 <div className="flex items-start gap-4">
-                  <div className={cn("rounded-xl p-3", isDark ? "bg-red-500/20" : "bg-red-100")}>
+                  <div className={cn("rounded-lg p-3", isDark ? "bg-red-500/20" : "bg-red-100")}>
                     <area.icon
                       className={cn("h-6 w-6", isDark ? "text-red-400" : "text-red-600")}
                     />

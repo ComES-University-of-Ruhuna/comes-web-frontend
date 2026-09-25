@@ -37,7 +37,11 @@ export const Section: FC<SectionProps> = ({
   ...props
 }) => {
   return (
-    <section className={cn(backgrounds[background], paddings[padding], className)} {...props}>
+    <section
+      data-surface={background}
+      className={cn("site-section", backgrounds[background], paddings[padding], className)}
+      {...props}
+    >
       {container ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
       ) : (
@@ -67,10 +71,13 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className={cn("mb-12", centered && "text-center", className)} {...props}>
+    <div
+      className={cn("site-section-header mb-12", centered && "text-center", className)}
+      {...props}
+    >
       <h2
         className={cn(
-          "mb-4 text-3xl font-bold md:text-4xl lg:text-5xl",
+          "site-section-heading mb-4 text-3xl font-bold md:text-4xl lg:text-5xl",
           light ? "text-white" : isDark ? "text-white" : "text-gray-900",
         )}
       >
@@ -79,7 +86,7 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
       {subtitle && (
         <p
           className={cn(
-            "mx-auto max-w-3xl text-lg leading-relaxed md:text-xl",
+            "site-section-description mx-auto max-w-3xl text-lg leading-relaxed md:text-xl",
             light ? "text-gray-200" : isDark ? "text-gray-300" : "text-gray-600",
           )}
         >

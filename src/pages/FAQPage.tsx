@@ -50,7 +50,7 @@ const FAQItem = ({
       <motion.div
         layout
         className={cn(
-          "overflow-hidden rounded-xl border",
+          "site-card overflow-hidden rounded-lg border",
           isDark
             ? "border-slate-700 bg-slate-800/50 hover:border-slate-600"
             : "border-gray-200 bg-white hover:border-gray-300",
@@ -58,23 +58,16 @@ const FAQItem = ({
       >
         <button
           onClick={onToggle}
+          aria-expanded={isOpen}
           className={cn(
             "flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors",
             isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50",
           )}
         >
-          <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg",
-                isDark
-                  ? "bg-gradient-to-br from-blue-500/20 to-cyan-500/20"
-                  : "bg-gradient-to-br from-blue-100 to-cyan-100",
-              )}
+          <div className="min-w-0">
+            <span
+              className={cn("text-base font-semibold", isDark ? "text-white" : "text-gray-800")}
             >
-              <HelpCircle className={cn("h-4 w-4", isDark ? "text-blue-400" : "text-blue-500")} />
-            </div>
-            <span className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-800")}>
               {question}
             </span>
           </div>
@@ -84,7 +77,7 @@ const FAQItem = ({
             className={cn(
               "flex-shrink-0 rounded-full p-1",
               isOpen
-                ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
+                ? "site-accent-panel from-blue-500 to-cyan-500 text-white"
                 : isDark
                   ? "text-gray-400"
                   : "text-gray-500",
@@ -105,7 +98,7 @@ const FAQItem = ({
               <div className={cn("px-6 pt-4 pb-5", isDark ? "bg-slate-900/50" : "bg-gray-50")}>
                 <p
                   className={cn(
-                    "pl-11 leading-relaxed",
+                    "text-sm leading-relaxed",
                     isDark ? "text-gray-400" : "text-gray-600",
                   )}
                 >
@@ -121,72 +114,6 @@ const FAQItem = ({
 };
 
 // Hero Section
-const FAQHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Animated background elements */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/30 to-cyan-500/30 blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-            opacity: [0.4, 0.2, 0.4],
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/30 to-orange-500/30 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-          >
-            <HelpCircle className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Questions
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Find answers to common questions about ComES, membership, events, and more. Can't find
-            what you're looking for? Contact us!
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Search Section
 const SearchSection = () => {
@@ -257,7 +184,7 @@ const FAQListSection = () => {
           <FadeInView key={category} delay={catIndex * 0.1}>
             <motion.div layout>
               <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
+                <div className="site-accent-panel flex h-10 w-10 items-center justify-center rounded-lg from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
                   <BookOpen className="h-5 w-5 text-white" />
                 </div>
                 <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -344,7 +271,6 @@ const QuickLinksSection = () => {
                 )}
               >
                 <motion.div
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
                   transition={{ duration: 0.5 }}
                   className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${link.gradient} mx-auto mb-4 flex items-center justify-center shadow-lg`}
                 >
@@ -376,23 +302,13 @@ const CTASection = () => {
     <Section background="dark" padding="xl">
       <div className="relative mx-auto max-w-3xl text-center">
         {/* Glowing orbs */}
-        <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute top-0 left-0 h-32 w-32 rounded-full bg-blue-500/30 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.3, 1, 1.3], opacity: [0.6, 0.3, 0.6] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute right-0 bottom-0 h-40 w-40 rounded-full bg-cyan-500/30 blur-3xl"
-        />
 
         <FadeInView>
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
+            className="site-accent-panel mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
             <HelpCircle className="h-8 w-8 text-white" />
           </motion.div>
@@ -401,7 +317,7 @@ const CTASection = () => {
         <FadeInView delay={0.1}>
           <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">
             Still Have{" "}
-            <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+            <span className="site-accent-panel from-amber-400 to-orange-400 bg-clip-text text-transparent">
               Questions?
             </span>
           </h2>
@@ -434,7 +350,6 @@ const CTASection = () => {
 export const FAQPage = () => {
   return (
     <PageTransition>
-      <FAQHero />
       <SearchSection />
       <FAQListSection />
       <QuickLinksSection />

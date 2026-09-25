@@ -55,7 +55,7 @@ const ContactInfoCard = ({
 
   const content = (
     <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10, scale: 1.02 }}>
+      <motion.div>
         <Card
           hoverable
           padding="lg"
@@ -64,10 +64,7 @@ const ContactInfoCard = ({
             isDark && "border-slate-700/50 bg-slate-800/50",
           )}
         >
-          <motion.div
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-            whileHover={{ rotate: 10, scale: 1.1 }}
-          >
+          <motion.div className="site-accent-panel mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
             {icon}
           </motion.div>
           <h3 className={cn("mb-2 text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -120,8 +117,8 @@ const SocialLinksSection = () => {
             className={cn(
               "flex h-12 w-12 items-center justify-center rounded-full transition-all",
               isDark
-                ? "bg-slate-800 text-gray-400 hover:bg-gradient-to-br hover:from-blue-500 hover:to-cyan-500 hover:text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gradient-to-br hover:from-blue-500 hover:to-cyan-500 hover:text-white",
+                ? "hover:site-accent-panel bg-slate-800 text-gray-400 hover:from-blue-500 hover:to-cyan-500 hover:text-white"
+                : "hover:site-accent-panel bg-gray-100 text-gray-600 hover:from-blue-500 hover:to-cyan-500 hover:text-white",
             )}
             aria-label={social.label}
           >
@@ -189,7 +186,7 @@ const ContactForm = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring" }}
-            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg shadow-green-500/30"
+            className="site-accent-panel mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full from-green-400 to-emerald-500 shadow-lg shadow-green-500/30"
           >
             <CheckCircle className="h-10 w-10 text-white" />
           </motion.div>
@@ -213,7 +210,7 @@ const ContactForm = () => {
     <FadeInView direction="left">
       <Card padding="lg" className={cn(isDark && "border-slate-700/50 bg-slate-800/50")}>
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
+          <div className="site-accent-panel flex h-10 w-10 items-center justify-center rounded-lg from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
             <MessageSquare className="h-5 w-5 text-white" />
           </div>
           <h3 className={cn("text-xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
@@ -287,63 +284,6 @@ const ContactForm = () => {
 };
 
 // Hero Section
-const ContactHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background={isDark ? "dark" : "gradient"}
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-          >
-            <Mail className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Get In{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Touch
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Have questions, ideas, or just want to say hello? We'd love to hear from you. Reach out
-            and let's connect!
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Contact Info Section
 const ContactInfoSection = () => {
@@ -447,7 +387,7 @@ const FAQSection = () => {
           <FadeInView key={faq.id} delay={index * 0.1}>
             <motion.div
               className={cn(
-                "overflow-hidden rounded-xl border",
+                "overflow-hidden rounded-lg border",
                 isDark ? "border-slate-700 bg-slate-800/50" : "border-gray-200 bg-white",
               )}
             >
@@ -494,7 +434,6 @@ const FAQSection = () => {
 export const ContactPage = () => {
   return (
     <PageTransition>
-      <ContactHero />
       <ContactInfoSection />
       <FormMapSection />
       <FAQSection />

@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, ExternalLink, Rocket, Code2, Sparkles, Lightbulb, Users } from "lucide-react";
+import { Github, ExternalLink, Code2, Sparkles, Lightbulb, Users } from "lucide-react";
 import {
   Section,
   SectionHeader,
@@ -42,7 +42,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
 
   return (
     <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10 }}>
+      <motion.div>
         <Card
           hoverable
           padding="none"
@@ -147,7 +147,7 @@ const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number 
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 text-white transition-opacity hover:opacity-90"
+                  className="site-accent-panel flex flex-1 items-center justify-center gap-2 rounded-lg from-blue-500 to-cyan-500 px-4 py-2 text-white transition-opacity hover:opacity-90"
                 >
                   <ExternalLink className="h-4 w-4" />
                   <span className="text-sm font-medium">Live Demo</span>
@@ -169,18 +169,13 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
 
   return (
     <FadeInView direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.2}>
-      <motion.div whileHover={{ scale: 1.02 }}>
+      <motion.div>
         <Card
           hoverable
           padding="none"
           className={cn("overflow-hidden lg:flex", isDark && "border-slate-700/50 bg-slate-800/50")}
         >
-          <div className="relative flex flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 p-8 text-white lg:w-2/5">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10"
-            />
+          <div className="site-accent-panel relative flex flex-col justify-center overflow-hidden from-blue-600 via-cyan-500 to-blue-700 p-8 text-white lg:w-2/5">
             <Badge variant="secondary" size="sm" className="mb-4 self-start">
               ⭐ Featured Project
             </Badge>
@@ -286,63 +281,6 @@ const FeaturedProjectCard = ({ project, index = 0 }: { project: Project; index?:
 };
 
 // Hero Section
-const ProjectsHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background={isDark ? "dark" : "gradient"}
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30"
-          >
-            <Rocket className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Our{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Projects
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Explore innovative projects built by our talented members. From web applications to AI
-            solutions, we're building the future.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Featured Projects Section
 const FeaturedProjectsSection = () => {
@@ -402,16 +340,15 @@ const AllProjectsSection = () => {
         {["All", ...(categories ?? [])].map((category) => (
           <motion.button
             key={category}
+            aria-pressed={activeCategory === category}
             onClick={() => {
               setActiveCategory(category);
               setPage(1);
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-all",
+              "site-filter rounded-lg px-4 py-2 text-sm font-medium transition-all",
               activeCategory === category
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
+                ? "site-accent-panel from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
                 : isDark
                   ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
                   : "bg-white text-gray-600 hover:bg-gray-100",
@@ -483,7 +420,7 @@ const CTASection = () => {
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
+            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
             <Lightbulb className="h-8 w-8 text-white" />
           </motion.div>
@@ -528,7 +465,6 @@ const CTASection = () => {
 export const ProjectsPage = () => {
   return (
     <PageTransition>
-      <ProjectsHero />
       <FeaturedProjectsSection />
       <AllProjectsSection />
       <CTASection />

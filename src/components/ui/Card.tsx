@@ -30,7 +30,7 @@ export const Card: FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-sm",
+        "site-card overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-sm",
         paddings[padding],
         hoverable && "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
         gradient && "bg-gradient-to-br from-white to-gray-50",

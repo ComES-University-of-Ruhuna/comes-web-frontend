@@ -4,16 +4,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  ArrowRight,
-  Sparkles,
-  Users,
-  PartyPopper,
-  Ticket,
-} from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, Sparkles, Users, Ticket } from "lucide-react";
 import {
   Section,
   SectionHeader,
@@ -39,7 +30,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
 
   return (
     <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10 }}>
+      <motion.div>
         <Card
           hoverable
           padding="none"
@@ -50,9 +41,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
         >
           <CardHeader gradient={event.color}>
             <div className="mb-4 flex items-center justify-between">
-              <motion.span className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                {event.icon}
-              </motion.span>
+              <motion.span className="text-4xl">{event.icon}</motion.span>
               <Badge variant="secondary" size="sm">
                 {event.type}
               </Badge>
@@ -146,7 +135,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                   className={`h-2 rounded-full ${
                     event.registered >= event.capacity
                       ? "bg-red-500"
-                      : "bg-gradient-to-r from-blue-500 to-cyan-500"
+                      : "site-accent-panel from-blue-500 to-cyan-500"
                   }`}
                 />
               </div>
@@ -192,13 +181,12 @@ const FilterTabs = ({
       {options.map((option) => (
         <motion.button
           key={option}
+          aria-pressed={active === option}
           onClick={() => onChange(option)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           className={cn(
-            "rounded-full px-4 py-2 text-sm font-medium transition-all",
+            "site-filter rounded-lg px-4 py-2 text-sm font-medium transition-all",
             active === option
-              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
+              ? "site-accent-panel from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
               : isDark
                 ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200",
@@ -212,64 +200,6 @@ const FilterTabs = ({
 };
 
 // Hero Section
-const EventsHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background={isDark ? "dark" : "gradient"}
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Animated background elements */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
-          >
-            <PartyPopper className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Events &{" "}
-            <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              Workshops
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-blue-600")}>
-            Join us for exciting events that foster learning, innovation, and community building.
-            From hackathons to workshops, there's something for everyone.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Upcoming Events Section
 const UpcomingEventsSection = () => {
@@ -338,7 +268,7 @@ const PastEventsSection = () => {
       <div className="grid gap-6 md:grid-cols-2">
         {pastEvents.map((event, index) => (
           <FadeInView key={event.id} direction="left" delay={index * 0.1}>
-            <motion.div whileHover={{ x: 10 }}>
+            <motion.div>
               <Card
                 padding="lg"
                 className={cn(
@@ -346,9 +276,7 @@ const PastEventsSection = () => {
                   isDark && "border-slate-700/50 bg-slate-800/50",
                 )}
               >
-                <motion.div className="text-4xl" whileHover={{ scale: 1.2, rotate: 10 }}>
-                  {event.icon}
-                </motion.div>
+                <motion.div className="text-4xl">{event.icon}</motion.div>
                 <div className="flex-1">
                   <div className="mb-2 flex items-center gap-2">
                     <h3
@@ -400,7 +328,7 @@ const CTASection = () => {
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
+            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
             <Sparkles className="h-8 w-8 text-white" />
           </motion.div>
@@ -432,7 +360,6 @@ const CTASection = () => {
 export const EventsPage = () => {
   return (
     <PageTransition>
-      <EventsHero />
       <UpcomingEventsSection />
       <PastEventsSection />
       <NewsletterSection

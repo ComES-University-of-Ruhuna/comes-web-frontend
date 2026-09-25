@@ -185,51 +185,18 @@ const TeamHero = ({ members, loading }: { members: ApiTeamMember[]; loading: boo
   return (
     <section
       className={cn(
-        "border-b pt-16 pb-14 sm:pt-20 sm:pb-16",
+        "site-team-summary border-b py-6",
         isDark ? "border-slate-800 bg-slate-950" : "border-gray-200 bg-white",
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-end gap-10 lg:grid-cols-[1fr_auto]">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="max-w-3xl"
-          >
-            <div
-              className={cn(
-                "mb-4 text-sm font-semibold tracking-wider uppercase",
-                isDark ? "text-blue-300" : "text-blue-700",
-              )}
-            >
-              Leadership and community
-            </div>
-            <h1
-              className={cn(
-                "text-4xl leading-tight font-bold sm:text-5xl lg:text-6xl",
-                isDark ? "text-white" : "text-gray-950",
-              )}
-            >
-              The people behind ComES
-            </h1>
-            <p
-              className={cn(
-                "mt-5 max-w-2xl text-base leading-7 sm:text-lg",
-                isDark ? "text-gray-400" : "text-gray-600",
-              )}
-            >
-              Students, faculty advisors, and coordinators working together to strengthen the
-              computer engineering community at the University of Ruhuna.
-            </p>
-          </motion.div>
-
+        <div className="max-w-xl">
           <motion.dl
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.1 }}
             className={cn(
-              "grid grid-cols-3 divide-x border-y py-5 lg:min-w-[420px]",
+              "grid grid-cols-3 divide-x py-2",
               isDark ? "divide-slate-800 border-slate-800" : "divide-gray-200 border-gray-200",
             )}
           >
@@ -344,7 +311,7 @@ const AllMembersSection = ({ members }: { members: ApiTeamMember[] }) => {
               aria-selected={isActive}
               onClick={() => setActiveCategory(category.id)}
               className={cn(
-                "shrink-0 border px-4 py-2 text-sm font-medium transition-colors",
+                "site-filter shrink-0 border px-4 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? isDark
                     ? "border-blue-400 bg-blue-400 text-slate-950"

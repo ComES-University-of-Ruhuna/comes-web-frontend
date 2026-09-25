@@ -44,6 +44,7 @@ export const Button: FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles = cn(
+    `site-button site-button--${variant}`,
     "inline-flex items-center justify-center gap-2 font-semibold rounded-full",
     "transition-all duration-300 transform",
     "focus:outline-none focus:ring-2 focus:ring-comesBlue focus:ring-offset-2 dark:focus:ring-blue-400 dark:focus:ring-offset-slate-950",

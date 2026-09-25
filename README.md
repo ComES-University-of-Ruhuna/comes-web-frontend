@@ -311,6 +311,12 @@ git commit -m "fix(auth): resolve login redirect issue"
 git commit -m "docs: update README with deployment instructions"
 ```
 
+### Public Website Design
+
+Public pages share the `.public-site` theme in `src/index.css`. Its color, spacing, typography, card, button, and filter styles are scoped to the public layout; admin and student dashboards keep their own styling. `PublicPageHeader` defines the consistent title, description, and breadcrumb for each main and subgroup route. Add new public route headings there instead of adding a second hero or H1 inside the page.
+
+`HomeIntro` provides the homepage identity and subgroup navigation. Its locally hosted engineering photograph, `public/engineering-board.jpg`, is sourced from [Unsplash](https://images.unsplash.com/photo-1518770660439-4636190af475). Existing logos remain the society's primary branding assets. Public layout and navigation tests are in `tests/public-design.test.tsx`.
+
 ### Content Publishing
 
 Use `/admin/blog` to create Markdown articles and choose **Published** when ready. Draft and archived articles remain private. Use `/admin/projects` to save projects; in-progress and completed projects are public, while archived projects are hidden. The **Featured** checkbox controls featured placements. Both editors persist changes to the backend, including for authorized student admins.

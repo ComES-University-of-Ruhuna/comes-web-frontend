@@ -2,12 +2,12 @@
 // ComES Website - Navbar Component
 // ============================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles, ChevronDown } from "lucide-react";
+import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
-import { useScrollPosition, useClickOutside } from "@/hooks";
+import { useClickOutside } from "@/hooks";
 import { cn } from "@/utils";
 import { ThemeToggle, UserProfileDropdown, NotificationsDropdown } from "@/components/ui";
 import { useThemeStore, useStudentStore, useAuthStore } from "@/store";
@@ -23,11 +23,24 @@ interface NavItemProps {
   isScrolled: boolean;
   isDark: boolean;
   isActive: (path: string) => boolean;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsDropdownOpen(false));
+const NavItem = ({
+  link,
+  index,
+  isScrolled,
+  isDark,
+  isActive,
+  isOpen: isDropdownOpen,
+  onOpenChange: setIsDropdownOpen,
+}: NavItemProps) => {
+  const dropdownRef = useClickOutside<HTMLDivElement>(() => {
+    if (isDropdownOpen) setIsDropdownOpen(false);
+  });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
 
   const hasChildren = link.children && link.children.length > 0;
   const isChildActive = hasChildren && link.children?.some((child) => isActive(child.path));
@@ -40,13 +53,34 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
         className="relative"
-        onMouseEnter={() => setIsDropdownOpen(true)}
-        onMouseLeave={() => setIsDropdownOpen(false)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setIsDropdownOpen(false);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            setIsDropdownOpen(false);
+            triggerRef.current?.focus();
+          }
+        }}
       >
         <button
+          ref={triggerRef}
+          type="button"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          aria-expanded={isDropdownOpen}
+          aria-controls={menuId}
+          data-active={isChildActive || undefined}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setIsDropdownOpen(true);
+              requestAnimationFrame(() => dropdownRef.current?.querySelector("a")?.focus());
+            }
+          }}
           className={cn(
-            "relative flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+            "site-nav-link relative flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
             isChildActive
               ? isScrolled
                 ? isDark
@@ -72,12 +106,13 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
         <AnimatePresence>
           {isDropdownOpen && (
             <motion.div
+              id={menuId}
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "absolute top-full left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl shadow-xl",
+                "site-nav-menu absolute top-full left-0 z-50 mt-2 w-64 overflow-hidden rounded-lg border shadow-lg",
                 isDark ? "border border-slate-800 bg-slate-900" : "border border-gray-200 bg-white",
               )}
             >
@@ -86,8 +121,10 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
                   <Link
                     key={child.path}
                     to={child.path}
+                    onClick={() => setIsDropdownOpen(false)}
+                    aria-current={isActive(child.path) ? "page" : undefined}
                     className={cn(
-                      "block px-4 py-3 text-sm font-medium transition-all duration-200",
+                      "site-subnav-link block px-4 py-3 text-sm font-medium transition-all duration-200",
                       isActive(child.path)
                         ? isDark
                           ? "bg-blue-500/20 text-blue-400"
@@ -116,8 +153,9 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
     >
       <Link
         to={link.path}
+        aria-current={isActive(link.path) ? "page" : undefined}
         className={cn(
-          "relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+          "site-nav-link relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
           isActive(link.path)
             ? isScrolled
               ? isDark
@@ -131,16 +169,6 @@ const NavItem = ({ link, index, isScrolled, isDark, isActive }: NavItemProps) =>
               : "text-white/90 hover:bg-white/10 hover:text-white",
         )}
       >
-        {isActive(link.path) && (
-          <motion.div
-            layoutId="nav-indicator"
-            className={cn(
-              "absolute inset-0 rounded-xl",
-              isScrolled ? (isDark ? "bg-blue-500/20" : "bg-comesBlue") : "bg-white/20",
-            )}
-            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-          />
-        )}
         <span className="relative z-10">{link.label}</span>
       </Link>
     </motion.div>
@@ -156,22 +184,27 @@ interface MobileNavItemProps {
 }
 
 const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const hasChildren = link.children && link.children.length > 0;
   const isChildActive = hasChildren && link.children?.some((child) => isActive(child.path));
+  const [isExpanded, setIsExpanded] = useState(Boolean(isChildActive));
+  const menuId = useId();
 
   if (hasChildren) {
     return (
       <motion.div
+        className="site-mobile-entry"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.05 }}
       >
         <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+          aria-controls={menuId}
+          data-active={isChildActive || undefined}
           className={cn(
-            "flex w-full items-center justify-between rounded-xl px-4 py-3 font-medium transition-all duration-200",
+            "site-mobile-link flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
             isChildActive
               ? isDark
                 ? "bg-blue-500/20 text-blue-400"
@@ -190,6 +223,7 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
         <AnimatePresence>
           {isExpanded && (
             <motion.div
+              id={menuId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -206,8 +240,9 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
                   <Link
                     key={child.path}
                     to={child.path}
+                    aria-current={isActive(child.path) ? "page" : undefined}
                     className={cn(
-                      "block rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                      "site-subnav-link block rounded-md px-3 py-3 text-sm font-medium transition-all duration-200",
                       isActive(child.path)
                         ? isDark
                           ? "bg-blue-500/20 text-blue-400"
@@ -230,14 +265,16 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
 
   return (
     <motion.div
+      className="site-mobile-entry"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
     >
       <Link
         to={link.path}
+        aria-current={isActive(link.path) ? "page" : undefined}
         className={cn(
-          "block rounded-xl px-4 py-3 font-medium transition-all duration-200",
+          "site-mobile-link block rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
           isActive(link.path)
             ? isDark
               ? "bg-blue-500/20 text-blue-400"
@@ -255,11 +292,13 @@ const MobileNavItem = ({ link, index, isDark, isActive }: MobileNavItemProps) =>
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isScrolled } = useScrollPosition();
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const mobileTriggerRef = useRef<HTMLButtonElement>(null);
+  const isScrolled = true;
   const location = useLocation();
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
-  const mobileMenuRef = useClickOutside<HTMLDivElement>(() => setIsMobileMenuOpen(false));
+  const mobileMenuRef = useClickOutside<HTMLElement>(() => setIsMobileMenuOpen(false));
 
   // Check if user is authenticated
   const { isAuthenticated: isStudentAuth } = useStudentStore();
@@ -269,57 +308,68 @@ export const Navbar = () => {
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setOpenGroup(null);
   }, [location.pathname]);
 
   // Prevent scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!isMobileMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [isMobileMenuOpen]);
 
-  const isActive = (path: string) => location.pathname === path;
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1280) setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  // Dynamic styles based on scroll and theme
-  const getNavStyles = () => {
-    if (isScrolled) {
-      return isDark
-        ? "bg-slate-900/95 backdrop-blur-md shadow-lg shadow-black/20 border-b border-slate-800"
-        : "bg-white/95 backdrop-blur-md shadow-lg";
-    }
-    return isDark ? "bg-slate-950" : "bg-comesBlue";
-  };
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   // Determine appropriate logo
-  const logoSrc = isScrolled ? (isDark ? LogoWhite : LogoBlack) : LogoWhite;
+  const logoSrc = isDark ? LogoWhite : LogoBlack;
 
   return (
     <motion.header
+      ref={mobileMenuRef}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn("fixed top-0 right-0 left-0 z-50 transition-all duration-300", getNavStyles())}
+      className="site-navigation fixed top-0 right-0 left-0 z-50 border-b"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && isMobileMenuOpen) {
+          setIsMobileMenuOpen(false);
+          mobileTriggerRef.current?.focus();
+        }
+      }}
     >
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between md:h-20">
+      <nav aria-label="Main navigation" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-4 md:h-20 xl:gap-6">
           {/* Logo */}
-          <Link to="/" className="group flex items-center gap-3">
+          <Link to="/" aria-label="ComES home" className="group flex shrink-0 items-center gap-2">
             <motion.img
               src={logoSrc}
               alt="ComES Logo"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-32 w-auto object-contain drop-shadow-md transition-all duration-300"
+              className="h-12 w-12 object-contain sm:h-14 sm:w-14"
             />
+            <span className="text-lg font-bold text-[var(--site-heading)]">
+              ComES
+              <span className="hidden text-[10px] font-medium text-[var(--site-muted)] sm:block">
+                UNIVERSITY OF RUHUNA
+              </span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-1 xl:flex">
+          <div className="hidden flex-1 items-center justify-center gap-1 xl:flex">
             {NAV_LINKS.map((link, index) => (
               <NavItem
                 key={link.path}
@@ -328,16 +378,16 @@ export const Navbar = () => {
                 isScrolled={isScrolled}
                 isDark={isDark}
                 isActive={isActive}
+                isOpen={openGroup === link.path}
+                onOpenChange={(open) => setOpenGroup(open ? link.path : null)}
               />
             ))}
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden items-center gap-3 xl:flex">
+          <div className="hidden shrink-0 items-center gap-2 border-l border-[var(--site-border)] pl-4 xl:flex">
             {/* Theme Toggle - only show if not authenticated */}
-            {!isAuthenticated && (
-              <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
-            )}
+            {!isAuthenticated && <ThemeToggle />}
 
             {/* Notifications - only show if authenticated */}
             {isAuthenticated && <NotificationsDropdown isScrolled={isScrolled} />}
@@ -346,24 +396,25 @@ export const Navbar = () => {
             {isAuthenticated ? (
               <UserProfileDropdown isScrolled={isScrolled} />
             ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <>
+                <Link to="/login" className="site-nav-link px-3 py-2 font-medium whitespace-nowrap">
+                  Sign in
+                </Link>
                 <Link
                   to="/register"
                   className={cn(
-                    "flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-300",
-                    "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 hover:from-amber-300 hover:to-yellow-400",
-                    "shadow-lg shadow-amber-500/25",
+                    "site-button site-button--primary flex items-center gap-2 px-4 py-2 text-sm font-semibold whitespace-nowrap",
                   )}
                 >
-                  <Sparkles className="h-4 w-4" />
-                  Join Us
+                  Join ComES
+                  <ArrowUpRight className="h-4 w-4" />
                 </Link>
-              </motion.div>
+              </>
             )}
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className="flex shrink-0 items-center gap-1 xl:hidden">
             {!isAuthenticated && (
               <ThemeToggle className={cn(isScrolled ? "" : "text-white hover:bg-white/10")} />
             )}
@@ -374,6 +425,7 @@ export const Navbar = () => {
               </>
             )}
             <motion.button
+              ref={mobileTriggerRef}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={cn(
@@ -385,6 +437,8 @@ export const Navbar = () => {
                   : "text-white hover:bg-white/10",
               )}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="public-mobile-menu"
             >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
@@ -429,17 +483,20 @@ export const Navbar = () => {
 
             {/* Menu Panel */}
             <motion.div
-              ref={mobileMenuRef}
+              id="public-mobile-menu"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
               className={cn(
-                "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto shadow-2xl md:top-20 md:h-[calc(100vh-5rem)] xl:hidden",
+                "site-nav-menu fixed top-16 right-0 h-[calc(100dvh-4rem)] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto shadow-xl md:top-20 md:h-[calc(100dvh-5rem)] xl:hidden",
                 isDark ? "border-l border-slate-800 bg-slate-900" : "bg-white",
               )}
             >
-              <div className="space-y-2 p-6">
+              <nav aria-label="Mobile navigation" className="space-y-1 p-4">
+                <p className="px-3 py-3 text-xs font-semibold text-[var(--site-muted)]">
+                  NAVIGATION
+                </p>
                 {NAV_LINKS.map((link, index) => (
                   <MobileNavItem
                     key={link.path}
@@ -466,24 +523,24 @@ export const Navbar = () => {
                       <Link
                         to="/login"
                         className={cn(
-                          "mb-3 flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all",
+                          "site-button site-button--outline mb-3 flex w-full items-center justify-center gap-2 px-6 py-3 font-semibold transition-all",
                           isDark
                             ? "bg-slate-800 text-white hover:bg-slate-700"
                             : "bg-gray-100 text-gray-900 hover:bg-gray-200",
                         )}
                       >
-                        Login
+                        Sign in
                       </Link>
                       <Link
                         to="/register"
-                        className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-600 hover:to-cyan-600"
+                        className="site-button site-button--primary flex w-full items-center justify-center gap-2 px-6 py-3 font-semibold"
                       >
-                        Register
+                        Join ComES
                       </Link>
                     </>
                   )}
                 </motion.div>
-              </div>
+              </nav>
             </motion.div>
           </>
         )}

@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Image, Camera, Send, Sparkles } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Image, Send, Sparkles } from "lucide-react";
 import { Section, Badge, PageTransition, FadeInView, HoverScale } from "@/components/ui";
 import { galleryCategories, getImagesByCategory } from "@/data";
 import { useThemeStore } from "@/store";
@@ -37,8 +37,6 @@ const Lightbox = ({
       {/* Close Button */}
       <motion.button
         onClick={onClose}
-        whileHover={{ scale: 1.1, rotate: 90 }}
-        whileTap={{ scale: 0.9 }}
         className="absolute top-4 right-4 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
       >
         <X className="h-6 w-6" />
@@ -48,8 +46,6 @@ const Lightbox = ({
       {hasPrev && (
         <motion.button
           onClick={onPrev}
-          whileHover={{ scale: 1.1, x: -5 }}
-          whileTap={{ scale: 0.9 }}
           className="absolute top-1/2 left-4 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
         >
           <ChevronLeft className="h-8 w-8" />
@@ -58,8 +54,6 @@ const Lightbox = ({
       {hasNext && (
         <motion.button
           onClick={onNext}
-          whileHover={{ scale: 1.1, x: 5 }}
-          whileTap={{ scale: 0.9 }}
           className="absolute top-1/2 right-4 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
         >
           <ChevronRight className="h-8 w-8" />
@@ -105,25 +99,22 @@ const GalleryCard = ({
     <FadeInView direction="up" delay={index * 0.05}>
       <motion.div
         onClick={onClick}
-        whileHover={{ scale: 1.05, zIndex: 10 }}
-        className="group relative aspect-square cursor-pointer overflow-hidden rounded-xl shadow-lg"
+        className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg shadow-lg"
       >
         <motion.img
           src={image.src}
           alt={image.alt}
           className="h-full w-full object-cover"
-          whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.5 }}
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* Content */}
         <motion.div
           className="absolute right-0 bottom-0 left-0 p-4"
           initial={{ y: 20, opacity: 0 }}
-          whileHover={{ y: 0, opacity: 1 }}
         >
           <h3 className="font-semibold text-white">{image.title}</h3>
           <p className="text-sm text-gray-300">{image.category}</p>
@@ -148,63 +139,6 @@ const GalleryCard = ({
 };
 
 // Hero Section
-const GalleryHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background={isDark ? "dark" : "gradient"}
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-0 left-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute right-1/4 bottom-0 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/30"
-          >
-            <Camera className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Our{" "}
-            <span className="bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
-              Gallery
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Capturing moments of learning, celebration, and achievement. Browse through our
-            collection of memories from events, workshops, and more.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Main Gallery Section
 const MainGallerySection = () => {
@@ -235,12 +169,11 @@ const MainGallerySection = () => {
           <motion.button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            aria-pressed={activeCategory === category.id}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-all",
+              "site-filter rounded-lg px-4 py-2 text-sm font-medium transition-all",
               activeCategory === category.id
-                ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30"
+                ? "site-accent-panel from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30"
                 : isDark
                   ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200",
@@ -316,7 +249,7 @@ const StatsSection = () => {
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         {stats.map((stat, index) => (
           <FadeInView key={index} direction="up" delay={index * 0.1}>
-            <motion.div whileHover={{ scale: 1.05, y: -5 }} className="text-center">
+            <motion.div className="text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
@@ -346,7 +279,7 @@ const CTASection = () => {
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/30"
+            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-pink-500 to-purple-600 shadow-lg shadow-pink-500/30"
           >
             <Sparkles className="h-8 w-8 text-white" />
           </motion.div>
@@ -366,7 +299,7 @@ const CTASection = () => {
           <HoverScale>
             <a
               href="mailto:media@comes.ruh.ac.lk"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-3 font-medium text-white shadow-lg shadow-pink-500/30 transition-opacity hover:opacity-90"
+              className="site-button site-button--primary inline-flex items-center gap-2"
             >
               <Send className="h-5 w-5" />
               Submit Your Photos
@@ -382,7 +315,6 @@ const CTASection = () => {
 export const GalleryPage = () => {
   return (
     <PageTransition>
-      <GalleryHero />
       <MainGallerySection />
       <StatsSection />
       <CTASection />

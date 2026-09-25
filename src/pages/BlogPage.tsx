@@ -40,7 +40,7 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
 
   return (
     <FadeInView direction="up" delay={index * 0.1}>
-      <motion.div whileHover={{ y: -10 }}>
+      <motion.div>
         <Card
           hoverable
           padding="none"
@@ -55,7 +55,6 @@ const BlogPostCard = ({ post, index = 0 }: { post: BlogPost; index?: number }) =
                 src={post.coverImage}
                 alt={post.title}
                 className="h-48 w-full object-cover"
-                whileHover={{ scale: 1.1 }}
                 transition={{ duration: 0.3 }}
               />
             ) : (
@@ -147,7 +146,7 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
 
   return (
     <FadeInView direction="left">
-      <motion.div whileHover={{ scale: 1.02 }}>
+      <motion.div>
         <Card
           hoverable
           padding="none"
@@ -159,7 +158,6 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
                 src={post.coverImage}
                 alt={post.title}
                 className="h-64 w-full object-cover lg:h-full"
-                whileHover={{ scale: 1.1 }}
                 transition={{ duration: 0.5 }}
               />
             ) : (
@@ -227,63 +225,6 @@ const FeaturedPostCard = ({ post }: { post: BlogPost }) => {
 };
 
 // Hero Section
-const BlogHero = () => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <Section
-      background="gradient"
-      padding="xl"
-      className={isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : ""}
-    >
-      <div className="relative mx-auto max-w-4xl text-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-gradient-to-br from-green-400/20 to-emerald-500/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-500/20 blur-3xl"
-        />
-
-        <FadeInView>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/30"
-          >
-            <Newspaper className="h-10 w-10 text-white" />
-          </motion.div>
-        </FadeInView>
-
-        <FadeInView delay={0.1}>
-          <h1
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Blog &{" "}
-            <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-              News
-            </span>
-          </h1>
-        </FadeInView>
-
-        <FadeInView delay={0.2}>
-          <p className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}>
-            Stay updated with the latest news, tutorials, and insights from our community. Learn,
-            share, and grow together.
-          </p>
-        </FadeInView>
-      </div>
-    </Section>
-  );
-};
 
 // Featured Posts Section
 const FeaturedSection = () => {
@@ -362,16 +303,15 @@ const AllPostsSection = () => {
           {blogCategories.map((category) => (
             <motion.button
               key={category}
+              aria-pressed={activeCategory === category}
               onClick={() => {
                 setActiveCategory(category);
                 setPage(1);
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition-all",
+                "site-filter rounded-lg px-4 py-2 text-sm font-medium transition-all",
                 activeCategory === category
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30"
+                  ? "site-accent-panel from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30"
                   : isDark
                     ? "bg-slate-800 text-gray-300 hover:bg-slate-700"
                     : "bg-white text-gray-600 hover:bg-gray-100",
@@ -444,7 +384,7 @@ const CTASection = () => {
           <motion.div
             initial={{ scale: 0 }}
             whileInView={{ scale: 1 }}
-            className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
+            className="site-accent-panel mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30"
           >
             <PenLine className="h-8 w-8 text-white" />
           </motion.div>
@@ -476,7 +416,6 @@ const CTASection = () => {
 export const BlogPage = () => {
   return (
     <PageTransition>
-      <BlogHero />
       <FeaturedSection />
       <AllPostsSection />
       <NewsletterSection

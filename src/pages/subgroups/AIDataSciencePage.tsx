@@ -2,7 +2,6 @@
 // ComES Website - AI and Data Science Subgroup Page
 // ============================================
 
-import { motion } from "framer-motion";
 import { Brain, BarChart3, Database, Cpu, LineChart, Sparkles } from "lucide-react";
 import { Section, SectionHeader, Card, PageTransition, FadeInView } from "@/components/ui";
 import { useThemeStore } from "@/store";
@@ -38,43 +37,6 @@ const AIDataSciencePage = () => {
   return (
     <PageTransition>
       {/* Hero Section */}
-      <Section
-        background="gradient"
-        padding="xl"
-        className={cn(isDark && "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950")}
-      >
-        <div className="mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.4 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30"
-          >
-            <Brain className="h-10 w-10 text-white" />
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            AI and Data Science
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}
-          >
-            Unlocking the power of data and artificial intelligence. Our AI & Data Science subgroup
-            explores cutting-edge technologies shaping the future.
-          </motion.p>
-        </div>
-      </Section>
 
       {/* Focus Areas */}
       <Section padding="lg">
@@ -89,7 +51,7 @@ const AIDataSciencePage = () => {
               <Card hoverable padding="lg" className="h-full">
                 <div className="flex items-start gap-4">
                   <div
-                    className={cn("rounded-xl p-3", isDark ? "bg-purple-500/20" : "bg-purple-100")}
+                    className={cn("rounded-lg p-3", isDark ? "bg-purple-500/20" : "bg-purple-100")}
                   >
                     <area.icon
                       className={cn("h-6 w-6", isDark ? "text-purple-400" : "text-purple-600")}

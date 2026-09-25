@@ -7,6 +7,7 @@ import { Outlet } from "react-router";
 import { motion } from "framer-motion";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { PublicPageHeader } from "./PublicPageHeader";
 import { useThemeStore } from "@/store";
 
 export const Layout: FC = () => {
@@ -14,7 +15,8 @@ export const Layout: FC = () => {
 
   return (
     <div
-      className={`font-comes flex min-h-screen flex-col overflow-x-clip transition-colors duration-300 ${
+      data-theme={resolvedTheme}
+      className={`public-site font-comes flex min-h-screen flex-col overflow-x-clip transition-colors duration-300 ${
         resolvedTheme === "dark" ? "bg-slate-950 text-gray-100" : "bg-white text-gray-900"
       }`}
     >
@@ -25,6 +27,7 @@ export const Layout: FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
+        <PublicPageHeader />
         <Outlet />
       </motion.main>
       <Footer />

@@ -2,8 +2,7 @@
 // ComES Website - Embedded and Electronics Subgroup Page
 // ============================================
 
-import { motion } from "framer-motion";
-import { Cpu, Zap, Radio, CircuitBoard, Microchip, Bot } from "lucide-react";
+import { Zap, Radio, CircuitBoard, Microchip, Bot } from "lucide-react";
 import { Section, SectionHeader, Card, PageTransition, FadeInView } from "@/components/ui";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
@@ -38,43 +37,6 @@ const EmbeddedElectronicsPage = () => {
   return (
     <PageTransition>
       {/* Hero Section */}
-      <Section
-        background="gradient"
-        padding="xl"
-        className={cn(isDark && "bg-gradient-to-br from-slate-950 via-green-950 to-slate-950")}
-      >
-        <div className="mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.4 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg shadow-green-500/30"
-          >
-            <Cpu className="h-10 w-10 text-white" />
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={cn(
-              "mb-6 text-4xl font-bold md:text-5xl lg:text-6xl",
-              isDark ? "text-white" : "text-comesBlue",
-            )}
-          >
-            Embedded and Electronics
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className={cn("text-xl leading-relaxed", isDark ? "text-gray-400" : "text-gray-600")}
-          >
-            Where hardware meets software. Our Embedded Systems subgroup bridges the gap between
-            electronics and programming to create innovative solutions.
-          </motion.p>
-        </div>
-      </Section>
 
       {/* Focus Areas */}
       <Section padding="lg">
@@ -89,7 +51,7 @@ const EmbeddedElectronicsPage = () => {
               <Card hoverable padding="lg" className="h-full">
                 <div className="flex items-start gap-4">
                   <div
-                    className={cn("rounded-xl p-3", isDark ? "bg-green-500/20" : "bg-green-100")}
+                    className={cn("rounded-lg p-3", isDark ? "bg-green-500/20" : "bg-green-100")}
                   >
                     <area.icon
                       className={cn("h-6 w-6", isDark ? "text-green-400" : "text-green-600")}
