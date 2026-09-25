@@ -23,6 +23,7 @@ import { UnderMaintenancePage } from "@/pages/UnderMaintenancePage";
 import { StudentRegisterPage } from "@/pages/StudentRegisterPage";
 import { StudentLoginPage } from "@/pages/StudentLoginPage";
 import { StudentPortfolioPage } from "@/pages/StudentPortfolioPage";
+import { PasswordRecoveryPage } from "@/pages/PasswordRecoveryPage";
 import {
   SoftwareEngineeringPage,
   AIDataSciencePage,
@@ -147,6 +148,14 @@ const AnimatedRoutes = () => {
 
           {/* Student Login Route (public) */}
           <Route path="/login" element={<StudentLoginPage />} />
+          <Route
+            path="/forgot-password"
+            element={<PasswordRecoveryPage key={location.pathname + location.search} />}
+          />
+          <Route
+            path="/reset-password/:token"
+            element={<PasswordRecoveryPage key={location.pathname + location.search} />}
+          />
 
           {/* Student Portfolio Route (public) */}
           <Route path="/portfolio/:username" element={<StudentPortfolioPage />} />

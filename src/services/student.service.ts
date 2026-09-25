@@ -7,6 +7,7 @@ import { STORAGE_KEYS } from "@/config";
 
 export interface Student {
   _id: string;
+  role?: "student" | "admin";
   name: string;
   email: string;
   username: string;
@@ -107,6 +108,16 @@ const getOrdinalSuffix = (n: number): string => {
 };
 
 export const studentService = {
+  forgotPassword: async (email: string): Promise<ApiResponse<null>> => {
+    const response = await api.post<ApiResponse<null>>("/students/forgot-password", { email });
+    return response.data;
+  },
+
+  resetPassword: async (token: string): Promise<ApiResponse<null>> => {
+    const response = await api.patch<ApiResponse<null>>(`/students/reset-password/${token}`, {});
+    return response.data;
+  },
+
   // Register new student
   register: async (data: StudentRegisterData): Promise<ApiResponse<StudentAuthResponse>> => {
     const response = await api.post<ApiResponse<StudentAuthResponse>>("/students/register", data);

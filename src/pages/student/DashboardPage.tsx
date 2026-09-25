@@ -24,6 +24,7 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge, CreateTeamModal } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
+import { DashboardSwitch } from "@/components/ui/DashboardSwitch";
 
 // Quick Stats Card
 const StatCard = ({
@@ -132,6 +133,7 @@ export const StudentDashboardPage = () => {
       <main className="flex-1 pt-16 md:pt-20">
         <div className={cn("min-h-screen pt-8 pb-12", isDark ? "bg-slate-950" : "bg-gray-50")}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <DashboardSwitch />
             {/* Welcome Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

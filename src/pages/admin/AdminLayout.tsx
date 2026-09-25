@@ -27,6 +27,8 @@ import { useAuthStore } from "@/store";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { ThemeToggle } from "@/components/ui";
+import { DashboardSwitch } from "@/components/ui/DashboardSwitch";
+import { useStudentStore } from "@/store/studentStore";
 
 import LogoBlack from "@/assets/logo/Logo Black Coloured.png";
 import LogoWhite from "@/assets/logo/Logo White Coloured.png";
@@ -38,7 +40,7 @@ const navItems = [
   { path: "/admin/events", label: "Events", icon: Calendar },
   { path: "/admin/projects", label: "Projects", icon: FolderKanban },
   { path: "/admin/blog", label: "Blog Posts", icon: FileText },
-  { path: "/admin/team", label: "Team Members", icon: Users },
+  { path: "/admin/team", label: "Committee & Team", icon: Users },
   { path: "/admin/contacts", label: "Contact Messages", icon: Mail },
   { path: "/admin/notifications", label: "Notifications", icon: Bell },
   { path: "/admin/newsletter", label: "Newsletter", icon: Newspaper },
@@ -49,14 +51,22 @@ const navItems = [
 export const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, logout } = useAuthStore();
+  const { user: adminUser, logout } = useAuthStore();
+  const {
+    student,
+    isAuthenticated: studentAuthenticated,
+    logout: studentLogout,
+  } = useStudentStore();
+  const isStudentAdmin = studentAuthenticated && student?.role === "admin";
+  const user = isStudentAdmin ? student : adminUser;
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    if (studentAuthenticated) studentLogout();
     await logout();
-    navigate("/admin/login");
+    navigate(isStudentAdmin ? "/login" : "/admin/login");
   };
 
   return (
@@ -293,6 +303,7 @@ export const AdminLayout = () => {
         )}
       >
         <div className="min-w-0 p-4 lg:p-8">
+          <DashboardSwitch />
           <Outlet />
         </div>
       </main>

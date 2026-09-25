@@ -18,6 +18,17 @@ const api = axios.create({
 // Token management
 let accessToken: string | null = localStorage.getItem(STORAGE_KEYS.accessToken);
 let studentAccessToken: string | null = localStorage.getItem(STORAGE_KEYS.studentAccessToken);
+let studentAdminAccess = false;
+
+export const setStudentAdminAccess = (enabled: boolean) => {
+  studentAdminAccess = enabled;
+};
+
+type AuthRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean; _studentAuth?: boolean };
+
+const requiresStudentToken = (url: string, method?: string): boolean =>
+  /^\/students\/(me(?:\?|$)|my-|events\/|change-password(?:\?|$)|search(?:\?|$))/.test(url) ||
+  (/^\/quizzes\/[^/]+\/attempt(?:\?|$)/.test(url) && method === "post");
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
@@ -42,7 +53,7 @@ export const getStudentAccessToken = () => studentAccessToken;
 
 // Request interceptor - add auth token
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config: AuthRequestConfig) => {
     const url = config.url || "";
     const isPublicAuthEndpoint =
       url.includes("/auth/login") ||
@@ -51,25 +62,18 @@ api.interceptors.request.use(
       url.includes("/auth/reset-password") ||
       url.includes("/students/login") ||
       url.includes("/students/register") ||
+      url.includes("/students/forgot-password") ||
+      url.includes("/students/reset-password") ||
       url.includes("/students/refresh-token");
 
     if (isPublicAuthEndpoint) {
       return config;
     }
 
-    // Check if this is a student-specific endpoint (me, my-events, etc.)
-    // Admin endpoints to /students (GET all, DELETE, notify) should use admin token
-    const isStudentAuthEndpoint =
-      config.url?.includes("/students/me") ||
-      config.url?.includes("/students/my-") ||
-      config.url?.includes("/students/events/") ||
-      config.url?.includes("/students/change-password") ||
-      config.url?.includes("/students/search") ||
-      (config.url?.includes("/quizzes/") &&
-        config.url?.includes("/attempt") &&
-        config.method === "post");
-
-    const token = isStudentAuthEndpoint ? studentAccessToken : accessToken;
+    config._studentAuth =
+      requiresStudentToken(url, config.method) ||
+      (!url.startsWith("/auth/") && studentAdminAccess && Boolean(studentAccessToken));
+    const token = config._studentAuth ? studentAccessToken : accessToken;
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -83,7 +87,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as AuthRequestConfig | undefined;
+    if (!originalRequest) return Promise.reject(error);
     const url = originalRequest.url || "";
     const isPublicAuthEndpoint =
       url.includes("/auth/login") ||
@@ -92,19 +97,15 @@ api.interceptors.response.use(
       url.includes("/auth/reset-password") ||
       url.includes("/students/login") ||
       url.includes("/students/register") ||
+      url.includes("/students/forgot-password") ||
+      url.includes("/students/reset-password") ||
       url.includes("/students/refresh-token");
 
     // If 401 and not already retrying, try to refresh token
     if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuthEndpoint) {
       originalRequest._retry = true;
 
-      // Determine if this is a student endpoint
-      const isStudentEndpoint =
-        url.includes("/students/me") ||
-        url.includes("/students/my-") ||
-        url.includes("/students/events/") ||
-        url.includes("/students/change-password") ||
-        url.includes("/students/search");
+      const isStudentEndpoint = originalRequest._studentAuth === true;
 
       try {
         if (isStudentEndpoint) {

@@ -7,6 +7,7 @@ import { persist } from "zustand/middleware";
 import { isAxiosError } from "axios";
 import { studentService, type Student, type StudentRegisterData } from "@/services/student.service";
 import { setStudentAccessToken } from "@/services/student.service";
+import { setStudentAdminAccess } from "@/services/api";
 
 interface ApiErrorResponse {
   message?: string;
@@ -60,6 +61,7 @@ export const useStudentStore = create<StudentState>()(
           const response = await studentService.login(credentials);
 
           if (response.success && response.data) {
+            setStudentAdminAccess(response.data.student.role === "admin");
             set({
               student: response.data.student,
               isAuthenticated: true,
@@ -81,6 +83,7 @@ export const useStudentStore = create<StudentState>()(
         try {
           const response = await studentService.register(data);
           if (response.success && response.data) {
+            setStudentAdminAccess(response.data.student.role === "admin");
             setStudentAccessToken(response.data.accessToken);
             localStorage.setItem("studentRefreshToken", response.data.refreshToken);
             set({
@@ -102,6 +105,7 @@ export const useStudentStore = create<StudentState>()(
       },
 
       logout: () => {
+        setStudentAdminAccess(false);
         setStudentAccessToken(null);
         localStorage.removeItem("studentRefreshToken");
         set({
@@ -115,6 +119,7 @@ export const useStudentStore = create<StudentState>()(
       checkAuth: async () => {
         const token = localStorage.getItem("studentRefreshToken");
         if (!token) {
+          setStudentAdminAccess(false);
           set({ isAuthenticated: false, student: null });
           return;
         }
@@ -123,24 +128,33 @@ export const useStudentStore = create<StudentState>()(
         try {
           const response = await studentService.getProfile();
           if (response.success && response.data) {
+            setStudentAdminAccess(response.data.student.role === "admin");
             set({
               student: response.data.student,
               isAuthenticated: true,
               isLoading: false,
             });
           } else {
+            setStudentAdminAccess(false);
             set({ isAuthenticated: false, student: null, isLoading: false });
           }
         } catch {
+          setStudentAdminAccess(false);
           set({ isAuthenticated: false, student: null, isLoading: false });
         }
       },
 
       clearError: () => set({ error: null }),
-      updateStudent: (student: Student) => set({ student }),
+      updateStudent: (student: Student) => {
+        setStudentAdminAccess(student.role === "admin");
+        set({ student });
+      },
     }),
     {
       name: "student-auth-storage",
+      onRehydrateStorage: () => (state) => {
+        setStudentAdminAccess(Boolean(state?.isAuthenticated && state.student?.role === "admin"));
+      },
       partialize: (state) => ({
         student: state.student,
         isAuthenticated: state.isAuthenticated,

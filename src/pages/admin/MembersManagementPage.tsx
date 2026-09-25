@@ -16,15 +16,18 @@ import {
   User,
   Send,
   Users,
+  ShieldCheck,
+  ShieldOff,
 } from "lucide-react";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button } from "@/components/ui";
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import api from "@/services/api";
 
 interface Student {
   _id: string;
+  role?: "student" | "admin";
   name: string;
   email: string;
   registrationNo: string;
@@ -413,6 +416,7 @@ export const MembersManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [roleLoading, setRoleLoading] = useState<string | null>(null);
   const [notificationModal, setNotificationModal] = useState<{
     isOpen: boolean;
     student: Student | null;
@@ -477,6 +481,35 @@ export const MembersManagementPage = () => {
 
     return filtered;
   })();
+
+  const handleChangeRole = async (student: Student) => {
+    const role = student.role === "admin" ? "student" : "admin";
+    if (
+      !confirm(
+        `${role === "admin" ? "Grant full admin access to" : "Remove admin access from"} ${student.name}?`,
+      )
+    )
+      return;
+    setRoleLoading(student._id);
+    try {
+      const response = await api.patch<{ data: { student: Student } }>(
+        `/students/${student._id}/role`,
+        { role },
+      );
+      setStudents((current) =>
+        current.map((member) => (member._id === student._id ? response.data.data.student : member)),
+      );
+      showToast("success", "Student access updated");
+    } catch (error) {
+      showToast(
+        "error",
+        (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+          "Failed to update student access",
+      );
+    } finally {
+      setRoleLoading(null);
+    }
+  };
 
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (!confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
@@ -852,6 +885,9 @@ export const MembersManagementPage = () => {
                         <div>
                           <p className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
                             {student.name}
+                            {student.role === "admin" && (
+                              <span className="ml-2 text-xs font-medium text-blue-500">Admin</span>
+                            )}
                           </p>
                           <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                             {student.email}
@@ -908,6 +944,21 @@ export const MembersManagementPage = () => {
                     </td>
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleChangeRole(student)}
+                          disabled={roleLoading === student._id}
+                          className="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-500/10 disabled:opacity-50"
+                          title={
+                            student.role === "admin" ? "Remove admin access" : "Grant admin access"
+                          }
+                          aria-label={`${student.role === "admin" ? "Remove admin access from" : "Grant admin access to"} ${student.name}`}
+                        >
+                          {student.role === "admin" ? (
+                            <ShieldOff className="h-4 w-4" />
+                          ) : (
+                            <ShieldCheck className="h-4 w-4" />
+                          )}
+                        </button>
                         <button
                           onClick={() => setNotificationModal({ isOpen: true, student })}
                           className={cn(

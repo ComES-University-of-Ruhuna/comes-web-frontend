@@ -26,6 +26,7 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button } from "@/components/ui";
 import api from "@/services/api";
+import { executiveCommittee } from "@/data/team";
 
 interface TeamMember {
   _id: string;
@@ -34,6 +35,7 @@ interface TeamMember {
   department: string;
   batch: string;
   email?: string;
+  contactNo?: string;
   bio?: string;
   avatar?: string;
   linkedin?: string;
@@ -50,7 +52,7 @@ interface TeamMember {
 
 const departments = [
   { value: "all", label: "All Departments" },
-  { value: "executive", label: "Executive" },
+  { value: "executive", label: "Executive Committee" },
   { value: "technical", label: "Technical" },
   { value: "creative", label: "Creative" },
   { value: "marketing", label: "Marketing" },
@@ -87,9 +89,10 @@ const TeamEditor = ({
   const [formData, setFormData] = useState({
     name: member?.name || "",
     role: member?.role || "",
-    department: member?.department || "technical",
+    department: member?.department || "executive",
     batch: member?.batch || "",
     email: member?.email || "",
+    contactNo: member?.contactNo || "",
     bio: member?.bio || "",
     avatar: member?.avatar || "",
     linkedin: member?.linkedin || "",
@@ -110,12 +113,13 @@ const TeamEditor = ({
       role: formData.role,
       department: formData.department,
       batch: formData.batch,
-      email: formData.email || undefined,
-      bio: formData.bio || undefined,
-      avatar: formData.avatar || undefined,
-      linkedin: formData.linkedin || undefined,
-      github: formData.github || undefined,
-      twitter: formData.twitter || undefined,
+      email: formData.email,
+      contactNo: formData.contactNo,
+      bio: formData.bio,
+      avatar: formData.avatar,
+      linkedin: formData.linkedin,
+      github: formData.github,
+      twitter: formData.twitter,
       order: formData.order,
       isActive: formData.isActive,
       term: {
@@ -143,6 +147,9 @@ const TeamEditor = ({
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="team-editor-title"
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
@@ -157,11 +164,15 @@ const TeamEditor = ({
             isDark ? "border-slate-800 bg-slate-900" : "border-gray-200 bg-white",
           )}
         >
-          <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+          <h2
+            id="team-editor-title"
+            className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}
+          >
             {isEditing ? "Edit Team Member" : "Add Team Member"}
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close member editor"
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
             <X className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-500")} />
@@ -169,10 +180,59 @@ const TeamEditor = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
-          {/* Name & Role */}
-          <div className="grid grid-cols-2 gap-4">
+          {!isEditing && (
             <div>
               <label
+                htmlFor="committee-template"
+                className={cn(
+                  "mb-2 block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                Existing Executive Roster
+              </label>
+              <select
+                id="committee-template"
+                defaultValue=""
+                className={inputCn}
+                onChange={(event) => {
+                  const entry = executiveCommittee.find(
+                    (candidate) => candidate.id === event.target.value,
+                  );
+                  if (!entry) return;
+                  setFormData((current) => ({
+                    ...current,
+                    name: entry.name,
+                    role: entry.role,
+                    department: "executive",
+                    batch: entry.batch || "",
+                    email: entry.email || "",
+                    contactNo: entry.contactNo || "",
+                    avatar: entry.image,
+                    bio: entry.bio || "",
+                    linkedin: entry.linkedin || "",
+                    github: entry.github || "",
+                    twitter: entry.twitter || "",
+                    order: executiveCommittee.indexOf(entry),
+                  }));
+                }}
+              >
+                <option value="" disabled>
+                  Select a member
+                </option>
+                {executiveCommittee.map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {entry.name} - {entry.role}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {/* Name & Role */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="team-member-name"
                 className={cn(
                   "mb-2 block text-sm font-medium",
                   isDark ? "text-gray-300" : "text-gray-700",
@@ -181,6 +241,7 @@ const TeamEditor = ({
                 Full Name *
               </label>
               <input
+                id="team-member-name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -201,6 +262,7 @@ const TeamEditor = ({
               <input
                 type="text"
                 value={formData.role}
+                aria-label="Role"
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 placeholder="President, Tech Lead..."
                 className={inputCn}
@@ -210,7 +272,7 @@ const TeamEditor = ({
           </div>
 
           {/* Department, Batch, Order */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label
                 className={cn(
@@ -222,6 +284,7 @@ const TeamEditor = ({
               </label>
               <select
                 value={formData.department}
+                aria-label="Department"
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 className={inputCn}
                 required
@@ -247,6 +310,7 @@ const TeamEditor = ({
               <input
                 type="text"
                 value={formData.batch}
+                aria-label="Batch"
                 onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
                 placeholder="2022/2023"
                 className={inputCn}
@@ -265,6 +329,7 @@ const TeamEditor = ({
               <input
                 type="number"
                 value={formData.order}
+                aria-label="Display Order"
                 onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                 className={inputCn}
               />
@@ -272,7 +337,7 @@ const TeamEditor = ({
           </div>
 
           {/* Email & Avatar */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label
                 className={cn(
@@ -284,6 +349,7 @@ const TeamEditor = ({
               </label>
               <input
                 type="email"
+                aria-label="Email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="john@example.com"
@@ -302,6 +368,7 @@ const TeamEditor = ({
               <input
                 type="url"
                 value={formData.avatar}
+                aria-label="Avatar URL"
                 onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
                 placeholder="https://example.com/photo.jpg"
                 className={inputCn}
@@ -321,6 +388,7 @@ const TeamEditor = ({
             </label>
             <textarea
               value={formData.bio}
+              aria-label="Bio"
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Short bio about the team member..."
               rows={3}
@@ -333,7 +401,7 @@ const TeamEditor = ({
           </div>
 
           {/* Term */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label
                 className={cn(
@@ -346,6 +414,7 @@ const TeamEditor = ({
               <input
                 type="date"
                 value={formData.termStart}
+                aria-label="Term Start"
                 onChange={(e) => setFormData({ ...formData, termStart: e.target.value })}
                 className={inputCn}
                 required
@@ -363,6 +432,7 @@ const TeamEditor = ({
               <input
                 type="date"
                 value={formData.termEnd}
+                aria-label="Term End"
                 onChange={(e) => setFormData({ ...formData, termEnd: e.target.value })}
                 className={inputCn}
               />
@@ -379,7 +449,7 @@ const TeamEditor = ({
             >
               Social Links
             </label>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div className="relative">
                 <Linkedin
                   className={cn(
@@ -390,6 +460,7 @@ const TeamEditor = ({
                 <input
                   type="url"
                   value={formData.linkedin}
+                  aria-label="LinkedIn URL"
                   onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
                   placeholder="LinkedIn URL"
                   className={cn(
@@ -411,6 +482,7 @@ const TeamEditor = ({
                 <input
                   type="url"
                   value={formData.github}
+                  aria-label="GitHub URL"
                   onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                   placeholder="GitHub URL"
                   className={cn(
@@ -432,6 +504,7 @@ const TeamEditor = ({
                 <input
                   type="url"
                   value={formData.twitter}
+                  aria-label="Twitter URL"
                   onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                   placeholder="Twitter URL"
                   className={cn(
@@ -446,11 +519,32 @@ const TeamEditor = ({
             </div>
           </div>
 
+          <div>
+            <label
+              htmlFor="team-member-phone"
+              className={cn(
+                "mb-2 block text-sm font-medium",
+                isDark ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              Phone Number
+            </label>
+            <input
+              id="team-member-phone"
+              type="tel"
+              maxLength={30}
+              value={formData.contactNo}
+              onChange={(event) => setFormData({ ...formData, contactNo: event.target.value })}
+              className={inputCn}
+            />
+          </div>
+
           {/* Active Toggle */}
           <div className="flex items-center gap-3">
             <label className="relative inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
+                aria-label="Active Member"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 className="peer sr-only"
@@ -503,7 +597,7 @@ export const TeamManagementPage = () => {
   const fetchTeam = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get("/team");
+      const response = await api.get("/team?includeInactive=true");
       setTeam(response.data.data.members || []);
     } catch (error) {
       showToast("error", "Failed to fetch team members");
@@ -595,6 +689,7 @@ export const TeamManagementPage = () => {
             className="fixed top-4 right-4 z-50"
           >
             <div
+              role={toast.type === "error" ? "alert" : "status"}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg",
                 toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white",
@@ -615,7 +710,7 @@ export const TeamManagementPage = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-            Team Members
+            Committee & Team
           </h1>
           <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
             Manage your club's team and leadership ({team.length} members)

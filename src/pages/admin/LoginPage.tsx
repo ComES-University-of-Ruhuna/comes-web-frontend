@@ -195,6 +195,15 @@ export const LoginPage = () => {
             </div>
           </div>
 
+          <div className="text-right">
+            <Link
+              to="/forgot-password?account=user"
+              className={cn("text-sm hover:underline", isDark ? "text-blue-400" : "text-blue-600")}
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           {/* Submit Button */}
           <Button type="submit" variant="primary" loading={isLoading} className="w-full">
             Sign In

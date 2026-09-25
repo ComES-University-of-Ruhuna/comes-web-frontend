@@ -4,6 +4,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { isAxiosError } from "axios";
 import { authService, type User, type LoginCredentials, type RegisterData } from "@/services";
 
 interface AuthState {
@@ -44,7 +45,9 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false, error: response.message || "Login failed" });
           return false;
         } catch (error) {
-          const message = error instanceof Error ? error.message : "Login failed";
+          const message =
+            (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+            (error instanceof Error ? error.message : "Login failed");
           set({ isLoading: false, error: message });
           return false;
         }

@@ -2,24 +2,27 @@
 // ComES Website - Team Page
 // ============================================
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Github, Linkedin, Mail, Phone, UserPlus } from "lucide-react";
-import { Button, PageTransition, Section } from "@/components/ui";
 import {
-  allTeamMembers,
-  executiveCommittee,
-  seniorAdvisors,
-  teamCategories,
-  getTeamByCategory,
-} from "@/data";
+  ArrowRight,
+  Github,
+  Linkedin,
+  Mail,
+  Phone,
+  UserPlus,
+  RefreshCw,
+  Twitter,
+} from "lucide-react";
+import { Button, PageTransition, Section } from "@/components/ui";
+import { teamService, teamDepartments, type ApiTeamMember } from "@/services/team.service";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import type { TeamMember } from "@/types";
 
-const TeamMemberCard = ({ member }: { member: TeamMember }) => {
+const TeamMemberCard = ({ member }: { member: ApiTeamMember }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const [imageFailed, setImageFailed] = useState(false);
 
   return (
     <article
@@ -31,18 +34,32 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
       )}
     >
       <div className="flex min-w-0 items-start gap-4">
-        <img
-          src={member.image}
-          alt={member.name}
-          className={cn(
-            "h-16 w-16 shrink-0 rounded-full border object-cover",
-            isDark ? "border-slate-700" : "border-gray-200",
-          )}
-        />
+        {member.avatar && !imageFailed ? (
+          <img
+            src={member.avatar}
+            alt={member.name}
+            onError={() => setImageFailed(true)}
+            className={cn(
+              "h-16 w-16 shrink-0 rounded-full border object-cover",
+              isDark ? "border-slate-700" : "border-gray-200",
+            )}
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-800"
+          >
+            {member.name
+              .split(/\s+/)
+              .slice(0, 2)
+              .map((part) => part[0])
+              .join("")}
+          </div>
+        )}
         <div className="min-w-0 flex-1 pt-1">
           <h3
             className={cn(
-              "text-lg leading-tight font-semibold",
+              "text-lg leading-tight font-semibold break-words",
               isDark ? "text-white" : "text-gray-950",
             )}
           >
@@ -58,6 +75,17 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
           )}
         </div>
       </div>
+
+      {member.bio && (
+        <p
+          className={cn(
+            "mt-4 text-sm leading-6 break-words",
+            isDark ? "text-gray-400" : "text-gray-600",
+          )}
+        >
+          {member.bio}
+        </p>
+      )}
 
       {(member.email || member.contactNo) && (
         <div
@@ -81,14 +109,25 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
               className="flex items-center gap-2 transition-colors hover:text-blue-500"
             >
               <Phone className="h-4 w-4 shrink-0" />
-              <span>{member.contactNo}</span>
+              <span className="break-all">{member.contactNo}</span>
             </a>
           )}
         </div>
       )}
 
-      {(member.linkedin || member.github) && (
+      {(member.linkedin || member.github || member.twitter) && (
         <div className="mt-auto flex gap-2 pt-5">
+          {member.twitter && (
+            <a
+              href={member.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${member.name} on Twitter`}
+              className="flex h-9 w-9 items-center justify-center border border-gray-400 text-gray-500 hover:text-blue-500"
+            >
+              <Twitter className="h-4 w-4" />
+            </a>
+          )}
           {member.linkedin && (
             <a
               href={member.linkedin}
@@ -128,13 +167,19 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
 };
 
 // Hero Section
-const TeamHero = () => {
+const TeamHero = ({ members, loading }: { members: ApiTeamMember[]; loading: boolean }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const summary = [
-    { value: allTeamMembers.length, label: "Team members" },
-    { value: executiveCommittee.length, label: "Executive leaders" },
-    { value: seniorAdvisors.length, label: "Faculty advisors" },
+    { value: members.length, label: "Team members" },
+    {
+      value: members.filter((member) => member.department === "executive").length,
+      label: "Executive leaders",
+    },
+    {
+      value: members.filter((member) => member.department === "advisory").length,
+      label: "Faculty advisors",
+    },
   ];
 
   return (
@@ -191,7 +236,7 @@ const TeamHero = () => {
             {summary.map((item) => (
               <div key={item.label} className="px-3 text-center sm:px-5">
                 <dd className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-950")}>
-                  {item.value}
+                  {loading ? "..." : item.value}
                 </dd>
                 <dt
                   className={cn(
@@ -259,9 +304,12 @@ const JoinTeamSection = () => {
 };
 
 // All Members Section with Filter
-const AllMembersSection = () => {
+const AllMembersSection = ({ members }: { members: ApiTeamMember[] }) => {
   const [activeCategory, setActiveCategory] = useState("all");
-  const filteredMembers = getTeamByCategory(activeCategory);
+  const filteredMembers = members.filter(
+    (member) => activeCategory === "all" || member.department === activeCategory,
+  );
+  const teamCategories = [{ id: "all", label: "All Members" }, ...teamDepartments];
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
@@ -322,8 +370,13 @@ const AllMembersSection = () => {
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
           {filteredMembers.map((member) => (
-            <TeamMemberCard key={member.id} member={member} />
+            <TeamMemberCard key={member._id} member={member} />
           ))}
+          {filteredMembers.length === 0 && (
+            <p className="col-span-full py-8 text-center text-gray-500">
+              No committee members published in this category.
+            </p>
+          )}
         </motion.div>
       </AnimatePresence>
     </Section>
@@ -332,10 +385,52 @@ const AllMembersSection = () => {
 
 // Main Team Page Component
 export const TeamPage = () => {
+  const [members, setMembers] = useState<ApiTeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [requestVersion, setRequestVersion] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
+    teamService
+      .getAll()
+      .then((response) => {
+        if (!response.success || !response.data) throw new Error("Team unavailable");
+        if (!cancelled) setMembers(response.data.members.filter((member) => member.isActive));
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [requestVersion]);
+
   return (
     <PageTransition>
-      <TeamHero />
-      <AllMembersSection />
+      <TeamHero members={members} loading={loading || error} />
+      {loading ? (
+        <div role="status" className="px-4 py-16 text-center">
+          Loading committee members...
+        </div>
+      ) : error ? (
+        <div role="alert" className="space-y-4 px-4 py-16 text-center">
+          <p>Committee details are currently unavailable.</p>
+          <Button
+            icon={<RefreshCw className="h-4 w-4" />}
+            onClick={() => setRequestVersion((current) => current + 1)}
+          >
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <AllMembersSection members={members} />
+      )}
       <JoinTeamSection />
     </PageTransition>
   );

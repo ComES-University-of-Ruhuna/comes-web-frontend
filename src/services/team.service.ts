@@ -16,20 +16,18 @@ export interface ApiTeamMember {
     | "events"
     | "finance"
     | "advisory";
-  image?: string;
+  avatar?: string;
   bio?: string;
   email?: string;
+  contactNo?: string;
+  linkedin?: string;
+  github?: string;
+  twitter?: string;
   batch: string;
   order: number;
   term: {
     start: string;
     end?: string;
-  };
-  social: {
-    linkedin?: string;
-    github?: string;
-    twitter?: string;
-    instagram?: string;
   };
   isActive: boolean;
   createdAt: string;
@@ -40,7 +38,18 @@ export interface TeamFilters {
   department?: string;
   isActive?: boolean;
   batch?: string;
+  includeInactive?: boolean;
 }
+
+export const teamDepartments = [
+  { id: "executive", label: "Executive Committee" },
+  { id: "advisory", label: "Faculty Advisors" },
+  { id: "technical", label: "Technical" },
+  { id: "creative", label: "Creative" },
+  { id: "marketing", label: "Marketing" },
+  { id: "events", label: "Events" },
+  { id: "finance", label: "Finance" },
+] as const;
 
 export const teamService = {
   // Get all team members

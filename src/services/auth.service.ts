@@ -91,21 +91,8 @@ export const authService = {
   },
 
   // Reset password
-  resetPassword: async (
-    token: string,
-    data: {
-      password: string;
-      passwordConfirm: string;
-    },
-  ): Promise<ApiResponse<AuthResponse>> => {
-    const response = await api.patch<ApiResponse<AuthResponse>>(
-      `/auth/reset-password/${token}`,
-      data,
-    );
-    if (response.data.data) {
-      setAccessToken(response.data.data.token);
-      localStorage.setItem(STORAGE_KEYS.refreshToken, response.data.data.refreshToken);
-    }
+  resetPassword: async (token: string): Promise<ApiResponse<null>> => {
+    const response = await api.patch<ApiResponse<null>>(`/auth/reset-password/${token}`, {});
     return response.data;
   },
 };

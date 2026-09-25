@@ -209,6 +209,15 @@ export const StudentLoginPage = () => {
             </div>
           </div>
 
+          <div className="text-right">
+            <Link
+              to="/forgot-password?account=student"
+              className={cn("text-sm hover:underline", isDark ? "text-blue-400" : "text-blue-600")}
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
