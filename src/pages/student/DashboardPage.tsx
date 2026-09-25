@@ -103,6 +103,7 @@ export const StudentDashboardPage = () => {
   ];
 
   const quickLinks = [
+    { icon: Users, label: "Organizing", href: "/student/organizing", color: "bg-teal-600" },
     { icon: Users, label: "My Teams", href: "/student/teams", color: "bg-indigo-500" },
     { icon: BookOpen, label: "My Quizzes", href: "/student/quizzes", color: "bg-purple-500" },
     { icon: Calendar, label: "Events", href: "/events", color: "bg-blue-500" },

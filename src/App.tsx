@@ -35,6 +35,14 @@ import {
 const StudentDashboardPage = lazy(() =>
   import("@/pages/student").then((pages) => ({ default: pages.StudentDashboardPage })),
 );
+const StudentOrganizingPage = lazy(() =>
+  import("@/pages/student/OrganizingPage").then((pages) => ({ default: pages.OrganizingPage })),
+);
+const OrganizingWorkspace = lazy(() =>
+  import("@/components/events/OrganizingWorkspace").then((components) => ({
+    default: components.OrganizingWorkspace,
+  })),
+);
 const StudentProfilePage = lazy(() =>
   import("@/pages/student").then((pages) => ({ default: pages.StudentProfilePage })),
 );
@@ -170,6 +178,8 @@ const AnimatedRoutes = () => {
             <Route path="/student/dashboard" element={<StudentDashboardPage />} />
             <Route path="/student/profile" element={<StudentProfilePage />} />
             <Route path="/student/events" element={<StudentEventsPage />} />
+            <Route path="/student/organizing" element={<StudentOrganizingPage />} />
+            <Route path="/student/organizing/:id" element={<StudentOrganizingPage />} />
             <Route path="/student/settings" element={<StudentSettingsPage />} />
             <Route path="/student/teams" element={<StudentTeamsPage />} />
             <Route path="/student/quizzes" element={<StudentQuizzesPage />} />
@@ -196,6 +206,7 @@ const AnimatedRoutes = () => {
             <Route path="members" element={<MembersManagementPage />} />
             <Route path="blog" element={<BlogManagementPage />} />
             <Route path="events" element={<EventsManagementPage />} />
+            <Route path="events/:id/committee" element={<OrganizingWorkspace mode="admin" />} />
             <Route path="projects" element={<ProjectsManagementPage />} />
             <Route path="team" element={<TeamManagementPage />} />
             <Route path="contacts" element={<AdminContactsPage />} />

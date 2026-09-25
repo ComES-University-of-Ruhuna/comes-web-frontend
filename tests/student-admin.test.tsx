@@ -143,6 +143,18 @@ describe("student administrator dashboards", () => {
 });
 
 describe("student administrator token routing", () => {
+  it("uses a regular student's token for chair requests without granting admin access", async () => {
+    setStudentAccessToken("chair-token");
+    setAccessToken("other-admin-token");
+    setStudentAdminAccess(false);
+    const adapter = vi.fn(async (config: InternalAxiosRequestConfig) => response(config));
+    api.defaults.adapter = adapter;
+    await api.get("/students/organized-events");
+    await api.patch("/students/organized-events/event-1", { title: "Chair update" });
+    expect(
+      adapter.mock.calls.every(([config]) => config.headers.Authorization === "Bearer chair-token"),
+    ).toBe(true);
+  });
   it("uses the student admin session even when another user token exists", async () => {
     setAccessToken("user-token");
     setStudentAccessToken("student-token");
@@ -166,7 +178,7 @@ describe("student administrator token routing", () => {
     expect(adapter.mock.calls[1][0].headers.Authorization).toBe("Bearer student-token");
   });
 
-  it.each(["/students", "/quizzes/quiz-1/attempt"])(
+  it.each(["/students", "/quizzes/quiz-1/attempt", "/students/organized-events/event-1"])(
     "refreshes the student session for %s",
     async (url) => {
       setStudentAccessToken("old-student-token");

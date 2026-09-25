@@ -317,6 +317,12 @@ Public pages share the `.public-site` theme in `src/index.css`. Its color, spaci
 
 `HomeIntro` provides the homepage identity and subgroup navigation. Its supplied banner image is stored in `public/banner.jpg` and copied to `dist/banner.jpg` on each build. Existing logos remain the society's primary branding assets. Public layout and navigation tests are in `tests/public-design.test.tsx`.
 
+### Event Organizing Committees
+
+In Admin > Events, open **Organizing Committee** for an event. Search registered student members by name, registration number, or username, then assign a role and team. Only admins can add/remove members, change assignments, or grant/revoke **Chair access**. Contribution notes are saved separately and are preserved when assignments change.
+
+Assigned chairs use **Organizing** in their student dashboard (`/student/organizing`). They can edit only their assigned event's details and OC member contributions. This does not grant admin-dashboard access. Committee data is private; authorization is checked on every API read/write, including immediately after access is revoked. Deploy the accompanying backend changes before using these views.
+
 ### Content Publishing
 
 Use `/admin/blog` to create Markdown articles and choose **Published** when ready. Draft and archived articles remain private. Use `/admin/projects` to save projects; in-progress and completed projects are public, while archived projects are hidden. The **Featured** checkbox controls featured placements. Both editors persist changes to the backend, including for authorized student admins.

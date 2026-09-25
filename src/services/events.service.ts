@@ -9,7 +9,7 @@ export interface ApiEvent {
   title: string;
   slug: string;
   description: string;
-  type: string;
+  type: "workshop" | "hackathon" | "seminar" | "competition" | "social" | "other";
   date: string;
   endDate?: string;
   location: string;

@@ -10,6 +10,7 @@ import { Plus, Search, Edit, Trash2, Calendar, MapPin, Users, Clock, Save, X } f
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
+import { Link } from "react-router";
 
 interface Event {
   _id: string;
@@ -29,18 +30,20 @@ interface Event {
 const eventTypes = ["All", "workshop", "seminar", "competition", "hackathon", "social", "other"];
 const eventStatuses = ["All", "upcoming", "ongoing", "completed", "cancelled"];
 
-const EventEditor = ({
+export const EventEditor = ({
   event,
   onClose,
   onSave,
 }: {
   event?: Event | null;
   onClose: () => void;
-  onSave: (data: Partial<Event>) => void;
+  onSave: (data: Partial<Event>) => Promise<void>;
 }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const isEditing = !!event;
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const eventDate = event?.date ? new Date(event.date) : null;
   const [formData, setFormData] = useState<{
@@ -49,27 +52,41 @@ const EventEditor = ({
     date: string;
     time: string;
     location: string;
-    maxParticipants: number;
+    maxParticipants: number | "";
     description: string;
     status: Event["status"];
     isFeatured: boolean;
   }>({
     title: event?.title || "",
     type: event?.type || "workshop",
-    date: eventDate ? eventDate.toISOString().split("T")[0] : "",
+    date: eventDate
+      ? `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, "0")}-${String(eventDate.getDate()).padStart(2, "0")}`
+      : "",
     time: eventDate ? eventDate.toTimeString().slice(0, 5) : "",
     location: event?.location || "",
-    maxParticipants: event?.maxParticipants || 50,
+    maxParticipants: event ? (event.maxParticipants ?? "") : 50,
     description: event?.description || "",
     status: event?.status || "upcoming",
     isFeatured: event?.isFeatured || false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { date, time, ...rest } = formData;
-    const combinedDate = new Date(`${date}T${time || "00:00"}`).toISOString();
-    onSave({ ...rest, date: combinedDate });
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const { date, time, maxParticipants, ...rest } = formData;
+      const combinedDate = new Date(`${date}T${time || "00:00"}`).toISOString();
+      await onSave({
+        ...rest,
+        date: combinedDate,
+        ...(maxParticipants === "" ? {} : { maxParticipants }),
+      });
+    } catch {
+      setSaveError("Unable to save event. Your changes have been kept; please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -78,7 +95,9 @@ const EventEditor = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={() => {
+        if (!saving) onClose();
+      }}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -101,6 +120,8 @@ const EventEditor = ({
           </h2>
           <button
             onClick={onClose}
+            disabled={saving}
+            aria-label="Close event editor"
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
             <X className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-500")} />
@@ -108,32 +129,12 @@ const EventEditor = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Event Title
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Enter event title..."
-              className={cn(
-                "w-full rounded-xl border px-4 py-3 transition-colors",
-                isDark
-                  ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
-                  : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
-                "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-              )}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          {saveError && (
+            <p role="alert" className="text-red-500">
+              {saveError}
+            </p>
+          )}
+          <fieldset disabled={saving} className="space-y-6">
             <div>
               <label
                 className={cn(
@@ -141,127 +142,16 @@ const EventEditor = ({
                   isDark ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                Event Type
-              </label>
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value as Event["type"] })
-                }
-                className={cn(
-                  "w-full rounded-xl border px-4 py-3 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white"
-                    : "border-gray-200 bg-gray-50 text-gray-900",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-                )}
-              >
-                {eventTypes
-                  .filter((t) => t !== "All")
-                  .map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value as Event["status"] })
-                }
-                className={cn(
-                  "w-full rounded-xl border px-4 py-3 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white"
-                    : "border-gray-200 bg-gray-50 text-gray-900",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-                )}
-              >
-                {eventStatuses
-                  .filter((s) => s !== "All")
-                  .map((status) => (
-                    <option key={status} value={status} className="capitalize">
-                      {status}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Date
-              </label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className={cn(
-                  "w-full rounded-xl border px-4 py-3 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white"
-                    : "border-gray-200 bg-gray-50 text-gray-900",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-                )}
-                required
-              />
-            </div>
-            <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Time
-              </label>
-              <input
-                type="time"
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                className={cn(
-                  "w-full rounded-xl border px-4 py-3 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white"
-                    : "border-gray-200 bg-gray-50 text-gray-900",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-                )}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                className={cn(
-                  "mb-2 block text-sm font-medium",
-                  isDark ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Location
+                Event Title
               </label>
               <input
                 type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Event venue"
+                aria-label="Event Title"
+                minLength={3}
+                maxLength={200}
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Enter event title..."
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 transition-colors",
                   isDark
@@ -272,6 +162,183 @@ const EventEditor = ({
                 required
               />
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Event Type
+                </label>
+                <select
+                  aria-label="Event Type"
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value as Event["type"] })
+                  }
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                >
+                  {eventTypes
+                    .filter((t) => t !== "All")
+                    .map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Status
+                </label>
+                <select
+                  aria-label="Status"
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as Event["status"] })
+                  }
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                >
+                  {eventStatuses
+                    .filter((s) => s !== "All")
+                    .map((status) => (
+                      <option key={status} value={status} className="capitalize">
+                        {status}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Date
+                </label>
+                <input
+                  type="date"
+                  aria-label="Date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Time
+                </label>
+                <input
+                  type="time"
+                  aria-label="Time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Location
+                </label>
+                <input
+                  type="text"
+                  aria-label="Location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="Event venue"
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  className={cn(
+                    "mb-2 block text-sm font-medium",
+                    isDark ? "text-gray-300" : "text-gray-700",
+                  )}
+                >
+                  Max Participants
+                </label>
+                <input
+                  type="number"
+                  aria-label="Max Participants"
+                  value={formData.maxParticipants}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maxParticipants: e.target.value === "" ? "" : parseInt(e.target.value),
+                    })
+                  }
+                  min={1}
+                  className={cn(
+                    "w-full rounded-xl border px-4 py-3 transition-colors",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
+                  )}
+                  required={!event || event.maxParticipants !== undefined}
+                />
+              </div>
+            </div>
+
             <div>
               <label
                 className={cn(
@@ -279,59 +346,36 @@ const EventEditor = ({
                   isDark ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                Max Participants
+                Description
               </label>
-              <input
-                type="number"
-                value={formData.maxParticipants}
-                onChange={(e) =>
-                  setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })
-                }
-                min={1}
+              <textarea
+                aria-label="Description"
+                required
+                minLength={10}
+                maxLength={5000}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Event description..."
+                rows={4}
                 className={cn(
-                  "w-full rounded-xl border px-4 py-3 transition-colors",
+                  "w-full resize-none rounded-xl border px-4 py-3 transition-colors",
                   isDark
-                    ? "border-slate-700 bg-slate-800 text-white"
-                    : "border-gray-200 bg-gray-50 text-gray-900",
+                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                    : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
                   "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                 )}
-                required
               />
             </div>
-          </div>
 
-          <div>
-            <label
-              className={cn(
-                "mb-2 block text-sm font-medium",
-                isDark ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Event description..."
-              rows={4}
-              className={cn(
-                "w-full resize-none rounded-xl border px-4 py-3 transition-colors",
-                isDark
-                  ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
-                  : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
-                "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-              )}
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" icon={<Save className="h-4 w-4" />}>
-              {isEditing ? "Update Event" : "Create Event"}
-            </Button>
-          </div>
+            <div className="flex items-center justify-end gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" icon={<Save className="h-4 w-4" />}>
+                {saving ? "Saving..." : isEditing ? "Update Event" : "Create Event"}
+              </Button>
+            </div>
+          </fieldset>
         </form>
       </motion.div>
     </motion.div>
@@ -396,12 +440,12 @@ export const EventsManagementPage = () => {
         setEvents([created, ...events]);
         showToast("success", "Event created successfully");
       }
+      setEditingEvent(null);
+      setIsCreating(false);
     } catch (error) {
       showToast("error", editingEvent ? "Failed to update event" : "Failed to create event");
       console.error("Error saving event:", error);
-    } finally {
-      setEditingEvent(null);
-      setIsCreating(false);
+      throw error;
     }
   };
 
@@ -617,6 +661,12 @@ export const EventsManagementPage = () => {
                 </div>
               </div>
 
+              <Link
+                to={`/admin/events/${event._id}/committee`}
+                className="mb-3 flex items-center gap-2 text-sm font-medium text-blue-500"
+              >
+                <Users className="h-4 w-4" /> Organizing Committee
+              </Link>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
