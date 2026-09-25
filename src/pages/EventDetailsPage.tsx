@@ -4,7 +4,8 @@ import { isAxiosError } from "axios";
 import { ArrowLeft, Calendar, Clock, MapPin, RotateCw, Ticket, Users } from "lucide-react";
 import { Badge, Button, Section } from "@/components/ui";
 import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
-import { eventsService, type ApiEvent } from "@/services/events.service";
+import { EventDescription } from "@/components/events/EventDescription";
+import { eventsService, getEventRegistrationLink, type ApiEvent } from "@/services/events.service";
 import { useThemeStore } from "@/store";
 
 export const EventDetailsPage = () => {
@@ -44,12 +45,14 @@ export const EventDetailsPage = () => {
   }, [slug, attempt]);
 
   const full = Boolean(event?.maxParticipants && event.registeredCount >= event.maxParticipants);
+  const registrationLink = event ? getEventRegistrationLink(event) : undefined;
   const registrationOpen = Boolean(
     event &&
       event.status === "upcoming" &&
       event.isRegistrationOpen &&
       new Date(event.date) > new Date() &&
-      !full,
+      !full &&
+      registrationLink,
   );
 
   return (
@@ -136,7 +139,7 @@ export const EventDetailsPage = () => {
                 <h2 id="event-description" className="mb-4 text-xl font-bold">
                   About the Event
                 </h2>
-                <p className="leading-relaxed whitespace-pre-wrap">{event.description}</p>
+                <EventDescription>{event.description}</EventDescription>
                 {!!event.tags?.length && (
                   <ul className="mt-5 flex flex-wrap gap-3 text-sm" aria-label="Event tags">
                     {event.tags.map((tag) => (
@@ -147,7 +150,11 @@ export const EventDetailsPage = () => {
               </section>
               <div className="my-8">
                 {registrationOpen ? (
-                  <Button href="/student/events" icon={<Ticket className="h-4 w-4" />}>
+                  <Button
+                    href={registrationLink}
+                    external={event.registrationMode === "custom"}
+                    icon={<Ticket className="h-4 w-4" />}
+                  >
                     View Registration
                   </Button>
                 ) : (

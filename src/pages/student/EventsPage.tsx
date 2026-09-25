@@ -23,8 +23,9 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge, Input } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
-import { eventsService, type ApiEvent } from "@/services/events.service";
+import { eventsService, getEventRegistrationLink, type ApiEvent } from "@/services/events.service";
 import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
+import { EventDescription } from "@/components/events/EventDescription";
 
 // Event Card Component
 const EventCard = ({
@@ -45,7 +46,13 @@ const EventCard = ({
   const eventDate = new Date(event.date);
   const isUpcoming = eventDate > new Date();
   const isFull = Boolean(event.maxParticipants && event.registeredCount >= event.maxParticipants);
-  const canRegister = isUpcoming && !isFull && event.isRegistrationOpen;
+  const registrationLink = getEventRegistrationLink(event);
+  const canRegister =
+    isUpcoming &&
+    !isFull &&
+    event.isRegistrationOpen &&
+    event.status === "upcoming" &&
+    Boolean(registrationLink);
 
   return (
     <motion.div
@@ -90,9 +97,9 @@ const EventCard = ({
       </div>
 
       {/* Description */}
-      <p className={cn("mb-4 line-clamp-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-        {event.description}
-      </p>
+      <div className={cn("mb-4 line-clamp-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+        <EventDescription preview>{event.description}</EventDescription>
+      </div>
 
       {/* Details */}
       <div className="mb-4 space-y-2">
@@ -181,7 +188,16 @@ const EventCard = ({
 
       {/* Action Button */}
       <div className="border-t pt-4" style={{ borderColor: isDark ? "#334155" : "#e5e7eb" }}>
-        {isRegistered ? (
+        {canRegister && event.registrationMode === "custom" ? (
+          <Button
+            href={registrationLink}
+            external
+            className="w-full"
+            icon={<ChevronRight className="h-4 w-4" />}
+          >
+            Register Now
+          </Button>
+        ) : isRegistered ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-green-500">
               <CheckCircle className="h-5 w-5" />

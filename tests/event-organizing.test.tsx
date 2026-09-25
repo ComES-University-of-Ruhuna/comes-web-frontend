@@ -140,6 +140,73 @@ it("rejects an end time before the start without discarding edits", async () => 
   expect(onSave).not.toHaveBeenCalled();
 });
 
+it("formats selected description text, previews it, and saves the Markdown", async () => {
+  const onSave = vi.fn().mockResolvedValue(undefined);
+  render(<EventEditor event={event} onSave={onSave} onClose={vi.fn()} />);
+  const description = screen.getByRole("textbox", { name: "Description" }) as HTMLTextAreaElement;
+  fireEvent.change(description, { target: { value: "Welcome to our workshop" } });
+  description.setSelectionRange(0, 7);
+  fireEvent.click(screen.getByRole("button", { name: "Bold" }));
+  expect(description.value).toBe("**Welcome** to our workshop");
+  fireEvent.click(screen.getByRole("button", { name: "Preview description" }));
+  expect(
+    screen.getByRole("region", { name: "Description preview" }).querySelector("strong")
+      ?.textContent,
+  ).toBe("Welcome");
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await waitFor(() =>
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ description: "**Welcome** to our workshop" }),
+    ),
+  );
+});
+
+it("formats multiple lines as a numbered list and inserts an editable link", () => {
+  render(<EventEditor event={event} onSave={vi.fn()} onClose={vi.fn()} />);
+  const description = screen.getByRole("textbox", { name: "Description" }) as HTMLTextAreaElement;
+  fireEvent.change(description, { target: { value: "Welcome\nWorkshop" } });
+  description.setSelectionRange(0, description.value.length);
+  fireEvent.click(screen.getByRole("button", { name: "Numbered list" }));
+  expect(description.value).toBe("1. Welcome\n2. Workshop");
+  description.setSelectionRange(description.value.length, description.value.length);
+  fireEvent.click(screen.getByRole("button", { name: "Link" }));
+  expect(description.value).toContain("[Link text](https://example.com)");
+  expect(description.value.slice(description.selectionStart, description.selectionEnd)).toBe(
+    "https://example.com",
+  );
+});
+
+it("saves custom registration and clears its URL when switching to platform", async () => {
+  const onSave = vi.fn().mockResolvedValue(undefined);
+  render(<EventEditor event={event} onSave={onSave} onClose={vi.fn()} />);
+  expect((screen.getByLabelText("Registration") as HTMLSelectElement).value).toBe("platform");
+  fireEvent.change(screen.getByLabelText("Registration"), { target: { value: "custom" } });
+  fireEvent.change(screen.getByLabelText("Registration URL"), {
+    target: { value: "https://forms.example.com/event" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await waitFor(() =>
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        registrationMode: "custom",
+        registrationUrl: "https://forms.example.com/event",
+      }),
+    ),
+  );
+  await waitFor(() =>
+    expect(
+      (screen.getByRole("button", { name: "Update Event" }) as HTMLButtonElement).disabled,
+    ).toBe(false),
+  );
+  fireEvent.change(screen.getByLabelText("Registration"), { target: { value: "platform" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update Event" }));
+  await waitFor(() =>
+    expect(onSave).toHaveBeenLastCalledWith(
+      expect.objectContaining({ registrationMode: "platform", registrationUrl: "" }),
+    ),
+  );
+});
+
 it("preserves the existing image and allows clearing the end time", async () => {
   const onSave = vi.fn().mockResolvedValue(undefined);
   render(

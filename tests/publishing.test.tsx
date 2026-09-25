@@ -231,7 +231,10 @@ it("keeps fetched event cards visible when scroll reveal callbacks never fire", 
   }
 });
 
-it("navigates from a completed event card to its full details and back", async () => {
+it("limits card descriptions to two lines and shows the full description after clicking", async () => {
+  const description = "Full event programme with workshops and presentations. ".repeat(30);
+  upcomingEvents = [{ ...savedEvent, description }];
+  completedEvents = [{ ...completedEvents[0], description }];
   render(
     <MemoryRouter initialEntries={["/events"]}>
       <Routes>
@@ -241,15 +244,74 @@ it("navigates from a completed event card to its full details and back", async (
     </MemoryRouter>,
   );
   const link = await screen.findByRole("link", { name: "Saved completed event" });
+  for (const preview of screen.getAllByText(description.trim())) {
+    expect(preview.closest(".line-clamp-2")).toBeTruthy();
+  }
   expect(link.getAttribute("href")).toBe("/events/saved-completed-event");
   expect(screen.getByRole("link", { name: savedEvent.title }).getAttribute("href")).toBe(
     `/events/${savedEvent.slug}`,
   );
   fireEvent.click(link);
   await screen.findByRole("heading", { level: 1, name: "Saved completed event" });
+  const fullDescription = screen.getByText(description.trim());
+  expect(fullDescription.className).not.toContain("line-clamp");
+  expect(fullDescription.textContent).toBe(description.trim());
   fireEvent.click(screen.getByRole("link", { name: "All events" }));
   await screen.findByRole("heading", { name: "Past Events" });
 });
+
+it("uses custom registration links on event cards and detail pages", async () => {
+  const customEvent = {
+    ...savedEvent,
+    registrationMode: "custom" as const,
+    registrationUrl: "https://forms.example.com/event",
+  };
+  upcomingEvents = [customEvent];
+  vi.mocked(api.get).mockImplementation(async (url) => ({
+    data: {
+      success: true,
+      data: String(url).includes("/slug/")
+        ? { event: customEvent }
+        : String(url).endsWith("/organizers")
+          ? { members: [] }
+          : {
+              events: String(url).includes("period=past") ? [] : upcomingEvents,
+              pagination: { page: 1, pages: 1, total: 1, limit: 9 },
+            },
+    },
+  }));
+  render(
+    <MemoryRouter initialEntries={["/events"]}>
+      <Routes>
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  expect(
+    (await screen.findByRole("link", { name: "View Registration" })).getAttribute("href"),
+  ).toBe(customEvent.registrationUrl);
+  fireEvent.click(screen.getByRole("link", { name: savedEvent.title }));
+  await screen.findByRole("heading", { level: 1, name: savedEvent.title });
+  expect(screen.getByRole("link", { name: "View Registration" }).getAttribute("href")).toBe(
+    customEvent.registrationUrl,
+  );
+  expect(api.post).not.toHaveBeenCalled();
+});
+
+it.each(["javascript:alert(1)", "", "https://user:password@example.com"])(
+  "does not render unsafe custom registration URL %s",
+  async (registrationUrl) => {
+    upcomingEvents = [{ ...savedEvent, registrationMode: "custom", registrationUrl }];
+    render(
+      <MemoryRouter>
+        <EventsPage />
+      </MemoryRouter>,
+    );
+    await screen.findByRole("heading", { name: savedEvent.title });
+    expect(screen.queryByRole("link", { name: "View Registration" })).toBeNull();
+  },
+);
 
 it("retries a failed event detail request", async () => {
   vi.mocked(api.get).mockRejectedValueOnce(new Error("Offline"));
@@ -299,6 +361,38 @@ it("opens public event details with the complete description and expanded commit
   expect(screen.getByText("Registration Closed")).toBeTruthy();
   expect(api.get).toHaveBeenCalledWith("/events/slug/saved-community-event");
   expect(screen.getByRole("link", { name: "All events" }).getAttribute("href")).toBe("/events");
+});
+
+it("renders description formatting without executing raw HTML or unsafe links", async () => {
+  vi.mocked(api.get).mockResolvedValue({
+    data: {
+      success: true,
+      data: {
+        event: {
+          ...savedEvent,
+          description:
+            "## Programme\n\n**Welcome** and *introductions*.\n\n- Workshop\n- Presentations\n\n[Schedule](https://example.com/schedule)\n\n<script>alert(1)</script>\n\n[Unsafe](javascript:alert(1))",
+        },
+        members: [],
+      },
+    },
+  });
+  const { container } = render(
+    <MemoryRouter initialEntries={["/events/example"]}>
+      <Routes>
+        <Route path="/events/:slug" element={<EventDetailsPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { name: "Programme" });
+  expect(container.querySelector("strong")?.textContent).toBe("Welcome");
+  expect(container.querySelector("em")?.textContent).toBe("introductions");
+  expect(screen.getByText("Workshop").closest("li")).toBeTruthy();
+  expect(screen.getByRole("link", { name: "Schedule" }).getAttribute("href")).toBe(
+    "https://example.com/schedule",
+  );
+  expect(container.querySelector("script")).toBeNull();
+  expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
 });
 
 it("shows a missing-event state and lets visitors return to the listing", async () => {

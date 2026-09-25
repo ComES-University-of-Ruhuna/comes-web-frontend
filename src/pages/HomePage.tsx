@@ -1,4 +1,5 @@
 import { HomeIntro } from "@/components/layout/HomeIntro";
+import { EventDescription } from "@/components/events/EventDescription";
 // ============================================
 // ComES Website - Home Page
 // ============================================
@@ -207,14 +208,14 @@ const EventsPreviewSection = () => {
                     </div>
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <p
+                    <div
                       className={cn(
                         "mb-4 line-clamp-2",
                         isDark ? "text-gray-400" : "text-gray-600",
                       )}
                     >
-                      {event.description}
-                    </p>
+                      <EventDescription preview>{event.description}</EventDescription>
+                    </div>
                     <div className="mb-4 flex items-center justify-between">
                       <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                         {event.registeredCount}

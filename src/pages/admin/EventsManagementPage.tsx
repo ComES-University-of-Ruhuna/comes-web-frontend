@@ -11,6 +11,7 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, Badge } from "@/components/ui";
 import { Link } from "react-router";
+import { EventDescriptionEditor } from "@/components/events/EventDescriptionEditor";
 
 interface Event {
   _id: string;
@@ -20,6 +21,8 @@ interface Event {
   date: string; // ISO datetime string
   endDate?: string | null;
   image?: string;
+  registrationMode?: "platform" | "custom";
+  registrationUrl?: string;
   location: string;
   maxParticipants?: number;
   registeredCount: number;
@@ -62,6 +65,8 @@ export const EventEditor = ({
     endDate: string;
     endTime: string;
     image: string;
+    registrationMode: "platform" | "custom";
+    registrationUrl: string;
     location: string;
     maxParticipants: number | "";
     description: string;
@@ -82,6 +87,8 @@ export const EventEditor = ({
     endDate: localDate(eventEndDate),
     endTime: eventEndDate ? eventEndDate.toTimeString().slice(0, 5) : "",
     image: event?.image || "",
+    registrationMode: event?.registrationMode || "platform",
+    registrationUrl: event?.registrationUrl || "",
     location: event?.location || "",
     maxParticipants: event ? (event.maxParticipants ?? "") : 50,
     description: event?.description || "",
@@ -104,6 +111,7 @@ export const EventEditor = ({
       }
       await onSave({
         ...rest,
+        registrationUrl: rest.registrationMode === "custom" ? rest.registrationUrl.trim() : "",
         date: combinedDate,
         endDate: combinedEndDate,
         ...(maxParticipants === "" ? {} : { maxParticipants }),
@@ -161,6 +169,59 @@ export const EventEditor = ({
             </p>
           )}
           <fieldset disabled={saving} className="min-w-0 space-y-6">
+            <label
+              className={cn(
+                "block text-sm font-medium",
+                isDark ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              Registration
+              <select
+                value={formData.registrationMode}
+                onChange={(change) =>
+                  setFormData({
+                    ...formData,
+                    registrationMode: change.target.value as "platform" | "custom",
+                  })
+                }
+                className={cn(
+                  "mt-2 w-full rounded-xl border px-4 py-3",
+                  isDark
+                    ? "border-slate-700 bg-slate-800 text-white"
+                    : "border-gray-200 bg-gray-50 text-gray-900",
+                )}
+              >
+                <option value="platform">Platform registration</option>
+                <option value="custom">Custom link</option>
+              </select>
+            </label>
+            {formData.registrationMode === "custom" && (
+              <label
+                className={cn(
+                  "block text-sm font-medium",
+                  isDark ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                Registration URL
+                <input
+                  type="url"
+                  required
+                  pattern="https?://.+"
+                  maxLength={2000}
+                  value={formData.registrationUrl}
+                  onChange={(change) =>
+                    setFormData({ ...formData, registrationUrl: change.target.value })
+                  }
+                  placeholder="https://forms.example.com/register"
+                  className={cn(
+                    "mt-2 w-full rounded-xl border px-4 py-3",
+                    isDark
+                      ? "border-slate-700 bg-slate-800 text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-900",
+                  )}
+                />
+              </label>
+            )}
             <div>
               <label
                 className={cn(
@@ -431,22 +492,10 @@ export const EventEditor = ({
               >
                 Description
               </label>
-              <textarea
-                aria-label="Description"
-                required
-                minLength={10}
-                maxLength={5000}
+              <EventDescriptionEditor
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Event description..."
-                rows={4}
-                className={cn(
-                  "w-full resize-none rounded-xl border px-4 py-3 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
-                    : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-                )}
+                onChange={(description) => setFormData({ ...formData, description })}
+                isDark={isDark}
               />
             </div>
 

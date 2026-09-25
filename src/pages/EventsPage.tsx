@@ -23,8 +23,9 @@ import { useEvents } from "@/hooks/useApi";
 import { CollectionPagination } from "@/components/ui/CollectionPagination";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import type { ApiEvent } from "@/services/events.service";
+import { getEventRegistrationLink, type ApiEvent } from "@/services/events.service";
 import { EventCommitteeTable } from "@/components/events/EventCommitteeTable";
+import { EventDescription } from "@/components/events/EventDescription";
 
 const eventTypeOptions = ["All", "Competition", "Workshop", "Other"];
 
@@ -33,9 +34,14 @@ const EventCard = ({ event }: { event: ApiEvent }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const eventDate = new Date(event.date);
+  const registrationLink = getEventRegistrationLink(event);
   const isFull = Boolean(event.maxParticipants && event.registeredCount >= event.maxParticipants);
   const registrationOpen =
-    event.status === "upcoming" && event.isRegistrationOpen && eventDate > new Date() && !isFull;
+    event.status === "upcoming" &&
+    event.isRegistrationOpen &&
+    eventDate > new Date() &&
+    !isFull &&
+    Boolean(registrationLink);
 
   return (
     <div>
@@ -109,11 +115,11 @@ const EventCard = ({ event }: { event: ApiEvent }) => {
               <span className="text-sm">{event.location}</span>
             </div>
 
-            <p
-              className={cn("mb-4 line-clamp-3 flex-1", isDark ? "text-gray-400" : "text-gray-600")}
+            <div
+              className={cn("mb-4 line-clamp-2 flex-1", isDark ? "text-gray-400" : "text-gray-600")}
             >
-              {event.description}
-            </p>
+              <EventDescription preview>{event.description}</EventDescription>
+            </div>
 
             {event.tags && (
               <div className="mb-4 flex flex-wrap gap-2">
@@ -185,7 +191,8 @@ const EventCard = ({ event }: { event: ApiEvent }) => {
               <HoverScale>
                 <Button
                   variant={registrationOpen ? "primary" : "outline"}
-                  href={registrationOpen ? "/student/events" : undefined}
+                  href={registrationOpen ? registrationLink : undefined}
+                  external={event.registrationMode === "custom"}
                   size="sm"
                   className="w-full"
                   disabled={!registrationOpen}
@@ -416,9 +423,14 @@ const PastEventsSection = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        {event.description}
-                      </p>
+                      <div
+                        className={cn(
+                          "mb-2 line-clamp-2 text-sm",
+                          isDark ? "text-gray-400" : "text-gray-600",
+                        )}
+                      >
+                        <EventDescription preview>{event.description}</EventDescription>
+                      </div>
                       <div
                         className={cn(
                           "flex flex-wrap items-center gap-4 text-sm",

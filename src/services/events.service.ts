@@ -19,6 +19,8 @@ export interface ApiEvent {
   isRegistrationOpen: boolean;
   availableSpots: number | null;
   image?: string;
+  registrationMode?: "platform" | "custom";
+  registrationUrl?: string;
   icon?: string;
   tags: string[];
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
@@ -37,6 +39,18 @@ export interface EventFilters {
   limit?: number;
   sort?: string;
 }
+
+export const getEventRegistrationLink = (event: ApiEvent): string | undefined => {
+  if (event.registrationMode !== "custom") return "/student/events";
+  try {
+    const url = new URL(event.registrationUrl || "");
+    return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password
+      ? url.href
+      : undefined;
+  } catch {
+    return undefined;
+  }
+};
 
 export interface PublicCommitteeMember {
   name: string;
