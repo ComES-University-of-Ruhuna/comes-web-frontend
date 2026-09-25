@@ -344,7 +344,7 @@ const FeaturedProjectsSection = () => {
 
       <div className="space-y-8">
         {featuredProjects.map((project, index) => (
-            <FeaturedProjectCard key={project.id} project={project} index={index} />
+          <FeaturedProjectCard key={project.id} project={project} index={index} />
         ))}
       </div>
     </Section>
