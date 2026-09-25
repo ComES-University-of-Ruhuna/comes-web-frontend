@@ -44,8 +44,10 @@ export function useEvents(
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const requestVersion = useRef(0);
 
   const fetch = useCallback(async () => {
+    const version = ++requestVersion.current;
     setIsLoading(true);
     setError(null);
     try {
@@ -58,6 +60,9 @@ export function useEvents(
         limit,
         sort,
       });
+      if (version !== requestVersion.current) return;
+      if (!response.success || !response.data)
+        throw new Error(response.message || "Failed to fetch events");
       if (response.data) {
         setData(response.data.items);
         setPagination({
@@ -67,14 +72,18 @@ export function useEvents(
         });
       }
     } catch (err) {
+      if (version !== requestVersion.current) return;
       setError(err instanceof Error ? err.message : "Failed to fetch events");
     } finally {
-      setIsLoading(false);
+      if (version === requestVersion.current) setIsLoading(false);
     }
   }, [type, status, featured, upcoming, page, limit, sort]);
 
   useEffect(() => {
     fetch();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [fetch]);
 
   return { data, isLoading, error, refetch: fetch, pagination };

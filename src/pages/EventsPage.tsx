@@ -18,15 +18,29 @@ import {
   HoverScale,
   NewsletterSection,
 } from "@/components/ui";
-import { events, pastEvents, eventTypeOptions } from "@/data";
+import { useEvents } from "@/hooks/useApi";
+import { CollectionPagination } from "@/components/ui/CollectionPagination";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import type { Event } from "@/types";
+import type { ApiEvent } from "@/services/events.service";
+
+const eventTypeOptions = [
+  "All",
+  "Workshop",
+  "Hackathon",
+  "Seminar",
+  "Competition",
+  "Social",
+  "Other",
+];
 
 // Event Card Component
-const EventCard = ({ event, index }: { event: Event; index: number }) => {
+const EventCard = ({ event, index }: { event: ApiEvent; index: number }) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const eventDate = new Date(event.date);
+  const isFull = Boolean(event.maxParticipants && event.registeredCount >= event.maxParticipants);
+  const registrationOpen = event.isRegistrationOpen && eventDate > new Date() && !isFull;
 
   return (
     <FadeInView direction="up" delay={index * 0.1}>
@@ -39,10 +53,22 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             isDark && "border-slate-700/50 bg-slate-800/50",
           )}
         >
-          <CardHeader gradient={event.color}>
+          {event.image && (
+            <img
+              src={event.image}
+              alt={event.title}
+              loading="lazy"
+              className="aspect-video w-full object-cover"
+            />
+          )}
+          <CardHeader>
             <div className="mb-4 flex items-center justify-between">
-              <motion.span className="text-4xl">{event.icon}</motion.span>
-              <Badge variant="secondary" size="sm">
+              {event.icon ? (
+                <span className="text-4xl">{event.icon}</span>
+              ) : (
+                <Calendar className="h-8 w-8" />
+              )}
+              <Badge variant="secondary" size="sm" className="capitalize">
                 {event.type}
               </Badge>
             </div>
@@ -50,11 +76,11 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             <div className="flex flex-wrap items-center gap-4 text-sm opacity-90">
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                {event.date}
+                {eventDate.toLocaleDateString()}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
-                {event.time}
+                {eventDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
           </CardHeader>
@@ -101,11 +127,12 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                   )}
                 >
                   <Users className="h-3.5 w-3.5" />
-                  {event.registered}/{event.capacity}
+                  {event.registeredCount}
+                  {event.maxParticipants ? `/${event.maxParticipants}` : ""} registered
                 </span>
                 <span
                   className={`text-sm font-medium ${
-                    event.registered >= event.capacity
+                    isFull
                       ? isDark
                         ? "text-red-400"
                         : "text-red-700"
@@ -114,45 +141,48 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                         : "text-green-700"
                   }`}
                 >
-                  {event.registered >= event.capacity
+                  {isFull
                     ? "Full"
-                    : `${event.capacity - event.registered} spots left`}
+                    : event.maxParticipants
+                      ? `${Math.max(0, event.maxParticipants - event.registeredCount)} spots left`
+                      : ""}
                 </span>
               </div>
 
-              <div
-                className={cn(
-                  "mb-4 h-2 w-full rounded-full",
-                  isDark ? "bg-slate-700" : "bg-gray-200",
-                )}
-              >
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{
-                    width: `${Math.min((event.registered / event.capacity) * 100, 100)}%`,
-                  }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  className={`h-2 rounded-full ${
-                    event.registered >= event.capacity
-                      ? "bg-red-500"
-                      : "site-accent-panel from-blue-500 to-cyan-500"
-                  }`}
-                />
-              </div>
+              {event.maxParticipants && (
+                <div
+                  className={cn(
+                    "mb-4 h-2 w-full rounded-full",
+                    isDark ? "bg-slate-700" : "bg-gray-200",
+                  )}
+                >
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{
+                      width: `${Math.min((event.registeredCount / event.maxParticipants) * 100, 100)}%`,
+                    }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className={`h-2 rounded-full ${
+                      isFull ? "bg-red-500" : "site-accent-panel from-blue-500 to-cyan-500"
+                    }`}
+                  />
+                </div>
+              )}
 
               <HoverScale>
                 <Button
-                  variant={event.registrationOpen ? "primary" : "outline"}
+                  variant={registrationOpen ? "primary" : "outline"}
+                  href={registrationOpen ? "/student/events" : undefined}
                   size="sm"
                   className="w-full"
-                  disabled={!event.registrationOpen || event.registered >= event.capacity}
+                  disabled={!registrationOpen}
                   icon={<Ticket className="h-4 w-4" />}
                 >
-                  {event.registrationOpen
-                    ? event.registered >= event.capacity
-                      ? "Registration Full"
-                      : "Register Now"
-                    : "Coming Soon"}
+                  {isFull
+                    ? "Registration Full"
+                    : registrationOpen
+                      ? "View Registration"
+                      : "Registration Closed"}
                 </Button>
               </HoverScale>
             </div>
@@ -204,10 +234,17 @@ const FilterTabs = ({
 // Upcoming Events Section
 const UpcomingEventsSection = () => {
   const [filter, setFilter] = useState("All");
+  const [page, setPage] = useState(1);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
-
-  const filteredEvents = filter === "All" ? events : events.filter((e) => e.type === filter);
+  const { data, isLoading, error, refetch, pagination } = useEvents({
+    upcoming: true,
+    type: filter === "All" ? undefined : filter.toLowerCase(),
+    page,
+    limit: 9,
+    sort: "date",
+  });
+  const filteredEvents = data ?? [];
 
   return (
     <Section background={isDark ? "dark" : "white"}>
@@ -219,33 +256,58 @@ const UpcomingEventsSection = () => {
         />
       </FadeInView>
 
-      <FilterTabs options={eventTypeOptions} active={filter} onChange={setFilter} />
+      <FilterTabs
+        options={eventTypeOptions}
+        active={filter}
+        onChange={(value) => {
+          setFilter(value);
+          setPage(1);
+        }}
+      />
 
-      <AnimatePresence mode="wait">
-        {filteredEvents.length > 0 ? (
-          <motion.div
-            key={filter}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredEvents.map((event, index) => (
-              <EventCard key={event.id} event={event} index={index} />
-            ))}
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="py-12 text-center"
-          >
-            <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
-              No {filter.toLowerCase()} events scheduled at the moment.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isLoading ? (
+        <p role="status" className="py-12 text-center">
+          Loading upcoming events...
+        </p>
+      ) : error ? (
+        <div role="alert" className="py-12 text-center">
+          <p>Unable to load upcoming events.</p>
+          <Button onClick={refetch} variant="outline" className="mt-4">
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <>
+          <AnimatePresence mode="wait">
+            {filteredEvents.length > 0 ? (
+              <motion.div
+                key={filter}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+              >
+                {filteredEvents.map((event, index) => (
+                  <EventCard key={event._id} event={event} index={index} />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="py-12 text-center"
+              >
+                <p className={cn("text-lg", isDark ? "text-gray-500" : "text-gray-500")}>
+                  {filter === "All"
+                    ? "No upcoming events scheduled at the moment."
+                    : `No ${filter.toLowerCase()} events scheduled at the moment.`}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <CollectionPagination page={page} pages={pagination?.pages ?? 0} onChange={setPage} />
+        </>
+      )}
     </Section>
   );
 };
@@ -254,6 +316,14 @@ const UpcomingEventsSection = () => {
 const PastEventsSection = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error, refetch, pagination } = useEvents({
+    status: "completed",
+    page,
+    limit: 6,
+    sort: "-date",
+  });
+  const pastEvents = data ?? [];
 
   return (
     <Section background={isDark ? "white" : "gray"} className={isDark ? "bg-slate-950" : ""}>
@@ -265,53 +335,74 @@ const PastEventsSection = () => {
         />
       </FadeInView>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {pastEvents.map((event, index) => (
-          <FadeInView key={event.id} direction="left" delay={index * 0.1}>
-            <motion.div>
-              <Card
-                padding="lg"
-                className={cn(
-                  "flex items-start gap-4",
-                  isDark && "border-slate-700/50 bg-slate-800/50",
-                )}
-              >
-                <motion.div className="text-4xl">{event.icon}</motion.div>
-                <div className="flex-1">
-                  <div className="mb-2 flex items-center gap-2">
-                    <h3
-                      className={cn("text-lg font-bold", isDark ? "text-white" : "text-comesBlue")}
-                    >
-                      {event.title}
-                    </h3>
-                    <Badge variant="secondary" size="sm">
-                      {event.type}
-                    </Badge>
-                  </div>
-                  <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    {event.description}
-                  </p>
-                  <div
+      {isLoading ? (
+        <p role="status" className="py-12 text-center">
+          Loading past events...
+        </p>
+      ) : error ? (
+        <div role="alert" className="py-12 text-center">
+          <p>Unable to load past events.</p>
+          <Button onClick={refetch} variant="outline" className="mt-4">
+            Retry
+          </Button>
+        </div>
+      ) : pastEvents.length === 0 ? (
+        <p className="py-12 text-center">No past events available yet.</p>
+      ) : (
+        <>
+          <div className="grid gap-6 md:grid-cols-2">
+            {pastEvents.map((event, index) => (
+              <FadeInView key={event._id} direction="left" delay={index * 0.1}>
+                <motion.div>
+                  <Card
+                    padding="lg"
                     className={cn(
-                      "flex items-center gap-4 text-sm",
-                      isDark ? "text-gray-400" : "text-gray-600",
+                      "flex items-start gap-4",
+                      isDark && "border-slate-700/50 bg-slate-800/50",
                     )}
                   >
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {event.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5" />
-                      {event.registered} participants
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </FadeInView>
-        ))}
-      </div>
+                    <motion.div className="text-4xl">{event.icon}</motion.div>
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-center gap-2">
+                        <h3
+                          className={cn(
+                            "text-lg font-bold",
+                            isDark ? "text-white" : "text-comesBlue",
+                          )}
+                        >
+                          {event.title}
+                        </h3>
+                        <Badge variant="secondary" size="sm">
+                          {event.type}
+                        </Badge>
+                      </div>
+                      <p className={cn("mb-2 text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        {event.description}
+                      </p>
+                      <div
+                        className={cn(
+                          "flex items-center gap-4 text-sm",
+                          isDark ? "text-gray-400" : "text-gray-600",
+                        )}
+                      >
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {new Date(event.date).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3.5 w-3.5" />
+                          {event.registeredCount} registrations
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              </FadeInView>
+            ))}
+          </div>
+          <CollectionPagination page={page} pages={pagination?.pages ?? 0} onChange={setPage} />
+        </>
+      )}
     </Section>
   );
 };

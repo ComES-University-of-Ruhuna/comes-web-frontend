@@ -12,18 +12,17 @@ export interface ApiEvent {
   type: string;
   date: string;
   endDate?: string;
-  time: string;
   location: string;
-  venue?: string;
-  capacity: number;
-  registeredUsers: string[];
-  registrationDeadline?: string;
+  maxParticipants?: number;
+  registeredCount: number;
+  registrations: string[];
+  isRegistrationOpen: boolean;
+  availableSpots: number | null;
   image?: string;
   icon?: string;
-  color?: string;
   tags: string[];
-  status: "draft" | "published" | "cancelled" | "completed";
-  featured: boolean;
+  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
 }

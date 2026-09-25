@@ -5,9 +5,6 @@
 // Team Data
 export * from "./team";
 
-// Events Data
-export * from "./events";
-
 // Projects Data
 
 // Gallery Data

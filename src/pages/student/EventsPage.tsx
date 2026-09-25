@@ -43,13 +43,8 @@ const EventCard = ({
 }) => {
   const eventDate = new Date(event.date);
   const isUpcoming = eventDate > new Date();
-  const isFull = event.registeredUsers.length >= event.capacity;
-  const registrationDeadlinePassed = event.registrationDeadline
-    ? new Date(event.registrationDeadline) < new Date()
-    : false;
-
-  const canRegister =
-    isUpcoming && !isFull && !registrationDeadlinePassed && event.status === "published";
+  const isFull = Boolean(event.maxParticipants && event.registeredCount >= event.maxParticipants);
+  const canRegister = isUpcoming && !isFull && event.isRegistrationOpen;
 
   return (
     <motion.div
@@ -66,7 +61,7 @@ const EventCard = ({
       {event.image && (
         <div className="relative mb-4 h-40 overflow-hidden rounded-xl">
           <img src={event.image} alt={event.title} className="h-full w-full object-cover" />
-          {event.featured && (
+          {event.isFeatured && (
             <div className="absolute top-2 right-2">
               <Badge variant="primary" className="gap-1">
                 <Sparkles className="h-3 w-3" />
@@ -80,7 +75,7 @@ const EventCard = ({
       {/* Header */}
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <Badge variant={event.status === "published" ? "success" : "secondary"} className="mb-2">
+          <Badge variant={event.status === "upcoming" ? "success" : "secondary"} className="mb-2">
             {event.type}
           </Badge>
           <h3 className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
@@ -119,7 +114,7 @@ const EventCard = ({
           )}
         >
           <Clock className="h-4 w-4" />
-          <span>{event.time}</span>
+          <span>{eventDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
         <div
           className={cn(
@@ -138,7 +133,8 @@ const EventCard = ({
         >
           <Users className="h-4 w-4" />
           <span>
-            {event.registeredUsers.length} / {event.capacity} registered
+            {event.registeredCount}
+            {event.maxParticipants ? ` / ${event.maxParticipants}` : ""} registered
           </span>
           {isFull && (
             <Badge variant="error" className="ml-2">
@@ -207,13 +203,7 @@ const EventCard = ({
           <div className="flex items-center gap-2 text-gray-500">
             <XCircle className="h-5 w-5" />
             <span className="text-sm">
-              {!isUpcoming
-                ? "Event ended"
-                : isFull
-                  ? "Event is full"
-                  : registrationDeadlinePassed
-                    ? "Registration closed"
-                    : "Registration unavailable"}
+              {!isUpcoming ? "Event ended" : isFull ? "Event is full" : "Registration unavailable"}
             </span>
           </div>
         )}
@@ -240,7 +230,7 @@ export const EventsPage = () => {
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
-        const response = await eventsService.getAll({ status: "published", limit: 50 });
+        const response = await eventsService.getAll({ limit: 50 });
         if (response.success && response.data) {
           setEvents(response.data.items);
         }
@@ -256,7 +246,7 @@ export const EventsPage = () => {
 
   // Check if student is registered for an event
   const isRegistered = (event: ApiEvent) => {
-    return student ? event.registeredUsers.includes(student._id) : false;
+    return student ? event.registrations.includes(student._id) : false;
   };
 
   // Register for event

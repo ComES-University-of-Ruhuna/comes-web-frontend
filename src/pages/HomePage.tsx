@@ -212,7 +212,8 @@ const EventsPreviewSection = () => {
                     </p>
                     <div className="mb-4 flex items-center justify-between">
                       <span className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        {event.registeredUsers.length}/{event.capacity} registered
+                        {event.registeredCount}
+                        {event.maxParticipants ? `/${event.maxParticipants}` : ""} registered
                       </span>
                       <div
                         className={cn(
@@ -223,7 +224,7 @@ const EventsPreviewSection = () => {
                         <motion.div
                           initial={{ width: 0 }}
                           whileInView={{
-                            width: `${event.capacity ? Math.min((event.registeredUsers.length / event.capacity) * 100, 100) : 0}%`,
+                            width: `${event.maxParticipants ? Math.min((event.registeredCount / event.maxParticipants) * 100, 100) : 0}%`,
                           }}
                           transition={{ duration: 1, delay: 0.5 }}
                           className="site-accent-panel h-2 rounded-full from-blue-500 to-cyan-500"

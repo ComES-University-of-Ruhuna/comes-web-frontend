@@ -1,10 +1,21 @@
 import type { ComponentProps, ReactNode } from "react";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { BlogPage } from "../src/pages/BlogPage";
 import { BlogPostPage } from "../src/pages/BlogPostPage";
 import { ProjectsPage } from "../src/pages/ProjectsPage";
+import { EventsPage } from "../src/pages/EventsPage";
+import { useEvents } from "../src/hooks/useApi";
+import type { ApiEvent } from "../src/services/events.service";
 import { BlogManagementPage } from "../src/pages/admin/BlogManagementPage";
 import { ProjectsManagementPage } from "../src/pages/admin/ProjectsManagementPage";
 import api from "../src/services/api";
@@ -31,14 +42,25 @@ vi.mock("@/components/ui", () => {
     FadeInView: Wrapper,
     HoverScale: Wrapper,
     Card: Wrapper,
+    CardHeader: Wrapper,
+    CardBody: Wrapper,
     Badge: Wrapper,
     SectionHeader: ({ title }: { title: string }) => <h2>{title}</h2>,
     NewsletterSection: () => null,
-    Button: ({ children, onClick, disabled, type }: ComponentProps<"button">) => (
-      <button onClick={onClick} disabled={disabled} type={type}>
-        {children}
-      </button>
-    ),
+    Button: ({
+      children,
+      onClick,
+      disabled,
+      type,
+      href,
+    }: ComponentProps<"button"> & { href?: string }) =>
+      href ? (
+        <a href={href}>{children}</a>
+      ) : (
+        <button onClick={onClick} disabled={disabled} type={type}>
+          {children}
+        </button>
+      ),
   };
 });
 
@@ -77,6 +99,28 @@ const project = {
 };
 let posts: (typeof post)[];
 let projects: (typeof project)[];
+const savedEvent: ApiEvent = {
+  _id: "saved-event",
+  slug: "saved-community-event",
+  title: "Saved community event",
+  description: "An event created by the committee",
+  type: "workshop",
+  date: "2099-06-15T10:00:00Z",
+  location: "Engineering faculty",
+  registeredCount: 2,
+  registrations: ["member-1", "member-2"],
+  maxParticipants: 10,
+  isRegistrationOpen: true,
+  availableSpots: 8,
+  image: "https://example.com/event.jpg",
+  tags: ["Technology"],
+  status: "upcoming",
+  isFeatured: true,
+  createdAt: "2026-01-01",
+  updatedAt: "2026-01-01",
+};
+let upcomingEvents: ApiEvent[];
+let completedEvents: ApiEvent[];
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubGlobal(
@@ -89,9 +133,29 @@ beforeEach(() => {
   );
   posts = [post];
   projects = [project];
+  upcomingEvents = [savedEvent];
+  completedEvents = [
+    {
+      ...savedEvent,
+      _id: "completed-event",
+      title: "Saved completed event",
+      date: "2026-01-01",
+      status: "completed",
+      isRegistrationOpen: false,
+    },
+  ];
   vi.mocked(api.get).mockImplementation(async (url) => {
     const path = String(url);
     const pagination = { page: 1, pages: 1, total: 1, limit: 12 };
+    if (path.startsWith("/events?")) {
+      const events = path.includes("status=completed") ? completedEvents : upcomingEvents;
+      return {
+        data: {
+          success: true,
+          data: { events, pagination: { ...pagination, total: events.length } },
+        },
+      };
+    }
     const data = path.includes("/blog/featured")
       ? { posts: [] }
       : path.includes("/projects/featured")
@@ -112,6 +176,137 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+});
+
+it("renders saved upcoming and completed events with real registration counts", async () => {
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { name: savedEvent.title });
+  await screen.findByRole("heading", { name: "Saved completed event" });
+  expect(screen.getByText("2/10 registered")).toBeTruthy();
+  expect(screen.getByText("8 spots left")).toBeTruthy();
+  expect(screen.getByRole("img", { name: savedEvent.title }).getAttribute("src")).toBe(
+    savedEvent.image,
+  );
+  expect(screen.getByRole("link", { name: "View Registration" }).getAttribute("href")).toBe(
+    "/student/events",
+  );
+  expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
+  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("upcoming=true"));
+  expect(api.get).toHaveBeenCalledWith(expect.stringContaining("status=completed"));
+});
+
+it("keeps empty upcoming and past event collections empty", async () => {
+  upcomingEvents = [];
+  completedEvents = [];
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByText("No upcoming events scheduled at the moment.");
+  await screen.findByText("No past events available yet.");
+  expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
+  expect(screen.queryByText("Annual Hackathon 2025")).toBeNull();
+});
+
+it("shows event failures and retries without sample fallback", async () => {
+  vi.mocked(api.get)
+    .mockRejectedValueOnce(new Error("Offline"))
+    .mockRejectedValueOnce(new Error("Offline"));
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByText("Unable to load upcoming events.");
+  await screen.findByText("Unable to load past events.");
+  expect(screen.queryByText("Annual Hackathon 2026")).toBeNull();
+  fireEvent.click(screen.getAllByRole("button", { name: "Retry" })[0]);
+  await screen.findByRole("heading", { name: savedEvent.title });
+});
+
+it("paginates events and resets the page when the category changes", async () => {
+  vi.mocked(api.get).mockImplementation(async (url) => ({
+    data: {
+      success: true,
+      data: {
+        events: String(url).includes("status=completed") ? [] : [savedEvent],
+        pagination: {
+          page: Number(new URLSearchParams(String(url).split("?")[1]).get("page")),
+          pages: String(url).includes("status=completed") ? 0 : 2,
+          total: 10,
+          limit: 9,
+        },
+      },
+    },
+  }));
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", { name: savedEvent.title });
+  fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith(expect.stringContaining("page=2")));
+  fireEvent.click(screen.getByRole("button", { name: "Workshop" }));
+  await waitFor(() =>
+    expect(api.get).toHaveBeenCalledWith(expect.stringMatching(/type=workshop.*page=1/)),
+  );
+});
+
+it("supports uncapped events and disables registration for full events", async () => {
+  upcomingEvents = [
+    { ...savedEvent, maxParticipants: undefined, availableSpots: null },
+    {
+      ...savedEvent,
+      _id: "full-event",
+      title: "Full event",
+      maxParticipants: 2,
+      availableSpots: 0,
+      isRegistrationOpen: false,
+    },
+  ];
+  render(
+    <MemoryRouter>
+      <EventsPage />
+    </MemoryRouter>,
+  );
+  await screen.findByText("2 registered");
+  expect(screen.getAllByRole("link", { name: "View Registration" })).toHaveLength(1);
+  expect(
+    (screen.getByRole("button", { name: "Registration Full" }) as HTMLButtonElement).disabled,
+  ).toBe(true);
+});
+
+it("ignores an older event response after a filter change", async () => {
+  let finishFirst!: (value: Awaited<ReturnType<typeof api.get>>) => void;
+  vi.mocked(api.get).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishFirst = resolve;
+      }),
+  );
+  const { result, rerender } = renderHook(({ type }) => useEvents({ type }), {
+    initialProps: { type: "workshop" },
+  });
+  rerender({ type: "seminar" });
+  await waitFor(() => expect(result.current.data?.[0].title).toBe(savedEvent.title));
+  await act(async () =>
+    finishFirst({
+      data: {
+        success: true,
+        data: {
+          events: [{ ...savedEvent, title: "Stale response" }],
+          pagination: { page: 1, pages: 1, total: 1 },
+        },
+      },
+    } as Awaited<ReturnType<typeof api.get>>),
+  );
+  expect(result.current.data?.[0].title).toBe(savedEvent.title);
 });
 
 it("shows saved articles and cover photos without static samples or an author requirement", async () => {
