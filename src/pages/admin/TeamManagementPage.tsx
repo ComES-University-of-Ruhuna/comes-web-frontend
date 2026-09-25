@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
+  RefreshCw,
 } from "lucide-react";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
@@ -130,10 +131,7 @@ const TeamEditor = ({
   };
 
   const inputCn = cn(
-    "w-full px-4 py-3 rounded-xl border transition-colors",
-    isDark
-      ? "bg-slate-800 border-slate-700 text-white placeholder-gray-500"
-      : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400",
+    "w-full px-3 py-2.5 text-sm rounded-md border border-[var(--admin-border,var(--border-color))] bg-[var(--admin-surface,var(--bg-primary))] text-[var(--admin-text,var(--text-primary))] placeholder-gray-500 transition-colors",
     "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
   );
 
@@ -142,8 +140,10 @@ const TeamEditor = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={() => {
+        if (!saving) onClose();
+      }}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -154,24 +154,23 @@ const TeamEditor = ({
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl shadow-2xl",
-          isDark ? "bg-slate-900" : "bg-white",
+          "flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-[var(--admin-border,var(--border-color))] bg-[var(--admin-surface,var(--bg-primary))] shadow-2xl",
         )}
       >
         <div
           className={cn(
-            "sticky top-0 z-10 flex items-center justify-between border-b p-6",
-            isDark ? "border-slate-800 bg-slate-900" : "border-gray-200 bg-white",
+            "flex shrink-0 items-center justify-between border-b border-[var(--admin-border,var(--border-color))] px-5 py-4",
           )}
         >
           <h2
             id="team-editor-title"
-            className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}
+            className="text-base font-semibold text-[var(--admin-text,var(--text-primary))]"
           >
             {isEditing ? "Edit Team Member" : "Add Team Member"}
           </h2>
           <button
             onClick={onClose}
+            disabled={saving}
             aria-label="Close member editor"
             className={cn("rounded-lg p-2", isDark ? "hover:bg-slate-800" : "hover:bg-gray-100")}
           >
@@ -179,7 +178,11 @@ const TeamEditor = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+        <form
+          id="team-member-form"
+          onSubmit={handleSubmit}
+          className="min-h-0 space-y-5 overflow-y-auto p-5"
+        >
           {!isEditing && (
             <div>
               <label
@@ -555,22 +558,26 @@ const TeamEditor = ({
               Active Member
             </span>
           </div>
-
-          {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} disabled={saving}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              icon={<Save className="h-4 w-4" />}
-              disabled={saving}
-            >
-              {saving ? "Saving..." : isEditing ? "Update Member" : "Add Member"}
-            </Button>
-          </div>
         </form>
+        <div className="flex shrink-0 items-center justify-end gap-2 border-t border-[var(--admin-border,var(--border-color))] px-4 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={saving}
+            className="min-h-10 rounded-md border border-[var(--admin-border,var(--border-color))] px-3 text-sm font-medium text-[var(--admin-text,var(--text-primary))] disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            form="team-member-form"
+            type="submit"
+            disabled={saving}
+            className="admin-primary-button disabled:opacity-50"
+          >
+            <Save className="h-4 w-4" />
+            {saving ? "Saving..." : isEditing ? "Update Member" : "Add Member"}
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -668,17 +675,8 @@ export const TeamManagementPage = () => {
     }
   };
 
-  // Department stats
-  const deptStats = departments
-    .filter((d) => d.value !== "all")
-    .map((dept) => ({
-      ...dept,
-      count: team.filter((m) => m.department === dept.value).length,
-      active: team.filter((m) => m.department === dept.value && m.isActive).length,
-    }));
-
   return (
-    <div className="space-y-6">
+    <div className="committee-workspace space-y-6">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -686,7 +684,7 @@ export const TeamManagementPage = () => {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 right-4 z-50"
+            className="fixed top-4 right-4 left-4 z-[60] sm:left-auto sm:max-w-md"
           >
             <div
               role={toast.type === "error" ? "alert" : "status"}
@@ -709,101 +707,98 @@ export const TeamManagementPage = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+          <h1 className="text-2xl font-semibold text-[var(--admin-text,var(--text-primary))]">
             Committee & Team
           </h1>
-          <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
-            Manage your club's team and leadership ({team.length} members)
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--admin-muted,var(--text-secondary))]">
+            <span>
+              {team.length} {team.length === 1 ? "member" : "members"}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              {team.filter((member) => member.isActive).length} published
+            </span>
+            <span>{team.filter((member) => !member.isActive).length} unpublished</span>
           </p>
         </div>
-        <Button
-          variant="primary"
-          icon={<Plus className="h-4 w-4" />}
-          onClick={() => setIsCreating(true)}
-        >
-          Add Member
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={fetchTeam}
+            disabled={loading}
+            aria-label="Refresh members"
+            title="Refresh members"
+            className="admin-icon-button"
+          >
+            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsCreating(true)}
+            className="admin-primary-button"
+          >
+            <Plus className="h-4 w-4" />
+            Add Member
+          </button>
+        </div>
       </div>
 
-      {/* Department Stats */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-        {deptStats.map((dept) => (
+      <div
+        className="flex gap-6 overflow-x-auto border-b border-[var(--admin-border,var(--border-color))]"
+        role="tablist"
+        aria-label="Committee departments"
+      >
+        {departments.map((dept) => (
           <button
             key={dept.value}
-            onClick={() =>
-              setSelectedDepartment(selectedDepartment === dept.value ? "all" : dept.value)
-            }
+            type="button"
+            role="tab"
+            aria-selected={selectedDepartment === dept.value}
+            onClick={() => setSelectedDepartment(dept.value)}
             className={cn(
-              "rounded-xl border p-3 text-center transition-all",
+              "flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-0.5 text-sm font-medium transition-colors",
               selectedDepartment === dept.value
-                ? "border-blue-500 bg-blue-500/10"
-                : isDark
-                  ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-                  : "border-gray-200 bg-white hover:border-gray-300",
+                ? "border-[var(--admin-accent,#2563eb)] text-[var(--admin-text,var(--text-primary))]"
+                : "border-transparent text-[var(--admin-muted,var(--text-secondary))] hover:text-[var(--admin-text,var(--text-primary))]",
             )}
           >
-            <p className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-              {dept.count}
-            </p>
-            <p
-              className={cn(
-                "truncate text-xs capitalize",
-                isDark ? "text-gray-400" : "text-gray-500",
-              )}
-            >
-              {dept.label}
-            </p>
+            {dept.value === "all" ? "All members" : dept.label}
+            <span className="text-xs tabular-nums opacity-65">
+              {dept.value === "all"
+                ? team.length
+                : team.filter((member) => member.department === dept.value).length}
+            </span>
           </button>
         ))}
       </div>
 
       {/* Filters */}
-      <div
-        className={cn(
-          "rounded-2xl border p-4",
-          isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
-        )}
-      >
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <div className="relative flex-1">
-            <Search
-              className={cn(
-                "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
-                isDark ? "text-gray-500" : "text-gray-400",
-              )}
-            />
-            <input
-              type="text"
-              placeholder="Search by name, role, or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={cn(
-                "w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors",
-                isDark
-                  ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
-                  : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
-                "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-              )}
-            />
-          </div>
-          <select
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-sm">
+          <Search
             className={cn(
-              "rounded-xl border px-4 py-2.5 transition-colors",
+              "absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2",
+              isDark ? "text-gray-500" : "text-gray-400",
+            )}
+          />
+          <input
+            type="text"
+            aria-label="Search members"
+            placeholder="Search by name, role, or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={cn(
+              "w-full rounded-md border py-2.5 pr-4 pl-10 text-sm transition-colors",
               isDark
-                ? "border-slate-700 bg-slate-800 text-white"
-                : "border-gray-200 bg-gray-50 text-gray-900",
+                ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500"
+                : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400",
               "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
             )}
-          >
-            {departments.map((dept) => (
-              <option key={dept.value} value={dept.value}>
-                {dept.label}
-              </option>
-            ))}
-          </select>
+          />
         </div>
+        <p className="shrink-0 text-xs text-[var(--admin-muted,var(--text-secondary))]">
+          {filteredTeam.length} of {team.length} members
+        </p>
       </div>
 
       {/* Loading State */}
@@ -814,7 +809,7 @@ export const TeamManagementPage = () => {
       ) : (
         <>
           {/* Team Grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredTeam.map((member, index) => (
               <motion.div
                 key={member._id}
@@ -822,19 +817,18 @@ export const TeamManagementPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={cn(
-                  "relative rounded-2xl border p-6 text-center transition-all",
-                  !member.isActive && "opacity-60",
-                  isDark
-                    ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-                    : "border-gray-200 bg-white hover:shadow-lg",
+                  "relative flex min-w-0 flex-col rounded-lg border border-[var(--admin-border,var(--border-color))] bg-[var(--admin-surface,var(--bg-primary))] p-5 pt-14 transition-colors",
                 )}
               >
                 {/* Active/Inactive Toggle */}
                 <div className="absolute top-3 right-3">
                   <button
                     onClick={() => handleToggleActive(member)}
+                    role="switch"
+                    aria-checked={member.isActive}
+                    aria-label={`Publish ${member.name}`}
                     className={cn(
-                      "rounded-lg p-1.5 transition-colors",
+                      "flex min-h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors",
                       member.isActive
                         ? isDark
                           ? "text-green-400 hover:bg-green-500/10"
@@ -850,6 +844,7 @@ export const TeamManagementPage = () => {
                     }
                   >
                     {member.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                    {member.isActive ? "Published" : "Unpublished"}
                   </button>
                 </div>
 
@@ -857,11 +852,11 @@ export const TeamManagementPage = () => {
                 <div className="absolute top-3 left-3">
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 font-mono text-xs",
+                      "px-1 py-1 font-mono text-xs tabular-nums",
                       isDark ? "bg-slate-800 text-gray-400" : "bg-gray-100 text-gray-500",
                     )}
                   >
-                    #{member.order}
+                    {String(member.order).padStart(2, "0")}
                   </span>
                 </div>
 
@@ -869,10 +864,10 @@ export const TeamManagementPage = () => {
                   <img
                     src={member.avatar}
                     alt={member.name}
-                    className="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-4 ring-blue-500/20"
+                    className="mb-4 h-14 w-14 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-2xl font-bold text-white ring-4 ring-blue-500/20">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-[var(--admin-tint,#eff6ff)] text-lg font-semibold text-[var(--admin-accent,#2563eb)]">
                     {member.name
                       .split(" ")
                       .map((n) => n[0])
@@ -881,19 +876,17 @@ export const TeamManagementPage = () => {
                   </div>
                 )}
 
-                <h3
-                  className={cn("text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}
-                >
+                <h3 className="text-base font-semibold break-words text-[var(--admin-text,var(--text-primary))]">
                   {member.name}
                 </h3>
                 <p className={cn("text-sm", isDark ? "text-blue-400" : "text-blue-600")}>
                   {member.role}
                 </p>
 
-                <div className="mt-2 flex items-center justify-center gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <span
                     className={cn(
-                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
+                      "inline-flex items-center rounded px-2 py-0.5 text-xs font-medium capitalize",
                       departmentColors[member.department] || "bg-gray-500/10 text-gray-500",
                     )}
                   >
@@ -916,10 +909,12 @@ export const TeamManagementPage = () => {
                 )}
 
                 {/* Social Links */}
-                <div className="mt-4 flex items-center justify-center gap-3">
+                <div className="mt-auto flex min-h-12 items-center gap-1 pt-3">
                   {member.linkedin && (
                     <a
                       href={member.linkedin}
+                      aria-label={`${member.name} on LinkedIn`}
+                      title="LinkedIn"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
@@ -935,6 +930,8 @@ export const TeamManagementPage = () => {
                   {member.github && (
                     <a
                       href={member.github}
+                      aria-label={`${member.name} on GitHub`}
+                      title="GitHub"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
@@ -950,6 +947,8 @@ export const TeamManagementPage = () => {
                   {member.twitter && (
                     <a
                       href={member.twitter}
+                      aria-label={`${member.name} on Twitter`}
+                      title="Twitter"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
@@ -965,6 +964,8 @@ export const TeamManagementPage = () => {
                   {member.email && (
                     <a
                       href={`mailto:${member.email}`}
+                      aria-label={`Email ${member.name}`}
+                      title={member.email}
                       className={cn(
                         "rounded-lg p-2",
                         isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
@@ -976,20 +977,18 @@ export const TeamManagementPage = () => {
                 </div>
 
                 {/* Actions */}
-                <div
-                  className="mt-4 flex items-center gap-2 border-t border-dashed pt-4"
-                  style={{ borderColor: isDark ? "#334155" : "#e5e7eb" }}
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
+                <div className="mt-2 flex items-center justify-between gap-2 border-t border-[var(--admin-border,var(--border-color))] pt-3">
+                  <button
+                    type="button"
                     onClick={() => setEditingMember(member)}
-                    className="flex-1"
+                    className="flex min-h-9 items-center gap-2 rounded-md px-2 text-sm font-medium text-[var(--admin-text,var(--text-primary))] hover:bg-[var(--admin-hover,var(--bg-secondary))]"
                   >
-                    <Edit className="mr-1 h-4 w-4" /> Edit
-                  </Button>
+                    <Edit className="h-4 w-4" /> Edit
+                  </button>
                   <button
                     onClick={() => handleDelete(member._id, member.name)}
+                    aria-label={`Delete ${member.name}`}
+                    title="Delete member"
                     className={cn(
                       "rounded-lg p-2 text-red-500 transition-colors",
                       isDark ? "hover:bg-red-500/10" : "hover:bg-red-50",
@@ -1005,8 +1004,7 @@ export const TeamManagementPage = () => {
           {filteredTeam.length === 0 && (
             <div
               className={cn(
-                "rounded-2xl border p-12 text-center",
-                isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
+                "border-y border-[var(--admin-border,var(--border-color))] px-4 py-16 text-center",
               )}
             >
               <Users

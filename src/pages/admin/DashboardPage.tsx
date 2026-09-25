@@ -56,16 +56,13 @@ const StatCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "rounded-2xl border p-6 transition-all",
+        "h-full rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 transition-colors hover:border-[var(--admin-muted)]",
         href && "cursor-pointer",
-        isDark
-          ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg",
       )}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className={cn("text-sm font-medium", isDark ? "text-gray-400" : "text-gray-500")}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="min-h-10 text-xs leading-5 font-medium break-words text-[var(--admin-muted)] sm:min-h-0">
             {title}
           </p>
           {loading ? (
@@ -76,14 +73,14 @@ const StatCard = ({
               )}
             />
           ) : (
-            <p className={cn("mt-2 text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            <p className="mt-3 text-3xl font-semibold text-[var(--admin-text)] tabular-nums">
               {value}
             </p>
           )}
           {change && (
             <div
               className={cn(
-                "mt-2 flex items-center gap-1 text-sm font-medium",
+                "mt-2 flex items-center gap-1 text-xs font-medium",
                 changeType === "positive"
                   ? "text-green-500"
                   : changeType === "negative"
@@ -100,13 +97,21 @@ const StatCard = ({
             </div>
           )}
         </div>
-        <div className={cn("rounded-xl p-3", color)}>{icon}</div>
+        <div
+          className={cn("hidden shrink-0 rounded-md p-2 sm:block [&>svg]:h-4 [&>svg]:w-4", color)}
+        >
+          {icon}
+        </div>
       </div>
     </motion.div>
   );
 
   if (href) {
-    return <Link to={href}>{content}</Link>;
+    return (
+      <Link to={href} className="block h-full rounded-lg">
+        {content}
+      </Link>
+    );
   }
   return content;
 };
@@ -119,39 +124,19 @@ interface QuickActionProps {
   color: string;
 }
 
-const QuickAction = ({ title, description, icon, href, color }: QuickActionProps) => {
-  const { resolvedTheme } = useThemeStore();
-  const isDark = resolvedTheme === "dark";
-
+const QuickAction = ({ title, icon, href, color }: QuickActionProps) => {
   return (
-    <Link to={href}>
-      <motion.div
-        whileHover={{ scale: 1.02, y: -3 }}
-        className={cn(
-          "group cursor-pointer rounded-xl border p-4 transition-all",
-          isDark
-            ? "border-slate-800 bg-slate-900/50 hover:border-slate-700"
-            : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md",
-        )}
-      >
-        <div className="flex items-center gap-4">
-          <div className={cn("rounded-xl p-3", color)}>{icon}</div>
-          <div className="flex-1">
-            <h3 className={cn("font-semibold", isDark ? "text-white" : "text-gray-900")}>
-              {title}
-            </h3>
-            <p className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
-              {description}
-            </p>
-          </div>
-          <ArrowUpRight
-            className={cn(
-              "h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1",
-              isDark ? "text-gray-500" : "text-gray-400",
-            )}
-          />
+    <Link
+      to={href}
+      className="group block border-b border-[var(--admin-border)] px-1 py-4 transition-colors hover:bg-[var(--admin-hover)]"
+    >
+      <div className="flex items-center gap-3">
+        <div className={cn("shrink-0 rounded-md p-2 [&>svg]:h-4 [&>svg]:w-4", color)}>{icon}</div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-medium text-[var(--admin-text)]">{title}</h3>
         </div>
-      </motion.div>
+        <ArrowUpRight className="h-4 w-4 shrink-0 text-[var(--admin-muted)] transition-colors group-hover:text-[var(--admin-accent)]" />
+      </div>
     </Link>
   );
 };
@@ -492,34 +477,26 @@ export const DashboardPage = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-            Dashboard
-          </h1>
-          <p className={cn("mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
-            Welcome back{user?.name ? `, ${user.name}` : ""}! Here's what's happening with your
-            site.
+          <h1 className="text-2xl font-semibold text-[var(--admin-text)]">Dashboard</h1>
+          <p className="mt-2 text-sm text-[var(--admin-muted)]">
+            Welcome back{user?.name ? `, ${user.name}` : ""}.
           </p>
         </div>
         <button
           onClick={fetchDashboardData}
           disabled={loading}
-          className={cn(
-            "rounded-xl border p-2 transition-colors",
-            isDark
-              ? "border-slate-800 text-gray-400 hover:bg-slate-800"
-              : "border-gray-200 text-gray-600 hover:bg-gray-50",
-            loading && "animate-spin",
-          )}
+          className="admin-icon-button"
+          aria-label="Refresh data"
           title="Refresh data"
         >
-          <RefreshCw className="h-5 w-5" />
+          <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
         </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -533,18 +510,11 @@ export const DashboardPage = () => {
       </div>
 
       {/* Quick Actions & Recent Activity */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 border-t border-[var(--admin-border)] pt-7 xl:grid-cols-3">
         {/* Quick Actions */}
-        <div
-          className={cn(
-            "rounded-2xl border p-6 lg:col-span-2",
-            isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
-          )}
-        >
-          <h2 className={cn("mb-4 text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className={cn("min-w-0 xl:col-span-2")}>
+          <h2 className="mb-2 text-sm font-semibold text-[var(--admin-text)]">Quick Actions</h2>
+          <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
             {quickActions.map((action, index) => (
               <motion.div
                 key={action.title}
@@ -559,15 +529,8 @@ export const DashboardPage = () => {
         </div>
 
         {/* Recent Activity */}
-        <div
-          className={cn(
-            "rounded-2xl border p-6",
-            isDark ? "border-slate-800 bg-slate-900/50" : "border-gray-200 bg-white",
-          )}
-        >
-          <h2 className={cn("mb-4 text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
-            Recent Activity
-          </h2>
+        <div className={cn("min-w-0 xl:border-l xl:border-[var(--admin-border)] xl:pl-7")}>
+          <h2 className="mb-4 text-sm font-semibold text-[var(--admin-text)]">Recent Activity</h2>
           {loading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (

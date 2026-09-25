@@ -110,6 +110,83 @@ body {
 }
 
 /* Custom animations */
+.admin-workspace {
+  --admin-bg: #f6f7f9;
+  --admin-surface: #ffffff;
+  --admin-text: #202429;
+  --admin-muted: #66717e;
+  --admin-border: #e2e5e9;
+  --admin-hover: #f0f2f5;
+  --admin-accent: #2455a4;
+  --admin-tint: #eaf0f9;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  letter-spacing: 0;
+}
+
+.admin-workspace[data-theme="dark"] {
+  --admin-bg: #151719;
+  --admin-surface: #1e2124;
+  --admin-text: #eef0f2;
+  --admin-muted: #a4acb5;
+  --admin-border: #34383d;
+  --admin-hover: #2a2e33;
+  --admin-accent: #99baf0;
+  --admin-tint: #263447;
+}
+
+.admin-icon-button {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--admin-border, var(--border-color));
+  border-radius: 6px;
+  color: var(--admin-muted, var(--text-secondary));
+  background: var(--admin-surface, var(--bg-primary));
+}
+
+.admin-icon-button:hover {
+  background: var(--admin-hover, var(--bg-secondary));
+}
+.admin-icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-primary-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #2455a4;
+  border-radius: 6px;
+  background: #2455a4;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-primary-button:hover {
+  background: #1c4485;
+}
+.admin-workspace .committee-workspace :is(input:not([type="checkbox"]), select, textarea) {
+  background-color: var(--admin-surface);
+  color: var(--admin-text);
+  border-color: var(--admin-border);
+  border-radius: 6px;
+}
+
+.admin-workspace :where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 3px;
+}
+
 @keyframes fade-in-up {
   from {
     opacity: 0;

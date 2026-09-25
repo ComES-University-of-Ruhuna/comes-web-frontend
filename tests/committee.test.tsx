@@ -103,6 +103,43 @@ describe("published committee", () => {
 });
 
 describe("committee editor", () => {
+  it("filters the directory with department tabs and search", async () => {
+    vi.mocked(api.get).mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          members: [
+            member,
+            { ...member, _id: "technical", name: "Technical Lead", department: "technical" },
+          ],
+        },
+      },
+    });
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: "Saved President" });
+    fireEvent.click(screen.getByRole("tab", { name: /Executive Committee/ }));
+    expect(screen.queryByRole("heading", { name: "Technical Lead" })).toBeNull();
+    expect(
+      screen.getByRole("tab", { name: /Executive Committee/ }).getAttribute("aria-selected"),
+    ).toBe("true");
+    fireEvent.change(screen.getByRole("textbox", { name: "Search members" }), {
+      target: { value: "missing member" },
+    });
+    expect(screen.getByText("No team members match your filters")).toBeTruthy();
+    fireEvent.change(screen.getByRole("textbox", { name: "Search members" }), {
+      target: { value: "" },
+    });
+    fireEvent.click(screen.getByRole("tab", { name: /All members/ }));
+    expect(screen.getByRole("heading", { name: "Technical Lead" })).toBeTruthy();
+  });
+
+  it("refreshes the roster using the toolbar control", async () => {
+    render(<TeamManagementPage />);
+    await screen.findByRole("heading", { name: "Saved President" });
+    fireEvent.click(screen.getByRole("button", { name: "Refresh members" }));
+    await waitFor(() => expect(api.get).toHaveBeenCalledTimes(2));
+  });
+
   it("edits saved details, clears optional fields, and publishes the saved response", async () => {
     let saved = { ...member };
     vi.mocked(api.patch).mockImplementation(async (_url, data) => {

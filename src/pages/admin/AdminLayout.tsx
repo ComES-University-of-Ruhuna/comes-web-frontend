@@ -3,7 +3,7 @@
 // ============================================
 
 import { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router";
+import { Outlet, NavLink, Link, useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -22,6 +22,7 @@ import {
   BarChart3,
   UserCircle,
   BrainCircuit,
+  Globe,
 } from "lucide-react";
 import { useAuthStore } from "@/store";
 import { useThemeStore } from "@/store";
@@ -62,6 +63,10 @@ export const AdminLayout = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const currentSection =
+    navItems.find((item) => (item.end ? pathname === item.path : pathname.startsWith(item.path)))
+      ?.label || "Dashboard";
 
   const handleLogout = async () => {
     if (studentAuthenticated) studentLogout();
@@ -70,56 +75,53 @@ export const AdminLayout = () => {
   };
 
   return (
-    <div
-      className={cn("flex min-h-screen overflow-x-clip", isDark ? "bg-slate-950" : "bg-gray-100")}
-    >
+    <div className="admin-workspace flex min-h-screen overflow-x-clip" data-theme={resolvedTheme}>
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 hidden h-full flex-col transition-all duration-300 lg:flex",
+          "fixed top-0 left-0 z-40 hidden h-full flex-col border-r border-[var(--admin-border)] bg-[var(--admin-surface)] transition-all duration-300 lg:flex",
           sidebarOpen ? "w-64" : "w-20",
-          isDark ? "border-r border-slate-800 bg-slate-900" : "border-r border-gray-200 bg-white",
         )}
       >
         <div
           className={cn(
-            "flex h-16 items-center gap-3 border-b px-4",
-            isDark ? "border-slate-800" : "border-gray-200",
+            "flex h-20 shrink-0 items-center gap-3 border-b border-[var(--admin-border)] px-4",
           )}
         >
           <img
             src={isDark ? LogoWhite : LogoBlack}
             alt="ComES Logo"
-            className="h-20 w-auto object-contain drop-shadow-md"
+            className="h-11 w-12 shrink-0 object-contain"
           />
           {sidebarOpen && (
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}
+              className="min-w-0 text-[var(--admin-text)]"
             >
-              Admin Panel
+              <span className="block text-lg font-semibold">ComES</span>
+              <span className="block text-xs text-[var(--admin-muted)]">Administration</span>
             </motion.span>
           )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4">
+        <nav aria-label="Admin navigation" className="flex-1 overflow-y-auto py-5">
           <ul className="space-y-1 px-3">
             {navItems.map((item) => (
               <li key={item.path}>
                 <NavLink
                   to={item.path}
                   end={item.end}
+                  title={!sidebarOpen ? item.label : undefined}
+                  aria-label={item.label}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all",
+                      "flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-[13px] transition-colors",
                       sidebarOpen ? "justify-start" : "justify-center",
                       isActive
-                        ? "bg-comesBlue text-white"
-                        : isDark
-                          ? "text-gray-400 hover:bg-slate-800 hover:text-white"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                        ? "bg-[var(--admin-tint)] text-[var(--admin-accent)]"
+                        : "text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]",
                     )
                   }
                 >
@@ -134,60 +136,59 @@ export const AdminLayout = () => {
         {/* Toggle Button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           className={cn(
-            "absolute top-20 -right-4 flex h-8 w-8 items-center justify-center rounded-lg shadow-sm",
-            isDark ? "bg-slate-800 text-gray-400" : "border border-gray-200 bg-white text-gray-600",
+            "absolute top-24 -right-3 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-muted)]",
           )}
         >
           <ChevronRight
-            className={cn("h-4 w-4 transition-transform", !sidebarOpen && "rotate-180")}
+            className={cn("h-3 w-3 transition-transform", sidebarOpen && "rotate-180")}
           />
         </button>
 
         {/* User Info */}
-        <div className={cn("border-t p-4", isDark ? "border-slate-800" : "border-gray-200")}>
+        <div className="border-t border-[var(--admin-border)] p-4">
           <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 font-bold text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--admin-tint)] text-sm font-semibold text-[var(--admin-accent)]">
               {user?.name?.charAt(0) || "A"}
             </div>
             {sidebarOpen && (
               <div className="min-w-0 flex-1">
-                <p className={cn("truncate font-medium", isDark ? "text-white" : "text-gray-900")}>
+                <p className="truncate text-sm font-medium text-[var(--admin-text)]">
                   {user?.name || "Admin"}
                 </p>
-                <p className={cn("truncate text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+                <p className="truncate text-xs text-[var(--admin-muted)]">
                   {user?.email || "admin@comes.lk"}
                 </p>
               </div>
             )}
           </div>
-          {sidebarOpen && (
-            <button
-              onClick={handleLogout}
-              className={cn(
-                "mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 transition-colors",
-                isDark
-                  ? "bg-slate-800 text-gray-400 hover:bg-slate-700 hover:text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900",
-              )}
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </button>
-          )}
+          <button
+            onClick={handleLogout}
+            aria-label="Logout"
+            title="Logout"
+            className={cn(
+              "mt-3 flex min-h-9 w-full items-center justify-center gap-2 rounded-md text-sm text-[var(--admin-muted)] transition-colors hover:bg-[var(--admin-hover)]",
+            )}
+          >
+            <LogOut className="h-4 w-4" />
+            {sidebarOpen && <span>Logout</span>}
+          </button>
         </div>
       </aside>
 
       {/* Mobile Header */}
       <div
         className={cn(
-          "fixed top-0 right-0 left-0 z-40 flex h-16 items-center justify-between px-4 lg:hidden",
-          isDark ? "border-b border-slate-800 bg-slate-900" : "border-b border-gray-200 bg-white",
+          "fixed top-0 right-0 left-0 z-40 flex h-16 items-center justify-between border-b border-[var(--admin-border)] bg-[var(--admin-surface)] px-4 lg:hidden",
         )}
       >
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open admin navigation"
+            aria-expanded={mobileMenuOpen}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-lg",
               isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
@@ -196,20 +197,14 @@ export const AdminLayout = () => {
             <Menu className={cn("h-6 w-6", isDark ? "text-white" : "text-gray-900")} />
           </button>
           <span className={cn("font-bold", isDark ? "text-white" : "text-gray-900")}>
-            Admin Panel
+            ComES <span className="font-normal text-[var(--admin-muted)]">Admin</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <button
-            className={cn(
-              "relative flex h-10 w-10 items-center justify-center rounded-lg",
-              isDark ? "hover:bg-slate-800" : "hover:bg-gray-100",
-            )}
-          >
-            <Bell className={cn("h-5 w-5", isDark ? "text-gray-400" : "text-gray-600")} />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
+          <Link to="/" aria-label="View website" title="View website" className="admin-icon-button">
+            <Globe className="h-4 w-4" />
+          </Link>
         </div>
       </div>
 
@@ -229,8 +224,7 @@ export const AdminLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               className={cn(
-                "fixed top-0 left-0 z-50 flex h-full w-72 flex-col lg:hidden",
-                isDark ? "bg-slate-900" : "bg-white",
+                "fixed top-0 left-0 z-50 flex h-full w-72 max-w-[85vw] flex-col bg-[var(--admin-surface)] lg:hidden",
               )}
             >
               <div
@@ -244,12 +238,13 @@ export const AdminLayout = () => {
                 </span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close admin navigation"
                   className="flex h-10 w-10 items-center justify-center rounded-lg"
                 >
                   <X className={cn("h-6 w-6", isDark ? "text-gray-400" : "text-gray-600")} />
                 </button>
               </div>
-              <nav className="flex-1 overflow-y-auto py-4">
+              <nav aria-label="Admin navigation" className="flex-1 overflow-y-auto py-4">
                 <ul className="space-y-1 px-3">
                   {navItems.map((item) => (
                     <li key={item.path}>
@@ -259,12 +254,10 @@ export const AdminLayout = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
                           cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all",
+                            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                             isActive
-                              ? "bg-comesBlue text-white"
-                              : isDark
-                                ? "text-gray-400 hover:bg-slate-800 hover:text-white"
-                                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                              ? "bg-[var(--admin-tint)] text-[var(--admin-accent)]"
+                              : "text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-text)]",
                           )
                         }
                       >
@@ -302,7 +295,24 @@ export const AdminLayout = () => {
           sidebarOpen ? "lg:ml-64" : "lg:ml-20",
         )}
       >
-        <div className="min-w-0 p-4 lg:p-8">
+        <header className="hidden h-20 items-center justify-between border-b border-[var(--admin-border)] bg-[var(--admin-surface)] px-8 lg:flex">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-[var(--admin-muted)]">Workspace</span>
+            <ChevronRight className="h-3 w-3 text-[var(--admin-muted)]" />
+            <span className="font-medium">{currentSection}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              to="/"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-hover)]"
+            >
+              <Globe className="h-4 w-4" />
+              View website
+            </Link>
+          </div>
+        </header>
+        <div className="mx-auto max-w-[1600px] min-w-0 px-4 py-6 sm:px-6 lg:p-8">
           <DashboardSwitch />
           <Outlet />
         </div>
