@@ -164,16 +164,18 @@ export const UserProfileDropdown = ({
         </Link>
 
         {/* Profile Link */}
-        <Link
-          to={isAdmin ? "/admin/settings" : "/student/profile"}
-          className={cn(
-            "flex items-center gap-3 rounded-xl px-4 py-3 transition-all",
-            isDark ? "text-gray-300 hover:bg-slate-800" : "text-gray-700 hover:bg-gray-100",
-          )}
-        >
-          <User className="h-5 w-5" />
-          <span>Profile</span>
-        </Link>
+        {!isAdmin && (
+          <Link
+            to="/student/profile"
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-4 py-3 transition-all",
+              isDark ? "text-gray-300 hover:bg-slate-800" : "text-gray-700 hover:bg-gray-100",
+            )}
+          >
+            <User className="h-5 w-5" />
+            <span>Profile</span>
+          </Link>
+        )}
 
         {/* Theme Selector */}
         <div className={cn("px-4 py-3", isDark ? "text-gray-300" : "text-gray-700")}>
@@ -319,20 +321,22 @@ export const UserProfileDropdown = ({
                 <ChevronRight className="h-4 w-4 opacity-50" />
               </Link>
 
-              <Link
-                to={isAdmin ? "/admin/settings" : "/student/profile"}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all",
-                  isDark
-                    ? "text-gray-300 hover:bg-slate-800 hover:text-white"
-                    : "text-gray-700 hover:bg-gray-100",
-                )}
-              >
-                <User className="h-5 w-5" />
-                <span className="flex-1">Profile</span>
-                <ChevronRight className="h-4 w-4 opacity-50" />
-              </Link>
+              {!isAdmin && (
+                <Link
+                  to="/student/profile"
+                  onClick={() => setIsOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all",
+                    isDark
+                      ? "text-gray-300 hover:bg-slate-800 hover:text-white"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                >
+                  <User className="h-5 w-5" />
+                  <span className="flex-1">Profile</span>
+                  <ChevronRight className="h-4 w-4 opacity-50" />
+                </Link>
+              )}
 
               {!isAdmin && (
                 <Link

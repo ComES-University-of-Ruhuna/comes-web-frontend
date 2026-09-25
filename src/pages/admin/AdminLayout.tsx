@@ -13,7 +13,6 @@ import {
   Users,
   Mail,
   Newspaper,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -46,7 +45,6 @@ const navItems = [
   { path: "/admin/notifications", label: "Notifications", icon: Bell },
   { path: "/admin/newsletter", label: "Newsletter", icon: Newspaper },
   { path: "/admin/quizzes", label: "Quizzes", icon: BrainCircuit },
-  { path: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export const AdminLayout = () => {

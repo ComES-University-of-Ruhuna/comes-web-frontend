@@ -3,7 +3,7 @@
 // ============================================
 
 import { useState, useEffect, lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router";
+import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from "react-router";
 import { AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout";
 import { LoadingScreen, CustomCursor, CookieConsent, ToastContainer } from "@/components/ui";
@@ -85,9 +85,6 @@ const AdminContactsPage = lazy(() =>
 );
 const NewsletterPage = lazy(() =>
   import("@/pages/admin").then((pages) => ({ default: pages.NewsletterPage })),
-);
-const SettingsPage = lazy(() =>
-  import("@/pages/admin").then((pages) => ({ default: pages.SettingsPage })),
 );
 const AnalyticsPage = lazy(() =>
   import("@/pages/admin").then((pages) => ({ default: pages.AnalyticsPage })),
@@ -205,7 +202,7 @@ const AnimatedRoutes = () => {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="newsletter" element={<NewsletterPage />} />
             <Route path="quizzes" element={<QuizManagementPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route path="settings" element={<Navigate to="/admin" replace />} />
           </Route>
 
           {/* 404 Route */}

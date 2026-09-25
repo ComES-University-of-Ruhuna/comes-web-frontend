@@ -9,6 +9,7 @@ import axios, {
 } from "axios";
 import { ProtectedRoute } from "../src/components/ProtectedRoute";
 import { DashboardSwitch } from "../src/components/ui/DashboardSwitch";
+import { AdminLayout } from "../src/pages/admin/AdminLayout";
 import { useStudentStore } from "../src/store/studentStore";
 import { useAuthStore } from "../src/store/authStore";
 import api, {
@@ -94,6 +95,19 @@ afterEach(() => {
 });
 
 describe("student administrator dashboards", () => {
+  it("keeps real notification tools without placeholder website settings", () => {
+    render(
+      <MemoryRouter initialEntries={["/admin"]}>
+        <AdminLayout />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByRole("link", { name: "Settings" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Notifications" }).getAttribute("href")).toBe(
+      "/admin/notifications",
+    );
+    expect(screen.getByRole("navigation", { name: "Dashboard switch" })).toBeTruthy();
+  });
+
   it("switches between both dashboards without a separate admin login", () => {
     renderDashboards("/student/dashboard");
     fireEvent.click(screen.getByRole("link", { name: "Admin" }));

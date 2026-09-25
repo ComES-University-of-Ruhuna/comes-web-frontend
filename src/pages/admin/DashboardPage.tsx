@@ -18,7 +18,6 @@ import {
   ArrowUpRight,
   Clock,
   UserCircle,
-  Plus,
   BarChart3,
   RefreshCw,
 } from "lucide-react";
@@ -464,13 +463,6 @@ export const DashboardPage = () => {
       icon: <Mail className="h-5 w-5 text-red-500" />,
       href: "/admin/contacts",
       color: "bg-red-500/10",
-    },
-    {
-      title: "Settings",
-      description: "Configure site settings",
-      icon: <Plus className="h-5 w-5 text-gray-500" />,
-      href: "/admin/settings",
-      color: "bg-gray-500/10",
     },
   ];
 

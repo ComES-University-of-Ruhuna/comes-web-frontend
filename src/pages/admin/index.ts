@@ -11,7 +11,6 @@ export { ProjectsManagementPage } from "./ProjectsManagementPage";
 export { TeamManagementPage } from "./TeamManagementPage";
 export { ContactsPage } from "./ContactsPage";
 export { NewsletterPage } from "./NewsletterPage";
-export { SettingsPage } from "./SettingsPage";
 export { AnalyticsPage } from "./AnalyticsPage";
 export { MembersManagementPage } from "./MembersManagementPage";
 export { NotificationsPage } from "./NotificationsPage";

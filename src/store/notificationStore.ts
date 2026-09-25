@@ -29,51 +29,11 @@ interface NotificationState {
 // Generate unique ID
 const generateId = () => `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-// Sample notifications for demo
-const sampleNotifications: Notification[] = [
-  {
-    id: "sample-1",
-    type: "event",
-    title: "Workshop Tomorrow",
-    message:
-      'Don\'t forget! "Introduction to Machine Learning" workshop starts tomorrow at 10:00 AM.',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-    read: false,
-    link: "/student/events",
-  },
-  {
-    id: "sample-2",
-    type: "announcement",
-    title: "New Project Showcase",
-    message: "Check out the latest student projects from the ComES community.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    read: false,
-    link: "/projects",
-  },
-  {
-    id: "sample-3",
-    type: "reminder",
-    title: "Event Registration Open",
-    message: 'Registration for "Annual Tech Fest 2026" is now open. Limited seats available!',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
-    read: true,
-    link: "/events",
-  },
-  {
-    id: "sample-4",
-    type: "system",
-    title: "Profile Update",
-    message: "Your profile information was successfully updated.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    read: true,
-  },
-];
-
 export const useNotificationStore = create<NotificationState>()(
   persist(
     (set) => ({
-      notifications: sampleNotifications,
-      unreadCount: sampleNotifications.filter((n) => !n.read).length,
+      notifications: [],
+      unreadCount: 0,
 
       addNotification: (notification) => {
         const newNotification: Notification = {
@@ -129,6 +89,18 @@ export const useNotificationStore = create<NotificationState>()(
     }),
     {
       name: "comes-notifications",
+      version: 1,
+      migrate: (persistedState) => {
+        const state = persistedState as Partial<NotificationState> | null;
+        const notifications = (state?.notifications ?? []).filter(
+          (notification) =>
+            !["sample-1", "sample-2", "sample-3", "sample-4"].includes(notification.id),
+        );
+        return {
+          notifications,
+          unreadCount: notifications.filter((notification) => !notification.read).length,
+        };
+      },
       partialize: (state) => ({
         notifications: state.notifications,
         unreadCount: state.unreadCount,
