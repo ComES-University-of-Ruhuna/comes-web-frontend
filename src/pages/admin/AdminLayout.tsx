@@ -23,6 +23,7 @@ import {
   BrainCircuit,
   Globe,
   Images,
+  GalleryHorizontal,
 } from "lucide-react";
 import { useAuthStore } from "@/store";
 import { useThemeStore } from "@/store";
@@ -40,6 +41,7 @@ const navItems = [
   { path: "/admin/members", label: "Members", icon: UserCircle },
   { path: "/admin/events", label: "Events", icon: Calendar },
   { path: "/admin/gallery", label: "Gallery", icon: Images },
+  { path: "/admin/homepage-slides", label: "Homepage Slides", icon: GalleryHorizontal },
   { path: "/admin/projects", label: "Projects", icon: FolderKanban },
   { path: "/admin/blog", label: "Blog Posts", icon: FileText },
   { path: "/admin/team", label: "Committee & Team", icon: Users },

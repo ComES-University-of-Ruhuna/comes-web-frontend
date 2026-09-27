@@ -6,6 +6,9 @@ import { HomeIntro } from "../src/components/layout/HomeIntro";
 import { Navbar } from "../src/components/layout/Navbar";
 import { NAV_LINKS } from "../src/constants";
 
+vi.mock("@/services/homeSlides.service", () => ({
+  homeSlidesService: { list: () => new Promise(() => {}) },
+}));
 vi.mock("@/store", () => ({
   useThemeStore: () => ({ resolvedTheme: "light" }),
   useStudentStore: () => ({ isAuthenticated: false }),

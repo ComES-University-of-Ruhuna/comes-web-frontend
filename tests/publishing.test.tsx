@@ -38,6 +38,9 @@ vi.hoisted(() => {
 vi.mock("../src/services/api", () => ({
   default: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() },
 }));
+vi.mock("@/services/homeSlides.service", () => ({
+  homeSlidesService: { list: async () => [] },
+}));
 vi.mock("@/store", () => ({ useThemeStore: () => ({ resolvedTheme: "light" }) }));
 vi.mock("@/store/studentStore", () => ({
   useStudentStore: () => ({ student: { name: "Example Student" } }),

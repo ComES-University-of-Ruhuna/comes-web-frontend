@@ -32,6 +32,14 @@
 
 The ComES Website serves as the digital platform for the Computer Engineering Society at the University of Ruhuna. It provides information about events, projects, team members, and resources for computer engineering students.
 
+### Homepage Slider
+
+In **Admin > Homepage Slides** (`/admin/homepage-slides`), choose a JPEG, PNG, or WebP image up to 3 MiB, enter an image description and display order, then choose **Add slide**. Slides start as drafts; check **Published** to make one public. Lower display-order numbers appear first; saved slides can be edited, unpublished, or removed with confirmation. Use landscape images with important subjects near the center because the homepage crops images to fill its responsive banner.
+
+The homepage rotates published slides every six seconds with previous/next, play/pause, keyboard, and swipe controls. Rotation pauses on hover, keyboard focus, and hidden tabs, and starts paused for reduced-motion preferences. With one slide, rotation controls are hidden. With no published slides, an unavailable API, or failed images, the original banner remains available.
+
+Uploads use the existing backend Cloudinary settings and `comes/homepage` folder; metadata is persisted in MongoDB. Failed metadata saves can be retried without uploading the same file again. Removing a slide does not delete its Cloudinary asset. No new environment variables are required.
+
 ### Event Gallery
 
 `/gallery` is an API-backed photo archive with event filters, scroll-to-load batches, lazy-loaded images, and a full-screen keyboard-accessible viewer. Photos are appended on the same page as visitors approach the bottom, with a manual load/retry control as a fallback. Only published photographs are public; no sample photos are substituted when the gallery is empty or unavailable.

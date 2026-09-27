@@ -244,6 +244,28 @@ body {
   inset: 0;
   background: rgb(14 25 30 / 62%);
 }
+.public-site .site-home-slide {
+  transition: opacity 600ms ease-in-out;
+}
+.public-site .site-home-slide-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(255 255 255 / 65%);
+  border-radius: 4px;
+  background: rgb(0 0 0 / 25%);
+  color: white;
+  cursor: pointer;
+}
+.public-site .site-home-slide-control:hover {
+  background: rgb(255 255 255 / 20%);
+}
+.public-site .site-home-slide-control:focus-visible {
+  outline: 2px solid #e8c970;
+  outline-offset: 3px;
+}
 .public-site .site-home-hero h1 {
   font-size: 5rem;
   font-weight: 700;
@@ -498,6 +520,24 @@ body {
   }
   .public-site .site-home-subtitle {
     font-size: 1.25rem;
+  }
+  .public-site .site-home-hero--slideshow h1 {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+  .public-site .site-home-hero--slideshow .site-home-eyebrow {
+    margin-bottom: 0.75rem;
+  }
+  .public-site .site-home-hero--slideshow .site-home-description {
+    margin-top: 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  .public-site .site-home-hero--slideshow .site-home-actions {
+    margin-top: 1.25rem;
+  }
+  .public-site .site-home-hero--slideshow .site-home-controls {
+    margin-top: 1rem;
   }
   .public-site .site-home-hero .site-button {
     min-height: 2.5rem;

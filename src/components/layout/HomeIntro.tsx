@@ -1,6 +1,19 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, ArrowUpRight, Brain, Cpu, GitBranch, Shield } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Brain,
+  ChevronLeft,
+  ChevronRight,
+  Cpu,
+  GitBranch,
+  Pause,
+  Play,
+  Shield,
+} from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { homeSlidesService, type HomeSlide } from "@/services/homeSlides.service";
 
 const domains = [
   { title: "Software Engineering", icon: GitBranch, href: "/subgroups/software-engineering" },
@@ -9,54 +22,194 @@ const domains = [
   { title: "Network & Cyber Security", icon: Shield, href: "/subgroups/network-security" },
 ];
 
-export const HomeIntro = () => (
-  <>
-    <section className="site-home-hero">
-      <img
-        src="/banner.jpg"
-        alt="ComES homepage banner"
-        fetchPriority="high"
-        className="site-home-photo"
-      />
-      <div className="site-home-shade" />
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+export const HomeIntro = () => {
+  const reducedMotion = useReducedMotion();
+  const [slides, setSlides] = useState<HomeSlide[]>([]);
+  const [index, setIndex] = useState(0);
+  const [playing, setPlaying] = useState(!reducedMotion);
+  const [hovered, setHovered] = useState(false);
+  const [visible, setVisible] = useState(() => !document.hidden);
+  const touchStart = useRef<number | null>(null);
+  const currentIndex = slides.length ? index % slides.length : 0;
+
+  useEffect(() => {
+    let active = true;
+    homeSlidesService
+      .list()
+      .then((items) => {
+        if (active) setSlides(items);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const onVisibilityChange = () => setVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || hovered || !visible || slides.length < 2) return;
+    const timer = window.setInterval(
+      () => setIndex((previous) => (previous + 1) % slides.length),
+      6000,
+    );
+    return () => window.clearInterval(timer);
+  }, [playing, hovered, visible, slides.length]);
+
+  const changeSlide = (direction: number) => {
+    setPlaying(false);
+    if (slides.length)
+      setIndex((previous) => (previous + direction + slides.length) % slides.length);
+  };
+
+  return (
+    <>
+      <section
+        className={`site-home-hero${slides.length > 1 ? "site-home-hero--slideshow" : ""}`}
+        aria-label="ComES highlights"
+        aria-roledescription={slides.length > 1 ? "carousel" : undefined}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocusCapture={() => setPlaying(false)}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            changeSlide(event.key === "ArrowLeft" ? -1 : 1);
+          }
+        }}
+        onTouchStart={(event) => {
+          touchStart.current = event.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(event) => {
+          const end = event.changedTouches[0]?.clientX;
+          if (
+            touchStart.current !== null &&
+            end !== undefined &&
+            Math.abs(end - touchStart.current) > 50
+          ) {
+            changeSlide(end < touchStart.current ? 1 : -1);
+          }
+          touchStart.current = null;
+        }}
       >
-        <p className="mb-5 text-xs font-semibold text-white/85">
-          FACULTY OF ENGINEERING / UNIVERSITY OF RUHUNA
-        </p>
-        <h1>ComES</h1>
-        <p className="site-home-subtitle">Computer Engineering Society</p>
-        <p className="site-home-description">
-          A student community exploring ideas, building connections, and creating practical
-          solutions.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/register"
-            className="site-button site-home-join inline-flex items-center gap-3"
-          >
-            Join ComES <ArrowUpRight className="h-4 w-4" />
-          </Link>
-          <Link to="/about" className="site-button site-home-about inline-flex items-center gap-3">
-            About ComES <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </motion.div>
-    </section>
-    <nav aria-label="Engineering subgroups" className="site-domain-band">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
-        {domains.map(({ title, icon: Icon, href }) => (
-          <Link key={href} to={href} className="site-domain-link">
-            <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
-            <span>{title}</span>
-            <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0" />
-          </Link>
+        <img
+          src="/banner.jpg"
+          alt={slides.length ? "" : "ComES homepage banner"}
+          aria-hidden={slides.length ? true : undefined}
+          fetchPriority="high"
+          className="site-home-photo"
+        />
+        {slides.map((slide, slideIndex) => (
+          <img
+            key={slide._id}
+            src={slide.image}
+            alt={slide.altText}
+            aria-hidden={slideIndex !== currentIndex}
+            fetchPriority={slideIndex === 0 ? "high" : "low"}
+            className="site-home-photo site-home-slide"
+            style={{
+              opacity: slideIndex === currentIndex ? 1 : 0,
+              transitionDuration: reducedMotion ? "0s" : undefined,
+            }}
+            onError={() => {
+              setSlides((previous) => previous.filter((item) => item._id !== slide._id));
+              setIndex(0);
+            }}
+          />
         ))}
-      </div>
-    </nav>
-  </>
-);
+        <div className="site-home-shade" />
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+        >
+          <p className="site-home-eyebrow mb-5 text-xs font-semibold text-white/85">
+            FACULTY OF ENGINEERING / UNIVERSITY OF RUHUNA
+          </p>
+          <h1>ComES</h1>
+          <p className="site-home-subtitle">Computer Engineering Society</p>
+          <p className="site-home-description">
+            A student community exploring ideas, building connections, and creating practical
+            solutions.
+          </p>
+          <div className="site-home-actions mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/register"
+              className="site-button site-home-join inline-flex items-center gap-3"
+            >
+              Join ComES <ArrowUpRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/about"
+              className="site-button site-home-about inline-flex items-center gap-3"
+            >
+              About ComES <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          {slides.length > 1 && (
+            <div
+              className="site-home-controls mt-6 flex items-center gap-2"
+              role="group"
+              aria-label="Slideshow controls"
+            >
+              <button
+                type="button"
+                className="site-home-slide-control"
+                aria-label="Previous slide"
+                title="Previous slide"
+                onClick={() => changeSlide(-1)}
+              >
+                <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+              </button>
+              <span
+                className="w-16 text-center text-sm tabular-nums"
+                aria-live={playing ? "off" : "polite"}
+                aria-atomic="true"
+              >
+                {currentIndex + 1} / {slides.length}
+              </span>
+              <button
+                type="button"
+                className="site-home-slide-control"
+                aria-label="Next slide"
+                title="Next slide"
+                onClick={() => changeSlide(1)}
+              >
+                <ChevronRight aria-hidden="true" className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                className="site-home-slide-control"
+                aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+                title={playing ? "Pause slideshow" : "Play slideshow"}
+                onClick={() => setPlaying((previous) => !previous)}
+              >
+                {playing ? (
+                  <Pause aria-hidden="true" className="h-4 w-4" />
+                ) : (
+                  <Play aria-hidden="true" className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          )}
+        </motion.div>
+      </section>
+      <nav aria-label="Engineering subgroups" className="site-domain-band">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {domains.map(({ title, icon: Icon, href }) => (
+            <Link key={href} to={href} className="site-domain-link">
+              <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
+              <span>{title}</span>
+              <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0" />
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </>
+  );
+};

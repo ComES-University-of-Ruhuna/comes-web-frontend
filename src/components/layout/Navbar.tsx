@@ -358,7 +358,7 @@ export const Navbar = () => {
               alt="ComES Logo"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-12 w-12 object-contain sm:h-14 sm:w-14"
+              className="h-14 w-14 object-contain md:h-18 md:w-18"
             />
           </Link>
 

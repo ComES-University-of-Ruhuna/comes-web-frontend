@@ -59,9 +59,8 @@ export const Footer = () => {
                 src={LogoWhite}
                 alt="ComES Logo"
                 whileHover={{ scale: 1.05 }}
-                className="h-24 w-24 object-contain"
+                className="h-28 w-28 object-contain"
               />
-              <span className="text-2xl font-bold">ComES</span>
             </Link>
             <p className={cn("mb-6 leading-relaxed", isDark ? "text-gray-400" : "text-blue-100")}>
               {SITE_CONFIG.description}
