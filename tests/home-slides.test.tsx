@@ -36,6 +36,9 @@ const renderHero = async () => {
 it("loads published slides and supports next, previous and keyboard navigation", async () => {
   await renderHero();
   expect(homeSlidesService.list).toHaveBeenCalledWith();
+  const hero = screen.getByRole("region", { name: "ComES highlights" });
+  expect(hero.classList.contains("site-home-hero")).toBe(true);
+  expect(hero.classList.contains("site-home-hero--slideshow")).toBe(true);
   expect(screen.getByRole("img", { name: "Engineering workshop" })).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Next slide" }));
   expect(screen.getByRole("img", { name: "ComES community" })).toBeTruthy();

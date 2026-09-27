@@ -69,7 +69,9 @@ export const HomeIntro = () => {
   return (
     <>
       <section
-        className={`site-home-hero${slides.length > 1 ? "site-home-hero--slideshow" : ""}`}
+        className={
+          slides.length > 1 ? "site-home-hero site-home-hero--slideshow" : "site-home-hero"
+        }
         aria-label="ComES highlights"
         aria-roledescription={slides.length > 1 ? "carousel" : undefined}
         onMouseEnter={() => setHovered(true)}
