@@ -16,6 +16,8 @@ import LogoWhite from "@/assets/logo/Logo White Coloured.png";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const { resolvedTheme } = useThemeStore();
@@ -25,8 +27,28 @@ export const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setEmailError("");
+    setPasswordError("");
 
-    const success = await login({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+    let hasError = false;
+
+    if (!normalizedEmail) {
+      setEmailError("Email is required");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailError("Please provide a valid email address");
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const success = await login({ email: normalizedEmail, password });
     if (success) {
       navigate("/admin");
     }
@@ -114,7 +136,7 @@ export const LoginPage = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           {/* Email Field */}
           <div>
             <label
@@ -135,18 +157,25 @@ export const LoginPage = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
                 placeholder="youremail@domain.lk"
-                required
                 className={cn(
                   "w-full rounded-xl border py-3 pr-4 pl-12 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  emailError
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500",
                   "focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                 )}
               />
             </div>
+            {emailError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{emailError}</p>
+            )}
           </div>
 
           {/* Password Field */}
@@ -169,14 +198,18 @@ export const LoginPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                }}
                 placeholder="••••••••"
-                required
                 className={cn(
                   "w-full rounded-xl border py-3 pr-12 pl-12 transition-colors",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  passwordError
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500",
                   "focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
                 )}
               />
@@ -193,6 +226,9 @@ export const LoginPage = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+            {passwordError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{passwordError}</p>
+            )}
           </div>
 
           <div className="text-right">

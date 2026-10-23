@@ -146,116 +146,121 @@ const PhotoEditor = ({
   onClose: () => void;
   onSaved: () => void;
 }) => {
-  const dialog = useRef<HTMLDialogElement>(null);
   const [previous] = useState(() => document.activeElement);
   const [title, setTitle] = useState(photo.title);
   const [description, setDescription] = useState(photo.description);
   const [published, setPublished] = useState(photo.isPublished);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
   useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      element?.close();
-      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
-    };
-  }, [previous]);
-  return (
-    <dialog
-      ref={dialog}
-      aria-labelledby="gallery-editor-title"
-      onCancel={(event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         event.preventDefault();
         if (!saving) onClose();
-      }}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          if (!saving) onClose();
-        }
-      }}
-      className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-5 text-[var(--text-primary)] backdrop:bg-black/60"
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+    };
+  }, [previous, saving, onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gallery-editor-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
     >
-      <form
-        onSubmit={async (event) => {
-          event.preventDefault();
-          setSaving(true);
-          setError("");
-          try {
-            await galleryService.update(photo._id, {
-              title: title.trim(),
-              description,
-              isPublished: published,
-            });
-            onSaved();
-          } catch (failure) {
-            setError(errorMessage(failure));
-          } finally {
-            setSaving(false);
-          }
+      <div
+        className="fixed inset-0 bg-black/60"
+        onClick={() => {
+          if (!saving) onClose();
         }}
-      >
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <h2 id="gallery-editor-title" className="text-xl font-semibold">
-            Edit photograph
-          </h2>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={onClose}
-            aria-label="Close editor"
-            title="Close"
-            className={commandClass}
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <fieldset disabled={saving} className="min-w-0 space-y-4">
-          <img src={photo.image} alt={photo.title} className="h-48 w-full object-contain" />
-          <p className="text-sm opacity-60">{photo.event?.title || "Community archive"}</p>
-          <label className="block text-sm">
-            Title
-            <input
-              autoFocus
-              required
-              minLength={2}
-              maxLength={160}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              className={inputClass}
-            />
-          </label>
-          <label className="block text-sm">
-            Caption
-            <textarea
-              rows={3}
-              maxLength={1000}
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              className={inputClass}
-            />
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(event) => setPublished(event.target.checked)}
-            />
-            Published
-          </label>
-          {error && (
-            <p role="alert" className="text-sm text-red-600">
-              {error}
-            </p>
-          )}
-          <button type="submit" className={commandClass}>
-            <Save className="h-4 w-4" />
-            {saving ? "Saving..." : "Save changes"}
-          </button>
-        </fieldset>
-      </form>
-    </dialog>
+      />
+      <div className="relative z-10 max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-5 text-[var(--text-primary)] shadow-2xl">
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            setSaving(true);
+            setError("");
+            try {
+              await galleryService.update(photo._id, {
+                title: title.trim(),
+                description,
+                isPublished: published,
+              });
+              onSaved();
+            } catch (failure) {
+              setError(errorMessage(failure));
+            } finally {
+              setSaving(false);
+            }
+          }}
+        >
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <h2 id="gallery-editor-title" className="text-xl font-semibold">
+              Edit photograph
+            </h2>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={onClose}
+              aria-label="Close editor"
+              title="Close"
+              className={commandClass}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <fieldset disabled={saving} className="min-w-0 space-y-4">
+            <img src={photo.image} alt={photo.title} className="h-48 w-full object-contain" />
+            <p className="text-sm opacity-60">{photo.event?.title || "Community archive"}</p>
+            <label className="block text-sm">
+              Title
+              <input
+                autoFocus
+                required
+                minLength={2}
+                maxLength={160}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <label className="block text-sm">
+              Caption
+              <textarea
+                rows={3}
+                maxLength={1000}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={published}
+                onChange={(event) => setPublished(event.target.checked)}
+              />
+              Published
+            </label>
+            {error && (
+              <p role="alert" className="text-sm text-red-600">
+                {error}
+              </p>
+            )}
+            <button type="submit" className={commandClass}>
+              <Save className="h-4 w-4" />
+              {saving ? "Saving..." : "Save changes"}
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
   );
 };
 

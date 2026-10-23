@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState, useEffect } from "react";
+import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -34,6 +35,7 @@ export const TeamsPage = () => {
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -69,6 +71,40 @@ export const TeamsPage = () => {
       console.error("Failed to respond to invitation:", error);
     } finally {
       setRespondingTo(null);
+    }
+  };
+
+  const handleLeaveTeam = async (teamId: string) => {
+    if (!window.confirm("Are you sure you want to leave this team?")) return;
+    setActionLoading(teamId);
+    try {
+      await competitionTeamService.leaveTeam(teamId);
+      await fetchData();
+    } catch (error) {
+      console.error("Failed to leave team:", error);
+      alert(
+        (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+          "Failed to leave team. Please try again.",
+      );
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDisbandTeam = async (teamId: string) => {
+    if (!window.confirm("Are you sure you want to disband this team? This action cannot be undone.")) return;
+    setActionLoading(teamId);
+    try {
+      await competitionTeamService.disbandTeam(teamId);
+      await fetchData();
+    } catch (error) {
+      console.error("Failed to disband team:", error);
+      alert(
+        (isAxiosError<{ message?: string }>(error) && error.response?.data?.message) ||
+          "Failed to disband team. Please try again.",
+      );
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -320,59 +356,69 @@ export const TeamsPage = () => {
                               Team Members ({team.members.length}/5)
                             </p>
                             <div className="flex flex-wrap gap-2">
-                              {team.members.map((member) => (
-                                <div
-                                  key={member.id}
-                                  className={cn(
-                                    "flex items-center gap-2 rounded-lg px-3 py-1.5",
-                                    member.status === "approved"
-                                      ? isDark
-                                        ? "border border-green-500/20 bg-green-500/10"
-                                        : "border border-green-200 bg-green-50"
-                                      : isDark
-                                        ? "border border-amber-500/20 bg-amber-500/10"
-                                        : "border border-amber-200 bg-amber-50",
-                                  )}
-                                >
+                              {team.members.map((member) => {
+                                const memberId = member.studentId || member.id || member._id;
+                                const isLeader = memberId === team.leaderId;
+                                return (
                                   <div
+                                    key={memberId || member.name}
                                     className={cn(
-                                      "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
-                                      isDark
-                                        ? "bg-slate-700 text-gray-300"
-                                        : "bg-gray-200 text-gray-600",
+                                      "flex items-center gap-2 rounded-lg px-3 py-1.5",
+                                      member.status === "approved"
+                                        ? isDark
+                                          ? "border border-green-500/20 bg-green-500/10"
+                                          : "border border-green-200 bg-green-50"
+                                        : isDark
+                                          ? "border border-amber-500/20 bg-amber-500/10"
+                                          : "border border-amber-200 bg-amber-50",
                                     )}
                                   >
-                                    {member.name.charAt(0).toUpperCase()}
-                                  </div>
-                                  <span
-                                    className={cn(
-                                      "text-sm",
-                                      isDark ? "text-gray-300" : "text-gray-700",
-                                    )}
-                                  >
-                                    {member.name}
-                                  </span>
-                                  {member.id === team.leaderId && (
-                                    <Crown className="h-3 w-3 text-amber-500" />
-                                  )}
-                                  {member.status === "pending" && (
-                                    <span
+                                    <div
                                       className={cn(
-                                        "text-xs",
-                                        isDark ? "text-amber-400" : "text-amber-600",
+                                        "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
+                                        isDark
+                                          ? "bg-slate-700 text-gray-300"
+                                          : "bg-gray-200 text-gray-600",
                                       )}
                                     >
-                                      (pending)
+                                      {member.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span
+                                      className={cn(
+                                        "text-sm",
+                                        isDark ? "text-gray-300" : "text-gray-700",
+                                      )}
+                                    >
+                                      {member.name}
                                     </span>
-                                  )}
-                                </div>
-                              ))}
+                                    {isLeader && (
+                                      <Crown className="h-3 w-3 text-amber-500" />
+                                    )}
+                                    {member.status === "pending" && (
+                                      <span
+                                        className={cn(
+                                          "text-xs",
+                                          isDark ? "text-amber-400" : "text-amber-600",
+                                        )}
+                                      >
+                                        (pending)
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
 
                           <div className="flex items-center justify-end gap-2">
                             {team.leaderId !== student?._id && (
-                              <Button variant="secondary" size="sm" className="gap-1">
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="gap-1"
+                                disabled={actionLoading === team._id}
+                                onClick={() => handleLeaveTeam(team._id)}
+                              >
                                 <LogOut className="h-4 w-4" />
                                 Leave Team
                               </Button>
@@ -382,6 +428,8 @@ export const TeamsPage = () => {
                                 variant="secondary"
                                 size="sm"
                                 className="gap-1 text-red-500 hover:text-red-600"
+                                disabled={actionLoading === team._id}
+                                onClick={() => handleDisbandTeam(team._id)}
                               >
                                 <Trash2 className="h-4 w-4" />
                                 Disband Team

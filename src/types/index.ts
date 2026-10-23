@@ -115,7 +115,9 @@ export interface CompetitionTeam {
 }
 
 export interface CompetitionTeamMember {
-  id: string;
+  id?: string;
+  studentId?: string;
+  _id?: string;
   name: string;
   email: string;
   registrationNo: string;

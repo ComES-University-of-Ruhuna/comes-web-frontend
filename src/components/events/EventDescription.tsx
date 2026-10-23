@@ -37,11 +37,58 @@ export const EventDescription = ({
           : {
               h1: ({ children }) => <h3>{children}</h3>,
               h2: ({ children }) => <h3>{children}</h3>,
-              a: ({ href, children }) => (
-                <a href={href} rel="noopener noreferrer">
-                  {children}
-                </a>
-              ),
+              a: ({ href, children }) => {
+                let targetHref = href;
+                if (
+                  (targetHref === "https://example.com" || targetHref === "http://example.com") &&
+                  typeof children === "string" &&
+                  children.includes(".") &&
+                  !children.includes(" ")
+                ) {
+                  targetHref = children;
+                }
+
+                const rawHref = targetHref?.trim() || "";
+                const lowerHref = rawHref.toLowerCase();
+
+                // Block dangerous pseudo-protocols
+                if (
+                  lowerHref.startsWith("javascript:") ||
+                  lowerHref.startsWith("data:") ||
+                  lowerHref.startsWith("vbscript:")
+                ) {
+                  return <span>{children}</span>;
+                }
+
+                let normalizedHref = rawHref;
+                if (rawHref.startsWith("//")) {
+                  normalizedHref = `https:${rawHref}`;
+                } else if (
+                  rawHref &&
+                  !lowerHref.startsWith("http://") &&
+                  !lowerHref.startsWith("https://") &&
+                  !lowerHref.startsWith("mailto:") &&
+                  !lowerHref.startsWith("tel:") &&
+                  !rawHref.startsWith("#") &&
+                  !rawHref.startsWith("/")
+                ) {
+                  normalizedHref = `https://${rawHref}`;
+                }
+
+                const isExternal =
+                  normalizedHref.toLowerCase().startsWith("http://") ||
+                  normalizedHref.toLowerCase().startsWith("https://");
+
+                return (
+                  <a
+                    href={normalizedHref}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                  >
+                    {children}
+                  </a>
+                );
+              },
             }
       }
     >

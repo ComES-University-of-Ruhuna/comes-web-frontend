@@ -3,6 +3,7 @@
 // ============================================
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
@@ -24,16 +25,11 @@ export const CustomCursor = () => {
     cursorType: "default",
   });
 
-  // Mouse position with spring physics for smooth following
+  // Mouse position (main cursor tracks 1:1 with zero lag)
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  // Main cursor (faster)
-  const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-
-  // Trailing cursor (slower, more elastic)
+  // Trailing cursor (smooth, elastic outer ring)
   const trailConfig = { damping: 20, stiffness: 150, mass: 0.8 };
   const trailXSpring = useSpring(cursorX, trailConfig);
   const trailYSpring = useSpring(cursorY, trailConfig);
@@ -63,7 +59,11 @@ export const CustomCursor = () => {
 
   // Detect hoverable elements
   const handleElementHover = useCallback((e: MouseEvent) => {
-    const target = e.target as HTMLElement;
+    const target = e.target;
+    if (!target || !(target instanceof Element) || typeof target.closest !== "function") {
+      setCursorState((prev) => ({ ...prev, isHovering: false, cursorType: "default" }));
+      return;
+    }
 
     // Check for interactive elements
     const isLink = target.closest('a, button, [role="button"]');
@@ -136,12 +136,16 @@ export const CustomCursor = () => {
   const mainSize = isClicking ? 8 : isHovering ? 16 : 10;
   const trailSize = isClicking ? 32 : isHovering ? 48 : 40;
 
-  return (
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <>
       {/* Outer ring / Trail cursor */}
       <motion.div
         className={cn(
-          "pointer-events-none fixed top-0 left-0 z-[9999] rounded-full mix-blend-difference",
+          "pointer-events-none fixed top-0 left-0 z-[99999] rounded-full mix-blend-difference",
           "transition-opacity duration-300",
           isVisible ? "opacity-100" : "opacity-0",
         )}
@@ -153,10 +157,11 @@ export const CustomCursor = () => {
         }}
       >
         <motion.div
+          initial={{ borderWidth: "1px" }}
           animate={{
             width: trailSize,
             height: trailSize,
-            borderWidth: isHovering ? 2 : 1,
+            borderWidth: isHovering ? "2px" : "1px",
           }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
           className={cn(
@@ -166,20 +171,20 @@ export const CustomCursor = () => {
             cursorType === "text" && "border-amber-400",
             cursorType === "grab" && "border-purple-400",
           )}
-          style={{ borderStyle: "solid" }}
+          style={{ borderStyle: "solid", borderWidth: "1px" }}
         />
       </motion.div>
 
       {/* Inner dot / Main cursor */}
       <motion.div
         className={cn(
-          "pointer-events-none fixed top-0 left-0 z-[9999] rounded-full",
+          "pointer-events-none fixed top-0 left-0 z-[99999] rounded-full",
           "transition-opacity duration-300",
           isVisible ? "opacity-100" : "opacity-0",
         )}
         style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
+          x: cursorX,
+          y: cursorY,
           translateX: "-50%",
           translateY: "-50%",
         }}
@@ -204,7 +209,7 @@ export const CustomCursor = () => {
       {/* Cursor glow effect */}
       <motion.div
         className={cn(
-          "pointer-events-none fixed top-0 left-0 z-[9998] rounded-full blur-xl",
+          "pointer-events-none fixed top-0 left-0 z-[99998] rounded-full blur-xl",
           "transition-opacity duration-500",
           isHovering && isVisible ? "opacity-30" : "opacity-0",
         )}
@@ -236,7 +241,7 @@ export const CustomCursor = () => {
           initial={{ scale: 0, opacity: 0.5 }}
           animate={{ scale: 2, opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="pointer-events-none fixed top-0 left-0 z-[9997] rounded-full"
+          className="pointer-events-none fixed top-0 left-0 z-[99997] rounded-full"
           style={{
             x: cursorX.get() - 25,
             y: cursorY.get() - 25,
@@ -249,7 +254,8 @@ export const CustomCursor = () => {
           />
         </motion.div>
       )}
-    </>
+    </>,
+    document.body
   );
 };
 

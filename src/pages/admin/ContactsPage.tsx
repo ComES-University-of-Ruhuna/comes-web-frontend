@@ -2,7 +2,7 @@
 // ComES Website - Admin Contacts Page
 // ============================================
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { motion } from "framer-motion";
 import {
@@ -41,8 +41,6 @@ export const ContactsPage = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const viewingId = viewingMessage?._id;
 
   useEffect(() => {
     let active = true;
@@ -79,15 +77,19 @@ export const ContactsPage = () => {
   }, [page, searchQuery, selectedStatus, revision]);
 
   useEffect(() => {
-    if (!viewingId || !dialogRef.current) return;
+    if (!viewingMessage) return;
     const opener = document.activeElement as HTMLElement | null;
-    const dialog = dialogRef.current;
-    dialog.showModal();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setViewingMessage(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      dialog.close();
+      window.removeEventListener("keydown", handleKeyDown);
       if (opener?.isConnected) opener.focus();
     };
-  }, [viewingId]);
+  }, [viewingMessage]);
 
   const handleOpen = async (id: string) => {
     if (busy) return;
@@ -425,25 +427,23 @@ export const ContactsPage = () => {
 
       {/* Message Viewer Modal */}
       {viewingMessage && (
-        <dialog
-          ref={dialogRef}
+        <div
+          role="dialog"
+          aria-modal="true"
           aria-labelledby="contact-message-title"
-          onCancel={() => setViewingMessage(null)}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") setViewingMessage(null);
-          }}
-          className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-lg border-0 p-0 backdrop:bg-black/50"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setViewingMessage(null);
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
         >
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setViewingMessage(null)}
+          />
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "w-full max-w-2xl overflow-hidden rounded-2xl shadow-2xl",
+              "relative z-10 max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl shadow-2xl",
               isDark ? "bg-slate-900" : "bg-white",
             )}
           >
@@ -599,7 +599,7 @@ export const ContactsPage = () => {
               </a>
             </div>
           </motion.div>
-        </dialog>
+        </div>
       )}
     </div>
   );

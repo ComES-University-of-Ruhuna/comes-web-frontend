@@ -133,9 +133,9 @@ export const HomeIntro = () => {
           <p className="site-home-eyebrow mb-5 text-xs font-semibold text-white/85">
             FACULTY OF ENGINEERING / UNIVERSITY OF RUHUNA
           </p>
-          <h1>ComES</h1>
-          <p className="site-home-subtitle">Computer Engineering Society</p>
-          <p className="site-home-description">
+          <h1 className="text-white">ComES</h1>
+          <p className="site-home-subtitle text-white">Computer Engineering Society</p>
+          <p className="site-home-description text-slate-200">
             A student community exploring ideas, building connections, and creating practical
             solutions.
           </p>
@@ -169,7 +169,7 @@ export const HomeIntro = () => {
                 <ChevronLeft aria-hidden="true" className="h-5 w-5" />
               </button>
               <span
-                className="w-16 text-center text-sm tabular-nums"
+                className="w-16 text-center text-sm tabular-nums text-white font-medium"
                 aria-live={playing ? "off" : "polite"}
                 aria-atomic="true"
               >
