@@ -22,6 +22,9 @@ export interface Student {
   linkedin?: string;
   website?: string;
   isEmailVerified: boolean;
+  registeredEvents?: Array<{ _id: string; title?: string; date?: string; location?: string } | string>;
+  quizzesCompleted?: string[];
+  certificates?: string[];
   createdAt: string;
 }
 

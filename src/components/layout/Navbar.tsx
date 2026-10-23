@@ -341,7 +341,12 @@ export const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="site-navigation fixed top-0 right-0 left-0 z-50 border-b"
+      className={cn(
+        "site-navigation fixed top-0 right-0 left-0 z-50 border-b transition-colors duration-300",
+        isDark
+          ? "border-slate-800 bg-slate-950/95 text-gray-100 backdrop-blur-md"
+          : "border-gray-200 bg-white/95 text-gray-900 backdrop-blur-md",
+      )}
       onKeyDown={(event) => {
         if (event.key === "Escape" && isMobileMenuOpen) {
           setIsMobileMenuOpen(false);
@@ -379,7 +384,12 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden shrink-0 items-center gap-2 border-l border-[var(--site-border)] pl-4 xl:flex">
+          <div
+            className={cn(
+              "hidden shrink-0 items-center gap-2 border-l pl-4 xl:flex",
+              isDark ? "border-slate-800" : "border-gray-200",
+            )}
+          >
             {/* Theme Toggle - only show if not authenticated */}
             {!isAuthenticated && <ThemeToggle />}
 
@@ -488,7 +498,12 @@ export const Navbar = () => {
               )}
             >
               <nav aria-label="Mobile navigation" className="space-y-1 p-4">
-                <p className="px-3 py-3 text-xs font-semibold text-[var(--site-muted)]">
+                <p
+                  className={cn(
+                    "px-3 py-3 text-xs font-semibold",
+                    isDark ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
                   NAVIGATION
                 </p>
                 {NAV_LINKS.map((link, index) => (

@@ -63,6 +63,7 @@ vi.mock("@/components/ui", () => {
     SectionHeader: ({ title }: { title: string }) => <h2>{title}</h2>,
     NewsletterSection: () => null,
     CreateTeamModal: () => null,
+    NotificationsDropdown: () => null,
     Button: ({
       children,
       onClick,

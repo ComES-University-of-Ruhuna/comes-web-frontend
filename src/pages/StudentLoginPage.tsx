@@ -4,6 +4,9 @@
 
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft, GraduationCap } from "lucide-react";
 import { useStudentStore } from "@/store/studentStore";
@@ -11,9 +14,17 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, ThemeToggle } from "@/components/ui";
 
+const studentLoginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please provide a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type StudentLoginFormData = z.infer<typeof studentLoginSchema>;
+
 export const StudentLoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useStudentStore();
   const { resolvedTheme } = useThemeStore();
@@ -21,11 +32,19 @@ export const StudentLoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<StudentLoginFormData>({
+    resolver: zodResolver(studentLoginSchema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = async (data: StudentLoginFormData) => {
     clearError();
 
-    const success = await login({ email: email.trim().toLowerCase(), password });
+    const success = await login({ email: data.email.trim().toLowerCase(), password: data.password });
     if (success) {
       const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from
         ?.pathname;
@@ -125,7 +144,7 @@ export const StudentLoginPage = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
           <div>
             <label
               htmlFor="student-email"
@@ -146,19 +165,22 @@ export const StudentLoginPage = () => {
               <input
                 id="student-email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-4 pl-10 transition-all",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  errors.email
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="your.email@example.com"
                 autoComplete="email"
-                required
               />
             </div>
+            {errors.email && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
@@ -181,17 +203,17 @@ export const StudentLoginPage = () => {
               <input
                 id="student-password"
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-12 pl-10 transition-all",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  errors.password
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="Enter your password"
                 autoComplete="current-password"
-                required
               />
               <button
                 type="button"
@@ -207,6 +229,9 @@ export const StudentLoginPage = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+            {errors.password && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="text-right">

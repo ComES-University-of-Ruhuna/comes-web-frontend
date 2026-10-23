@@ -277,6 +277,10 @@ body {
   font-size: 1.75rem;
   font-weight: 500;
   line-height: 1.4;
+  color: #ffffff;
+}
+.public-site .site-home-controls span {
+  color: #ffffff;
 }
 .public-site .site-home-description {
   max-width: 34rem;
@@ -512,14 +516,22 @@ body {
     font-size: 2rem;
   }
   .public-site .site-home-hero {
-    min-height: min(30rem, calc(100svh - 8rem));
+    min-height: min(24rem, calc(100svh - 6rem));
     padding-block: 1.5rem;
+  }
+  .public-site .site-home-photo {
+    object-position: center;
+    object-fit: cover;
   }
   .public-site .site-home-hero h1 {
     font-size: 3.5rem;
   }
   .public-site .site-home-subtitle {
     font-size: 1.25rem;
+    color: #ffffff;
+  }
+  .public-site .site-home-controls span {
+    color: #ffffff;
   }
   .public-site .site-home-hero--slideshow h1 {
     font-size: 3rem;

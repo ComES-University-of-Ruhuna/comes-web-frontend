@@ -162,3 +162,10 @@ export const useStudentStore = create<StudentState>()(
     },
   ),
 );
+
+// Listen for student logout events from API interceptor
+if (typeof window !== "undefined") {
+  window.addEventListener("student:logout", () => {
+    useStudentStore.getState().logout();
+  });
+}

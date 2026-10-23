@@ -20,6 +20,8 @@ import { BlogPage } from "@/pages/BlogPage";
 import { BlogPostPage } from "@/pages/BlogPostPage";
 import { ContactPage } from "@/pages/ContactPage";
 import { FAQPage } from "@/pages/FAQPage";
+import { PrivacyPage } from "@/pages/PrivacyPage";
+import { TermsPage } from "@/pages/TermsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { UnderMaintenancePage } from "@/pages/UnderMaintenancePage";
 import { StudentRegisterPage } from "@/pages/StudentRegisterPage";
@@ -151,6 +153,8 @@ const AnimatedRoutes = () => {
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/maintenance" element={<UnderMaintenancePage />} />
           </Route>
 

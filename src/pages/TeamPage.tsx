@@ -257,7 +257,7 @@ const JoinTeamSection = () => {
           </div>
         </div>
         <Button
-          href="https://volunteers.comesuor.lk"
+          href="mailto:contact@comesuor.lk?subject=ComES%20Volunteer%20Application"
           external
           size="lg"
           icon={<ArrowRight className="h-5 w-5" />}

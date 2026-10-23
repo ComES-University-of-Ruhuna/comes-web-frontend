@@ -16,6 +16,8 @@ export { UnderMaintenancePage } from "./UnderMaintenancePage";
 export { StudentRegisterPage } from "./StudentRegisterPage";
 export { StudentLoginPage } from "./StudentLoginPage";
 export { StudentPortfolioPage } from "./StudentPortfolioPage";
+export { PrivacyPage } from "./PrivacyPage";
+export { TermsPage } from "./TermsPage";
 
 // Student pages
 export {
