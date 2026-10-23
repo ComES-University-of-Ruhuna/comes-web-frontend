@@ -4,9 +4,6 @@
 
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft, GraduationCap } from "lucide-react";
 import { useStudentStore } from "@/store/studentStore";
@@ -14,17 +11,11 @@ import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
 import { Button, ThemeToggle } from "@/components/ui";
 
-const studentLoginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please provide a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type StudentLoginFormData = z.infer<typeof studentLoginSchema>;
-
 export const StudentLoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useStudentStore();
   const { resolvedTheme } = useThemeStore();
@@ -32,19 +23,31 @@ export const StudentLoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<StudentLoginFormData>({
-    resolver: zodResolver(studentLoginSchema),
-    mode: "onTouched",
-  });
-
-  const onSubmit = async (data: StudentLoginFormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     clearError();
+    setEmailError("");
+    setPasswordError("");
 
-    const success = await login({ email: data.email.trim().toLowerCase(), password: data.password });
+    const normalizedEmail = email.trim().toLowerCase();
+    let hasError = false;
+
+    if (!normalizedEmail) {
+      setEmailError("Email is required");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailError("Please provide a valid email address");
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const success = await login({ email: normalizedEmail, password });
     if (success) {
       const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from
         ?.pathname;
@@ -144,7 +147,7 @@ export const StudentLoginPage = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           <div>
             <label
               htmlFor="student-email"
@@ -165,10 +168,14 @@ export const StudentLoginPage = () => {
               <input
                 id="student-email"
                 type="email"
-                {...register("email")}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-4 pl-10 transition-all",
-                  errors.email
+                  emailError
                     ? "border-red-500 focus:border-red-500"
                     : isDark
                       ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
@@ -178,8 +185,8 @@ export const StudentLoginPage = () => {
                 autoComplete="email"
               />
             </div>
-            {errors.email && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.email.message}</p>
+            {emailError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{emailError}</p>
             )}
           </div>
 
@@ -203,10 +210,14 @@ export const StudentLoginPage = () => {
               <input
                 id="student-password"
                 type={showPassword ? "text" : "password"}
-                {...register("password")}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                }}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-12 pl-10 transition-all",
-                  errors.password
+                  passwordError
                     ? "border-red-500 focus:border-red-500"
                     : isDark
                       ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
@@ -229,8 +240,8 @@ export const StudentLoginPage = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.password.message}</p>
+            {passwordError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{passwordError}</p>
             )}
           </div>
 

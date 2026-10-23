@@ -4,9 +4,6 @@
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
 import { useAuthStore, useThemeStore } from "@/store";
@@ -16,36 +13,42 @@ import { Button, ThemeToggle } from "@/components/ui";
 import LogoBlack from "@/assets/logo/Logo Black Coloured.png";
 import LogoWhite from "@/assets/logo/Logo White Coloured.png";
 
-const adminLoginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please provide a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
-
 export const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AdminLoginFormData>({
-    resolver: zodResolver(adminLoginSchema),
-    mode: "onTouched",
-  });
-
-  const onSubmit = async (data: AdminLoginFormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     clearError();
+    setEmailError("");
+    setPasswordError("");
 
-    const success = await login({ email: data.email.trim(), password: data.password });
+    const normalizedEmail = email.trim().toLowerCase();
+    let hasError = false;
+
+    if (!normalizedEmail) {
+      setEmailError("Email is required");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailError("Please provide a valid email address");
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const success = await login({ email: normalizedEmail, password });
     if (success) {
       navigate("/admin");
     }
@@ -133,7 +136,7 @@ export const LoginPage = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           {/* Email Field */}
           <div>
             <label
@@ -153,11 +156,15 @@ export const LoginPage = () => {
               />
               <input
                 type="email"
-                {...register("email")}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
                 placeholder="youremail@domain.lk"
                 className={cn(
                   "w-full rounded-xl border py-3 pr-4 pl-12 transition-colors",
-                  errors.email
+                  emailError
                     ? "border-red-500 focus:border-red-500"
                     : isDark
                       ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
@@ -166,8 +173,8 @@ export const LoginPage = () => {
                 )}
               />
             </div>
-            {errors.email && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.email.message}</p>
+            {emailError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{emailError}</p>
             )}
           </div>
 
@@ -190,11 +197,15 @@ export const LoginPage = () => {
               />
               <input
                 type={showPassword ? "text" : "password"}
-                {...register("password")}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                }}
                 placeholder="••••••••"
                 className={cn(
                   "w-full rounded-xl border py-3 pr-12 pl-12 transition-colors",
-                  errors.password
+                  passwordError
                     ? "border-red-500 focus:border-red-500"
                     : isDark
                       ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
@@ -215,8 +226,8 @@ export const LoginPage = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.password.message}</p>
+            {passwordError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{passwordError}</p>
             )}
           </div>
 
