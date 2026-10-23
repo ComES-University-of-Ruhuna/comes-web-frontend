@@ -5,7 +5,8 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  plugins: [(tailwindcss as any)(), react()],
   build: {
     rollupOptions: {
       output: {
