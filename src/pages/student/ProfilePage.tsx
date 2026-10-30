@@ -344,8 +344,6 @@ export const ProfilePage = () => {
                     <Link
                       to={`/portfolio/${student.username}`}
                       className="shrink-0"
-                      target="_blank"
-                      rel="noopener noreferrer"
                     >
                       <Button variant="secondary" className="shrink-0">
                         View Portfolio

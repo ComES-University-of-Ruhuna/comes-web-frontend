@@ -10,7 +10,6 @@ import {
   Calendar,
   BookOpen,
   Award,
-  Bell,
   Settings,
   FileText,
   Clock,
@@ -23,7 +22,7 @@ import {
 import { useStudentStore } from "@/store/studentStore";
 import { useThemeStore } from "@/store";
 import { cn } from "@/utils";
-import { Button, Badge, CreateTeamModal } from "@/components/ui";
+import { Button, Badge, CreateTeamModal, NotificationsDropdown } from "@/components/ui";
 import { Navbar, Footer } from "@/components/layout";
 import { DashboardSwitch } from "@/components/ui/DashboardSwitch";
 import { useEvents } from "@/hooks/useApi";
@@ -94,6 +93,11 @@ export const StudentDashboardPage = () => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
+
+  const attendedEventsCount = student?.registeredEvents?.length ?? 0;
+  const quizzesCompleted = student?.quizzesCompleted?.length ?? 0;
+  const certificatesCount = student?.certificates?.length ?? 0;
+  const hoursActive = attendedEventsCount * 2;
 
   const {
     data: upcomingEvents,
@@ -169,10 +173,7 @@ export const StudentDashboardPage = () => {
                     <UserPlus className="h-4 w-4" />
                     <span className="hidden sm:inline">Create Team</span>
                   </Button>
-                  <Button variant="secondary" className="gap-2">
-                    <Bell className="h-4 w-4" />
-                    <span className="hidden sm:inline">Notifications</span>
-                  </Button>
+                  <NotificationsDropdown />
                   <Link to="/student/settings">
                     <Button variant="secondary" className="gap-2">
                       <Settings className="h-4 w-4" />
@@ -193,28 +194,28 @@ export const StudentDashboardPage = () => {
               <StatCard
                 icon={Calendar}
                 label="Events Attended"
-                value={0}
+                value={attendedEventsCount}
                 color="bg-blue-500"
                 isDark={isDark}
               />
               <StatCard
                 icon={BookOpen}
                 label="Quizzes Completed"
-                value={0}
+                value={quizzesCompleted}
                 color="bg-purple-500"
                 isDark={isDark}
               />
               <StatCard
                 icon={Award}
                 label="Certificates"
-                value={0}
+                value={certificatesCount}
                 color="bg-amber-500"
                 isDark={isDark}
               />
               <StatCard
                 icon={Clock}
                 label="Hours Active"
-                value={0}
+                value={hoursActive}
                 color="bg-green-500"
                 isDark={isDark}
               />

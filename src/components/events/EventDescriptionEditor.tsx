@@ -53,6 +53,13 @@ export const EventDescriptionEditor = ({
       end = lineEnd === -1 ? value.length : lineEnd;
     }
     const selected = value.slice(start, end) || option.sample;
+
+    let linkTarget = "https://example.com";
+    if (option.name === "Link" && selected !== option.sample && selected.includes(".") && !selected.includes(" ")) {
+      const lowerSelected = selected.toLowerCase();
+      linkTarget = lowerSelected.startsWith("http://") || lowerSelected.startsWith("https://") ? selected : `https://${selected}`;
+    }
+
     const replacement = option.block
       ? selected
           .split("\n")
@@ -61,7 +68,9 @@ export const EventDescriptionEditor = ({
               `${option.name === "Numbered list" ? `${index + 1}. ` : option.before}${line}`,
           )
           .join("\n")
-      : `${option.before}${selected}${option.after}`;
+      : option.name === "Link" && linkTarget !== "https://example.com"
+        ? `[${selected}](${linkTarget})`
+        : `${option.before}${selected}${option.after}`;
     const next = value.slice(0, start) + replacement + value.slice(end);
     if (next.length > 5000) {
       setError("Description cannot exceed 5,000 characters.");

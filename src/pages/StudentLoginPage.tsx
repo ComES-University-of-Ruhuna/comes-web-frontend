@@ -14,6 +14,8 @@ import { Button, ThemeToggle } from "@/components/ui";
 export const StudentLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useStudentStore();
   const { resolvedTheme } = useThemeStore();
@@ -24,8 +26,28 @@ export const StudentLoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setEmailError("");
+    setPasswordError("");
 
-    const success = await login({ email: email.trim().toLowerCase(), password });
+    const normalizedEmail = email.trim().toLowerCase();
+    let hasError = false;
+
+    if (!normalizedEmail) {
+      setEmailError("Email is required");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailError("Please provide a valid email address");
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const success = await login({ email: normalizedEmail, password });
     if (success) {
       const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from
         ?.pathname;
@@ -125,7 +147,7 @@ export const StudentLoginPage = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           <div>
             <label
               htmlFor="student-email"
@@ -147,18 +169,25 @@ export const StudentLoginPage = () => {
                 id="student-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-4 pl-10 transition-all",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  emailError
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="your.email@example.com"
                 autoComplete="email"
-                required
               />
             </div>
+            {emailError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{emailError}</p>
+            )}
           </div>
 
           <div>
@@ -182,16 +211,20 @@ export const StudentLoginPage = () => {
                 id="student-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError("");
+                }}
                 className={cn(
                   "w-full rounded-xl border py-3 pr-12 pl-10 transition-all",
-                  isDark
-                    ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
+                  passwordError
+                    ? "border-red-500 focus:border-red-500"
+                    : isDark
+                      ? "border-slate-700 bg-slate-800 text-white placeholder-gray-500 focus:border-blue-500"
+                      : "border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500",
                 )}
                 placeholder="Enter your password"
                 autoComplete="current-password"
-                required
               />
               <button
                 type="button"
@@ -207,6 +240,9 @@ export const StudentLoginPage = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+            {passwordError && (
+              <p className="mt-1.5 text-xs font-medium text-red-500">{passwordError}</p>
+            )}
           </div>
 
           <div className="text-right">

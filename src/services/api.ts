@@ -30,6 +30,7 @@ const requiresStudentToken = (url: string, method?: string): boolean =>
   /^\/students\/(me(?:\/|\?|$)|my-|events\/|organized-events(?:\/|\?|$)|change-password(?:\?|$)|search(?:\?|$))/.test(
     url,
   ) ||
+  /^\/competition-teams(?:\/|\?|$)/.test(url) ||
   (/^\/quizzes\/[^/]+\/attempt(?:\?|$)/.test(url) && method === "post");
 
 export const setAccessToken = (token: string | null) => {
@@ -72,10 +73,15 @@ api.interceptors.request.use(
       return config;
     }
 
-    config._studentAuth =
-      requiresStudentToken(url, config.method) ||
-      (!url.startsWith("/auth/") && studentAdminAccess && Boolean(studentAccessToken));
-    const token = config._studentAuth ? studentAccessToken : accessToken;
+    const isDualAuthEndpoint = /^\/students\/portfolio(?:\/|\?|$)/.test(url);
+    if (isDualAuthEndpoint) {
+      config._studentAuth = Boolean(studentAccessToken);
+    } else {
+      config._studentAuth =
+        requiresStudentToken(url, config.method) ||
+        (!url.startsWith("/auth/") && studentAdminAccess && Boolean(studentAccessToken));
+    }
+    const token = config._studentAuth ? studentAccessToken : (accessToken || studentAccessToken);
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;

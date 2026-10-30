@@ -93,11 +93,13 @@ const departmentColors: Record<string, string> = {
 
 const TeamEditor = ({
   member,
+  existingMembers = [],
   onClose,
   onSave,
   saving,
 }: {
   member?: TeamMember | null;
+  existingMembers?: TeamMember[];
   onClose: () => void;
   onSave: (data: Omit<TeamMember, "_id" | "createdAt">) => Promise<void>;
   saving: boolean;
@@ -262,8 +264,29 @@ const TeamEditor = ({
                 defaultValue=""
                 className={inputCn}
                 onChange={(event) => {
+                  const selectedId = event.target.value;
+                  const dbEntry = existingMembers.find((candidate) => candidate._id === selectedId);
+                  if (dbEntry) {
+                    setFormData((current) => ({
+                      ...current,
+                      name: dbEntry.name,
+                      role: dbEntry.role,
+                      department: dbEntry.department || "executive",
+                      batch: dbEntry.batch || "",
+                      email: dbEntry.email || "",
+                      contactNo: dbEntry.contactNo || "",
+                      avatar: dbEntry.avatar || "",
+                      bio: dbEntry.bio || "",
+                      linkedin: dbEntry.linkedin || "",
+                      github: dbEntry.github || "",
+                      twitter: dbEntry.twitter || "",
+                      order: dbEntry.order ?? 0,
+                    }));
+                    return;
+                  }
+
                   const entry = executiveCommittee.find(
-                    (candidate) => candidate.id === event.target.value,
+                    (candidate) => candidate.id === selectedId,
                   );
                   if (!entry) return;
                   setFormData((current) => ({
@@ -286,11 +309,22 @@ const TeamEditor = ({
                 <option value="" disabled>
                   Select a member
                 </option>
-                {executiveCommittee.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.name} - {entry.role}
-                  </option>
-                ))}
+                {existingMembers.length > 0 && (
+                  <optgroup label="Current Members (Database)">
+                    {existingMembers.map((entry) => (
+                      <option key={entry._id} value={entry._id}>
+                        {entry.name} - {entry.role} ({entry.department})
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label="Template Roster">
+                  {executiveCommittee.map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.name} - {entry.role}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
           )}
@@ -1196,6 +1230,7 @@ export const TeamManagementPage = () => {
         {(isCreating || editingMember) && (
           <TeamEditor
             member={editingMember}
+            existingMembers={team}
             onClose={() => {
               setIsCreating(false);
               setEditingMember(null);

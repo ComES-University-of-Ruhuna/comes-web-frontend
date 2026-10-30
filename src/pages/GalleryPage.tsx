@@ -59,40 +59,35 @@ const Lightbox = ({
   onChange: (index: number) => void;
   onClose: () => void;
 }) => {
-  const dialog = useRef<HTMLDialogElement>(null);
   const [previous] = useState(() => document.activeElement);
   const photo = photos[index];
+
   useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      element?.close();
-      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
-    };
-  }, [previous]);
-  return (
-    <dialog
-      ref={dialog}
-      aria-label="Photo viewer"
-      onCancel={(event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         event.preventDefault();
         onClose();
-      }}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          onClose();
-        }
-        if (event.key === "ArrowLeft" && index > 0) {
-          event.preventDefault();
-          onChange(index - 1);
-        }
-        if (event.key === "ArrowRight" && index < photos.length - 1) {
-          event.preventDefault();
-          onChange(index + 1);
-        }
-      }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-neutral-950 p-0 text-white backdrop:bg-black/80"
+      } else if (event.key === "ArrowLeft" && index > 0) {
+        event.preventDefault();
+        onChange(index - 1);
+      } else if (event.key === "ArrowRight" && index < photos.length - 1) {
+        event.preventDefault();
+        onChange(index + 1);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+    };
+  }, [previous, index, photos.length, onChange, onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photo viewer"
+      className="fixed inset-0 z-50 m-0 h-dvh max-h-none w-screen max-w-none bg-neutral-950 p-0 text-white"
     >
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-start justify-between gap-4 border-b border-white/15 px-4 py-4 sm:px-8">
@@ -171,7 +166,7 @@ const Lightbox = ({
           </div>
         </footer>
       </div>
-    </dialog>
+    </div>
   );
 };
 

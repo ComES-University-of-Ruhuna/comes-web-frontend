@@ -116,8 +116,13 @@ const FAQItem = ({
 // Hero Section
 
 // Search Section
-const SearchSection = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+const SearchSection = ({
+  searchQuery,
+  setSearchQuery,
+}: {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}) => {
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
@@ -159,13 +164,24 @@ const SearchSection = () => {
 };
 
 // FAQ List Section
-const FAQListSection = () => {
+const FAQListSection = ({ searchQuery }: { searchQuery: string }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const { resolvedTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
 
+  const trimmedQuery = searchQuery.trim().toLowerCase();
+
+  const filteredFaqs = trimmedQuery
+    ? faqs.filter(
+        (faq) =>
+          faq.question.toLowerCase().includes(trimmedQuery) ||
+          faq.answer.toLowerCase().includes(trimmedQuery) ||
+          faq.category?.toLowerCase().includes(trimmedQuery),
+      )
+    : faqs;
+
   // Group FAQs by category
-  const faqsByCategory = faqs.reduce(
+  const faqsByCategory = filteredFaqs.reduce(
     (acc, faq) => {
       const category = faq.category || "General";
       if (!acc[category]) {
@@ -180,34 +196,50 @@ const FAQListSection = () => {
   return (
     <Section background={isDark ? "white" : "gray"}>
       <div className="mx-auto max-w-3xl space-y-10">
-        {Object.entries(faqsByCategory).map(([category, categoryFaqs], catIndex) => (
-          <FadeInView key={category} delay={catIndex * 0.1}>
-            <motion.div layout>
-              <div className="mb-6 flex items-center gap-3">
-                <div className="site-accent-panel flex h-10 w-10 items-center justify-center rounded-lg from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
-                  <BookOpen className="h-5 w-5 text-white" />
-                </div>
-                <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
-                  {category}
-                </h2>
-              </div>
-              <div className="space-y-4">
-                {categoryFaqs.map((faq, index) => (
-                  <FAQItem
-                    key={faq.id}
-                    question={faq.question}
-                    answer={faq.answer}
-                    isOpen={openIndex === faqs.indexOf(faq)}
-                    onToggle={() =>
-                      setOpenIndex(openIndex === faqs.indexOf(faq) ? null : faqs.indexOf(faq))
-                    }
-                    index={index}
-                  />
-                ))}
-              </div>
-            </motion.div>
+        {filteredFaqs.length === 0 ? (
+          <FadeInView>
+            <div className="py-12 text-center">
+              <HelpCircle
+                className={cn("mx-auto mb-4 h-12 w-12", isDark ? "text-gray-600" : "text-gray-400")}
+              />
+              <h3 className={cn("text-xl font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                No questions found
+              </h3>
+              <p className={cn("mt-2 text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
+                We couldn't find any questions matching "{searchQuery}". Try different keywords or contact us directly.
+              </p>
+            </div>
           </FadeInView>
-        ))}
+        ) : (
+          Object.entries(faqsByCategory).map(([category, categoryFaqs], catIndex) => (
+            <FadeInView key={category} delay={catIndex * 0.1}>
+              <motion.div layout>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="site-accent-panel flex h-10 w-10 items-center justify-center rounded-lg from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
+                    <BookOpen className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-comesBlue")}>
+                    {category}
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {categoryFaqs.map((faq, index) => (
+                    <FAQItem
+                      key={faq.id}
+                      question={faq.question}
+                      answer={faq.answer}
+                      isOpen={openIndex === faqs.indexOf(faq)}
+                      onToggle={() =>
+                        setOpenIndex(openIndex === faqs.indexOf(faq) ? null : faqs.indexOf(faq))
+                      }
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </FadeInView>
+          ))
+        )}
       </div>
     </Section>
   );
@@ -348,10 +380,12 @@ const CTASection = () => {
 
 // Main FAQ Page Component
 export const FAQPage = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <PageTransition>
-      <SearchSection />
-      <FAQListSection />
+      <SearchSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <FAQListSection searchQuery={searchQuery} />
       <QuickLinksSection />
       <CTASection />
     </PageTransition>
